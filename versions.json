@@ -1,0 +1,47 @@
+{
+  "launcher": "1.0",
+  "recommended": "9.9",
+  "beta": "10.0-beta",
+  "versions": [
+    {
+      "id": "10.0-beta",
+      "channel": "beta",
+      "label": "10.0 BETA — NOTIFY EDITION",
+      "ref": "self",
+      "file": "swir-beta-10.js",
+      "notes": "PRIV notifications, friend online/room change, VIP, DND, unread badges, reconnect and notification center"
+    },
+    {
+      "id": "9.9",
+      "channel": "stable",
+      "label": "9.9 RECOMMENDED",
+      "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
+      "file": "swir.js",
+      "notes": "Frozen working build: Friend Radar, right-click friends, Ice Light, slim Friends panel"
+    },
+    {
+      "id": "9.8",
+      "channel": "stable",
+      "label": "9.8 STABLE",
+      "ref": "bf0ae7562016d82699baf834664b0945320102ba",
+      "file": "swir.js",
+      "notes": "Friend UX, right click and theme system"
+    },
+    {
+      "id": "9.7",
+      "channel": "stable",
+      "label": "9.7 STABLE",
+      "ref": "868963711b94d373eee7d6cc1a7444da3c89ef45",
+      "file": "swir.js",
+      "notes": "Friend Radar rebuild and persistent userId cache"
+    },
+    {
+      "id": "9.6",
+      "channel": "safe",
+      "label": "9.6 SAFE",
+      "ref": "9c4528f269d931f483989dd4dff591bb2a93fa31",
+      "file": "swir.js",
+      "notes": "Older passive friend radar build"
+    }
+  ]
+}
