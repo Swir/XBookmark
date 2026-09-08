@@ -9,15 +9,9 @@
   function patchAlert(){const old=window.alert;window._swirOriginalAlert97=old;window.alert=function(m){try{m=String(m).replace(/9\.2 COLOR LAB \+ IMAGE DIAGNOSTICS/g,'9.7 FRIEND RADAR REBUILD').replace(/MOBILE RADAR 9\.2/g,'FRIEND RADAR 9.7')}catch(e){}return old.call(window,m)}}
   function restoreAlert(){if(window._swirOriginalAlert97){window.alert=window._swirOriginalAlert97;delete window._swirOriginalAlert97}}
   load('swir-prepatch-96.js',()=>{
-    if(window._swirModIsRunning){
-      load('swir-patch-96.js',()=>load('swir-radar-97.js'));
-      return;
-    }
+    if(window._swirModIsRunning){load('swir-ui-97.js',()=>load('swir-radar-97.js'));return}
     patchAlert();
-    load('swir-core.js',()=>{
-      restoreAlert();
-      load('swir-patch-96.js',()=>load('swir-radar-97.js'));
-    });
+    load('swir-core.js',()=>{restoreAlert();load('swir-ui-97.js',()=>load('swir-radar-97.js'))});
     setTimeout(restoreAlert,6000);
   });
 }catch(e){console.error('SWIR CLOUD bootstrap 9.7:',e)}})();
