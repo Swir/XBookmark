@@ -1,57 +1,98 @@
-# XBookmark — SWIR Cloud Loader
+# XBookmark — SWIR Version Launcher
 
 Centralne repozytorium bookmarka SWIR dla CZATerii.
 
 ## Jak używać
 
 1. Otwórz `bookmark-loader.txt`.
-2. Skopiuj jedną linię zaczynającą się od `javascript:` do adresu zakładki.
-3. Wejdź na CZATerię, zrób pełne odświeżenie strony i kliknij zakładkę.
+2. Skopiuj jedną linię `javascript:...` do adresu zakładki w Chrome.
+3. Wejdź na CZATerię, odśwież stronę i kliknij zakładkę.
+4. Zamiast automatycznie uruchamiać jeden MOD, pojawi się **SWIR XBOOKMARK LAUNCHER** z wyborem wersji.
 
-SMART loader pobiera aktualny SHA brancha `main` z GitHub API i ładuje dokładnie ten commit z jsDelivr.
+SMART bookmark pobiera aktualny SHA `main` z GitHub API, a następnie ładuje dokładnie ten commit z jsDelivr. Sam bookmark nie wymaga zmiany przy kolejnych wydaniach.
 
-## SWIR 9.8
+## Launcher 1.0
 
-9.8 zostawia silnik Friend Radar 9.7 i poprawia warstwę obsługi/UI:
+Dostępne kanały:
 
-- stabilne pole `Dodaj nick do znajomych SWIR` — nie jest już kasowane przez cykliczny render Radaru,
-- naprawiona opcja prawego przycisku myszy `Dodaj/Usuń ze znajomych SWIR`,
-- po dodaniu z menu kontekstowego Radar od razu skanuje cache ID i może wykonać normalny APP Sync, jeżeli `userId` jest znane,
-- czysty nagłówek MOD: `SWIR // Czateria MOD by Swir v9.8`, bez duplikujących się napisów,
-- 5 zapamiętywanych motywów całego czatu:
-  - Gaming Neon,
-  - Steel Gray — jaśniejsze, szarawe okno wiadomości,
-  - Matrix,
-  - Ocean,
-  - Violet,
-- neon pozostaje tylko na nickach autorów wiadomości,
-- `📱` pozostaje tylko dla użytkowników faktycznie oznaczonych przez CZATerię jako mobile.
+- **10.0 BETA — NOTIFY EDITION** — najnowsze funkcje testowe,
+- **9.9 RECOMMENDED** — zamrożona, polecana wersja,
+- **9.8 STABLE** — poprzednia stabilna wersja,
+- **9.7 STABLE** — Friend Radar Rebuild,
+- **9.6 SAFE** — starsza spokojniejsza wersja.
 
-## Architektura
+Wersje 9.9–9.6 są przypięte do konkretnych commitów. Późniejsze zmiany na `main` nie zmienią ich kodu.
 
-- `swir.js` — bootstrap 9.8,
-- `swir-prepatch-96.js` — bramka anty-flood dla starego rdzenia,
-- `swir-core.js` — rdzeń SWIR,
-- `swir-ui-98.js` — UI/UX, motywy, stabilne pole znajomych i prawy klik,
-- `swir-radar-97.js` — przebudowany Friend Radar oparty o flow APK,
-- `FRIEND_RADAR_AUDIT_97.md` — audyt WEB + APK,
-- `version.json` — bieżąca wersja,
-- `bookmark-loader.txt` — SMART loader.
+Katalog wersji: `versions.json`.
 
-## Friend Radar — ważne
+## 10.0 BETA — NOTIFY EDITION
 
-Oficjalne dodanie znajomego wymaga numerycznego `userId`. SWIR zapamiętuje ID osób poznanych przez normalny ruch klienta i po znanym ID może użyć zwykłego `code 8 / subcode 4`, a potem `85 -> 159` do odczytu `rooms[]` znajomych APP.
+Beta korzysta z zamrożonej bazy 9.9 i dokłada osobny moduł powiadomień. Dzięki temu eksperymentalny kod nie modyfikuje stabilnej 9.9.
 
-Diagnostyka Radaru:
+Funkcje BETA:
+
+- powiadomienie o nowym PRIV, gdy rozmowa nie jest aktywna albo karta jest w tle,
+- licznik nieprzeczytanych na zakładce PRIV,
+- powiadomienie, gdy znajomy APP pojawi się online,
+- powiadomienie o zmianie pokoju znajomego,
+- opcjonalne powiadomienie o przejściu offline,
+- VIP — osobne wyróżnienie dla wybranych nicków,
+- DND / Nie przeszkadzać,
+- powiadomienia Chrome/Windows po ręcznym nadaniu zgody,
+- dźwięk lokalny,
+- alert o utracie i odzyskaniu połączenia,
+- historia ostatnich powiadomień w MOD,
+- przycisk testu powiadomień,
+- Auto Radar co 60 sekund — używa wyłącznie normalnego `Connection.send()` Radaru i respektuje jego cooldown.
+
+Powiadomienia systemowe wymagają kliknięcia przycisku `🔔 Uprawnienie` w MOD. Skrypt nie prosi o zgodę automatycznie.
+
+## Zamrożone wersje
+
+| Wersja | Kanał | Commit |
+|---|---|---|
+| 9.9 | RECOMMENDED | `8ef1a5773f98780094c65042c2e622852ea6eb29` |
+| 9.8 | STABLE | `bf0ae7562016d82699baf834664b0945320102ba` |
+| 9.7 | STABLE | `868963711b94d373eee7d6cc1a7444da3c89ef45` |
+| 9.6 | SAFE | `9c4528f269d931f483989dd4dff591bb2a93fa31` |
+
+## Friend Radar
+
+Działający silnik Radaru pozostaje w 9.9/10.0 oparty o `swir-radar-97.js`. Nie przebudowujemy go w 10.0 BETA.
+
+Oficjalny flow znajomego wykorzystuje znane `userId`, normalne dodanie APP oraz odpowiedź `85 -> 159` z `rooms[]`. Nie ma bezpośredniego fallbacku `webSocket.send()`.
+
+Diagnostyka:
 
 ```javascript
 SWIR_RADAR_DEBUG97.diagnostics()
 ```
 
+Powiadomienia BETA:
+
+```javascript
+SWIR_NOTIFY100.settings()
+SWIR_NOTIFY100.notifyTest()
+SWIR_NOTIFY100.logs()
+```
+
+## Pliki
+
+- `swir.js` — wejście do Launchera,
+- `launcher.js` — UI wyboru wersji,
+- `versions.json` — katalog wersji i przypięte commity,
+- `swir-beta-10.js` — bootstrap 10.0 BETA na bazie zamrożonej 9.9,
+- `swir-notify-100-beta.js` — Notification Center 10.0,
+- `swir-core.js` — rdzeń historyczny,
+- `swir-prepatch-96.js` — bramka anty-flood,
+- `swir-radar-97.js` — działający Friend Radar,
+- `swir-ui-99.js` — UI stabilnej 9.9,
+- `bookmark-loader.txt` — stały SMART bookmark.
+
 ## Bezpieczeństwo
 
-SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani innych ograniczeń serwera.
+SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów. Moduły Friend Radar i Notify korzystają z normalnych funkcji klienta.
 
-## Aktualna wersja
+## Aktualny układ
 
-SWIR 9.8 — UI + FRIEND UX + 5 THEMES + CLEAN MOD HEADER
+**Launcher 1.0 • 9.9 RECOMMENDED • 10.0 BETA NOTIFY EDITION**
