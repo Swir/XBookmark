@@ -7,7 +7,7 @@
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
   "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
-  "ui_patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-96.js",
+  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-97.js",
   "radar": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-radar-97.js",
   "loader": "bookmark-loader.txt"
 }
