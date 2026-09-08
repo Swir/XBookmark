@@ -1,17 +1,25 @@
 {
-  "launcher": "1.1",
+  "launcher": "1.2",
   "recommended": "9.9",
-  "beta": "10.0-beta",
+  "beta": "10.1-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "Testujemy w beta; po potwierdzeniu stabilności przenosimy wydanie do stable.",
   "versions": [
     {
+      "id": "10.1-beta",
+      "channel": "beta",
+      "label": "10.1 BETA — CLEAN UI + COLOR TAB",
+      "ref": "self",
+      "file": "swir-beta-101.js",
+      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles and cleaner MOD layout"
+    },
+    {
       "id": "10.0-beta",
       "channel": "beta",
       "label": "10.0 BETA — NOTIFY + TABBED MOD UI",
-      "ref": "self",
+      "ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
       "file": "swir-beta-10.js",
-      "notes": "PRIV notifications, friend online/room change, VIP, DND, reconnect, notification center and tabbed MOD settings"
+      "notes": "Frozen previous beta with notifications and first tabbed MOD settings"
     },
     {
       "id": "9.9",
