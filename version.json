@@ -1,8 +1,10 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.2",
+  "version": "9.3",
   "channel": "stable",
-  "title": "COLOR LAB + IMAGE DIAGNOSTICS",
+  "title": "FRIEND RADAR FIX + GLOBAL APP STATE + DIAGNOSTICS",
   "source": "https://github.com/Swir/XBookmark",
-  "script": "https://raw.githubusercontent.com/Swir/XBookmark/main/swir.js"
+  "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
+  "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
+  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/friend-radar-patch.js"
 }
