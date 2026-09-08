@@ -1,11 +1,12 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.5",
+  "version": "9.6",
   "channel": "stable",
-  "title": "FRIEND RADAR REAL SYNC + CHAT-ONLY NEON NICKS + UI FIX",
+  "title": "PASSIVE FRIEND RADAR + STABLE CHAT NEON + MOBILE BADGE",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
-  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-95.js",
+  "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
+  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-96.js",
   "loader": "bookmark-loader.txt"
 }
