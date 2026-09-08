@@ -1,0 +1,42 @@
+name: Build SWIR Cloud
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'chunks/**'
+      - 'build_cloud.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assemble cloud script
+        run: python build_cloud.py
+
+      - name: Validate JavaScript
+        run: node --check swir.js
+
+      - name: Commit generated swir.js
+        run: |
+          if git diff --quiet -- swir.js; then
+            echo 'swir.js already current'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add swir.js
+          git commit -m 'Build SWIR cloud script'
+          git push
