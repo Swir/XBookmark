@@ -5,62 +5,56 @@ Centralne repozytorium bookmarka SWIR dla CZATerii.
 ## Jak używać
 
 1. Otwórz `bookmark-loader.txt`.
-2. Skopiuj całą jedną linię zaczynającą się od `javascript:`.
-3. Utwórz zakładkę w przeglądarce i w polu adres/URL wklej tę linię.
-4. Wejdź na `https://czateria.interia.pl/`, odśwież stronę i kliknij zakładkę.
+2. Skopiuj jedną linię zaczynającą się od `javascript:` do adresu zakładki.
+3. Wejdź na `https://czateria.interia.pl/`, zrób pełne odświeżenie strony i kliknij zakładkę.
 
-Loader pyta GitHub API o aktualny SHA brancha `main`, a następnie ładuje dokładnie ten commit z jsDelivr. Dzięki temu nie polega na cache `@main`.
+Loader pobiera aktualny SHA brancha `main` z GitHub API i ładuje dokładnie ten commit z jsDelivr, więc nie polega na cache `@main`.
 
-## Architektura 9.5
+## Architektura 9.6
 
-- `swir.js` — mały bootstrap cloud 9.5.
-- `swir-core.js` — sprawdzony rdzeń SWIR 9.2.
-- `swir-patch-95.js` — Friend Radar REAL SYNC + neon tylko na nickach autorów wiadomości + poprawka MOD UI.
-- `version.json` — aktualna wersja i kanał.
-- `bookmark-loader.txt` — smart loader przypinający aktualny commit.
+- `swir.js` — bootstrap 9.6.
+- `swir-prepatch-96.js` — bezpieczna bramka Friend Protocol ładowana **przed** rdzeniem.
+- `swir-core.js` — sprawdzony rdzeń SWIR.
+- `swir-patch-96.js` — pasywny Friend Radar, stabilne nicki i znacznik mobile.
+- `version.json` — wersja/kanał.
+- `bookmark-loader.txt` — SMART loader.
 
-## Friend Radar 9.5 — REAL SYNC
+## Friend Radar 9.6 — PASSIVE
 
-Najważniejsza poprawka 9.5 usuwa błąd z poprzedniej wersji: `Connection.send()` jest teraz uznawane za udane tylko przy dokładnym `=== true`. Wcześniej `undefined !== false` mogło błędnie wyglądać jak poprawna wysyłka.
+9.6 usuwa źródło niepotrzebnego ruchu sieciowego z 9.5.
 
-Radar 9.5:
-- przechwytuje odpowiedzi `159` i `163`,
-- łapie ID użytkowników z normalnego ruchu klienta: `183 cards[]` + `132 users[]` sparowane indeksami,
-- łapie pojedyncze ID z `184 userName + uid`,
-- zbiera ID również z istniejących list użytkowników klienta,
-- zapisuje ID w `swir_friend_identity_cache`,
-- synchronizuje lokalnych znajomych SWIR z normalną listą APP dopiero, gdy ma ich prawidłowe ID,
-- używa zweryfikowanej akcji aplikacji: `code:8`, `subcode:4`, `userId`, `username`, `isFriend:true`,
-- po dodaniu ponawia `85 → 159` kilka razy,
-- zachowuje przycisk `☁ APP` jako ręczną synchronizację,
-- ma diagnostykę `SWIR_RADAR_DEBUG95.diagnostics()`.
+- brak automatycznego `85` przy wejściu na czat,
+- brak automatycznego `code 8` / APP Sync,
+- brak bezpośredniego fallbacku `webSocket.send()` dla Friend Protocol,
+- automatyczne pakiety friend-protocol ze starego rdzenia są blokowane przez prepatch,
+- `📡` działa ręcznie i ma cooldown,
+- `☁ APP` działa wyłącznie po kliknięciu użytkownika,
+- wysyłka korzysta tylko z normalnego `Connection.send(...) === true`,
+- odbieranie `159/163`, zbieranie ID z `183+132` i `184` nadal działa pasywnie,
+- globalne pokoje znajomych APP pozostają zachowane.
 
-Analiza APK 2.6.3 potwierdziła:
-- `code 8 / subcode 4` = dodanie użytkownika do listy friend/enemy,
-- `isFriend:true` = znajomy,
-- `code 8 / subcode 5` = usunięcie z listy.
+Diagnostyka: `SWIR_RADAR_DEBUG96.diagnostics()`.
 
-Jeśli serwer zaakceptuje dodanie, znajomy powinien zmienić się z `SWIR` na `APP + SWIR`, a `159` może wtedy zwracać jego pokoje globalnie. Jeżeli konto lub serwer nie udostępnia tej informacji, SWIR tego nie obchodzi przez uprawnienia administracyjne.
+## Stabilne nicki 9.6
 
-## Nicki 9.5
+Kolorowany jest wyłącznie nick autora wiadomości `.m-msg-item-user-login` w oknie czatu.
 
-Neon jest teraz celowo ograniczony tylko do nicku autora wiadomości w oknie czatu:
-- selektor `.m-msg-item-user-login` wewnątrz panelu wiadomości,
-- każdy nick ma własny jasny, stały kolor,
-- glow jest delikatny,
-- lista osób, panel Znajomi, MOD, tematy i inne elementy nie są kolorowane.
+- każdy nick ma stały jasny kolor,
+- glow jest bardzo delikatny,
+- brak animacji i migania,
+- styl jest nadawany tylko raz nowemu elementowi wiadomości,
+- lista osób, panel znajomych i inne części interfejsu nie dostają neonowych kolorów.
 
-## MOD UI 9.5
+## Mobile badge
 
-Nagłówek panelu został uporządkowany do jednej linii:
-`SWIR // Czateria MOD by Swir v9.5`
+CZATeria udostępnia klientowi informację `isMobileUser`, dlatego SWIR może oznaczyć użytkownika mobilnego małą ikoną `📱` przy nicku autora wiadomości.
 
-Usunięto duplikujący pseudo-napis i pozostawiono badge `GAMING UI`.
+SWIR **nie wyświetla modelu telefonu**, ponieważ normalne dane użytkownika dostępne klientowi PC nie zawierają potwierdzonego pola typu model/producent urządzenia. Nie zgadujemy tej informacji.
 
 ## Bezpieczeństwo
 
-SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani ograniczeń serwera. Globalny Radar korzysta z normalnej listy znajomych aplikacji; `whereIsUser` pozostaje ograniczone do kont, które naprawdę mają odpowiednie uprawnienia.
+SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani innych ograniczeń serwera. Friend Radar korzysta z normalnych funkcji listy znajomych i w 9.6 celowo respektuje ograniczenia `Connection.send`.
 
 ## Aktualna wersja
 
-SWIR 9.5 — FRIEND RADAR REAL SYNC + CHAT-ONLY NEON NICKS + UI FIX
+SWIR 9.6 — PASSIVE FRIEND RADAR + STABLE CHAT NEON + MOBILE BADGE
