@@ -1,8 +1,11 @@
 /* XBookmark SWIR Cloud Bootstrap 9.4 */
 (function(){try{
-  const base='https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/';
+  const current=(document.currentScript&&document.currentScript.src)||'';
+  const match=current.match(/\/gh\/Swir\/XBookmark@([^/]+)\//);
+  const ref=match&&match[1]?match[1]:'main';
+  const base='https://cdn.jsdelivr.net/gh/Swir/XBookmark@'+ref+'/';
   const v=Date.now();
-  function load(src,ok){const s=document.createElement('script');s.src=base+src+'?v='+v;s.onload=()=>ok&&ok();s.onerror=()=>console.error('SWIR CLOUD: nie udało się załadować '+src);document.head.appendChild(s)}
+  function load(src,ok){const s=document.createElement('script');s.src=base+src+'?v='+v;s.onload=()=>ok&&ok();s.onerror=()=>console.error('SWIR CLOUD: nie udało się załadować '+src+' @ '+ref);document.head.appendChild(s)}
   function patchAlert(){const old=window.alert;window._swirOriginalAlert94=old;window.alert=function(m){try{m=String(m).replace(/9\.2 COLOR LAB \+ IMAGE DIAGNOSTICS/g,'9.4 FRIEND RADAR + NEON UI').replace(/MOBILE RADAR 9\.2/g,'FRIEND RADAR 9.4')}catch(e){}return old.call(window,m)}}
   function restoreAlert(){if(window._swirOriginalAlert94){window.alert=window._swirOriginalAlert94;delete window._swirOriginalAlert94}}
   if(window._swirModIsRunning){load('swir-patch-94.js');return}
