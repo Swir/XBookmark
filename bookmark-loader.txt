@@ -1,0 +1,1 @@
+javascript:(()=>{if(!/(^|\.)czateria\.interia\.pl$/i.test(location.hostname)){alert('SWIR: otworz CZATerie');return}const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js?v='+Date.now();s.onerror=()=>alert('SWIR CLOUD: nie udalo sie pobrac swir.js');document.head.appendChild(s)})()
