@@ -1,10 +1,11 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.3",
+  "version": "9.4",
   "channel": "stable",
-  "title": "FRIEND RADAR FIX + GLOBAL APP STATE + DIAGNOSTICS",
+  "title": "FRIEND APP SYNC + NEON NICKS + UI POLISH",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
-  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/friend-radar-patch.js"
+  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-94.js",
+  "loader": "bookmark-loader.txt"
 }
