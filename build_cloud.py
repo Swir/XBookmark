@@ -6,15 +6,15 @@ root = Path(__file__).resolve().parent
 chunk_dir = root / 'gzchunks'
 manifest = json.loads((chunk_dir / 'manifest.json').read_text('utf-8'))
 
-packed = bytearray()
-for name in manifest['chunks']:
-    packed.extend(base64.b64decode((chunk_dir / name).read_text('ascii').strip()))
+# Chunks are slices of one Base64 stream. Join the text first, then decode once.
+packed_b64 = ''.join((chunk_dir / name).read_text('ascii').strip() for name in manifest['chunks'])
+packed = base64.b64decode(packed_b64)
 
 packed_sha = hashlib.sha256(packed).hexdigest()
 if packed_sha != manifest['gzip_sha256']:
     raise SystemExit(f'GZIP SHA256 mismatch: {packed_sha} != {manifest["gzip_sha256"]}')
 
-source = gzip.decompress(bytes(packed))
+source = gzip.decompress(packed)
 source_sha = hashlib.sha256(source).hexdigest()
 if source_sha != manifest['source_sha256']:
     raise SystemExit(f'SOURCE SHA256 mismatch: {source_sha} != {manifest["source_sha256"]}')
