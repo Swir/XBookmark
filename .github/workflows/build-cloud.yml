@@ -4,8 +4,9 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'chunks/**'
+      - 'gzchunks/**'
       - 'build_cloud.py'
+      - '.github/workflows/build-cloud.yml'
   workflow_dispatch:
 
 permissions:
