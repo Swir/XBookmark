@@ -32,7 +32,7 @@ jobs:
 
       - name: Commit generated swir.js
         run: |
-          if git diff --quiet -- swir.js; then
+          if [ -z "$(git status --porcelain -- swir.js)" ]; then
             echo 'swir.js already current'
             exit 0
           fi
