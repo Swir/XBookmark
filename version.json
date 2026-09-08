@@ -1,0 +1,8 @@
+{
+  "name": "SWIR XBookmark",
+  "version": "9.2",
+  "channel": "stable",
+  "title": "COLOR LAB + IMAGE DIAGNOSTICS",
+  "source": "https://github.com/Swir/XBookmark",
+  "script": "https://raw.githubusercontent.com/Swir/XBookmark/main/swir.js"
+}
