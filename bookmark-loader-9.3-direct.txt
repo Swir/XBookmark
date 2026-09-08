@@ -1,0 +1,1 @@
+javascript:(()=>{if(!/(^|\.)czateria\.interia\.pl$/i.test(location.hostname)){alert('SWIR: otworz CZATerie');return}const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/Swir/XBookmark@a7ef9850872bfe5e19b45a6ff51e6a286767bdb1/swir-9.3-direct.js';s.onerror=()=>alert('SWIR 9.3 DIRECT: nie udalo sie pobrac');document.head.appendChild(s)})()
