@@ -1,0 +1,24 @@
+{
+  "version": "9.2",
+  "title": "COLOR LAB + IMAGE DIAGNOSTICS",
+  "source_file": "Czateria_SWIR_Bookmark_9_2_COLOR_LAB_IMAGE_DIAGNOSTICS.txt",
+  "chunks": [
+    "000.b64",
+    "001.b64",
+    "002.b64",
+    "003.b64",
+    "004.b64",
+    "005.b64",
+    "006.b64",
+    "007.b64",
+    "008.b64",
+    "009.b64",
+    "010.b64",
+    "011.b64",
+    "012.b64",
+    "013.b64",
+    "014.b64"
+  ],
+  "source_bytes": 141843,
+  "source_sha256": "667e5bc9caccbabe4ebfb54ec3f493651e1474fd73a884bdda149990c1c7b388"
+}
