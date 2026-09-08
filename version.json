@@ -1,17 +1,18 @@
 {
   "name": "SWIR XBookmark",
-  "launcher": "1.1",
+  "launcher": "1.2",
   "recommended": "9.9",
-  "beta": "10.0-beta",
+  "beta": "10.1-beta",
   "channel": "launcher",
-  "title": "STABLE/BETA LAUNCHER + TABBED MOD UI",
+  "title": "STABLE/BETA LAUNCHER + CLEAN MOD UI + COLOR TAB",
   "source": "https://github.com/Swir/XBookmark",
   "entrypoint": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "catalog": "versions.json",
-  "beta_file": "swir-beta-10.js",
+  "beta_file": "swir-beta-101.js",
   "beta_notify": "swir-notify-100-beta.js",
-  "beta_mod_ui": "swir-mod-tabs-100-beta.js",
+  "beta_mod_ui": "swir-mod-tabs-101-beta.js",
   "beta_mod_polish": "swir-mod-tabs-100-polish.js",
   "stable_9_9_ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
+  "previous_beta_10_0_ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
   "loader": "bookmark-loader.txt"
 }
