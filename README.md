@@ -8,56 +8,50 @@ Centralne repozytorium bookmarka SWIR dla CZATerii.
 2. Skopiuj jedną linię zaczynającą się od `javascript:` do adresu zakładki.
 3. Wejdź na CZATerię, zrób pełne odświeżenie strony i kliknij zakładkę.
 
-SMART loader pobiera aktualny SHA brancha `main` z GitHub API i ładuje dokładnie ten commit z jsDelivr, więc nie polega na cache `@main`.
+SMART loader pobiera aktualny SHA brancha `main` z GitHub API i ładuje dokładnie ten commit z jsDelivr.
 
-## Architektura 9.7
+## SWIR 9.8
 
-- `swir.js` — bootstrap 9.7.
-- `swir-prepatch-96.js` — bramka anty-flood dla starych automatycznych pakietów Friend Protocol z rdzenia.
-- `swir-core.js` — sprawdzony rdzeń SWIR.
-- `swir-ui-97.js` — wyłącznie stabilne nicki przy wiadomościach + mobile badge + nagłówek MOD.
-- `swir-radar-97.js` — całkowicie przebudowany Friend Radar oparty o zweryfikowany flow APK.
-- `FRIEND_RADAR_AUDIT_97.md` — opis audytu WEB + APK.
-- `version.json` — wersja/kanał.
+9.8 zostawia silnik Friend Radar 9.7 i poprawia warstwę obsługi/UI:
+
+- stabilne pole `Dodaj nick do znajomych SWIR` — nie jest już kasowane przez cykliczny render Radaru,
+- naprawiona opcja prawego przycisku myszy `Dodaj/Usuń ze znajomych SWIR`,
+- po dodaniu z menu kontekstowego Radar od razu skanuje cache ID i może wykonać normalny APP Sync, jeżeli `userId` jest znane,
+- czysty nagłówek MOD: `SWIR // Czateria MOD by Swir v9.8`, bez duplikujących się napisów,
+- 5 zapamiętywanych motywów całego czatu:
+  - Gaming Neon,
+  - Steel Gray — jaśniejsze, szarawe okno wiadomości,
+  - Matrix,
+  - Ocean,
+  - Violet,
+- neon pozostaje tylko na nickach autorów wiadomości,
+- `📱` pozostaje tylko dla użytkowników faktycznie oznaczonych przez CZATerię jako mobile.
+
+## Architektura
+
+- `swir.js` — bootstrap 9.8,
+- `swir-prepatch-96.js` — bramka anty-flood dla starego rdzenia,
+- `swir-core.js` — rdzeń SWIR,
+- `swir-ui-98.js` — UI/UX, motywy, stabilne pole znajomych i prawy klik,
+- `swir-radar-97.js` — przebudowany Friend Radar oparty o flow APK,
+- `FRIEND_RADAR_AUDIT_97.md` — audyt WEB + APK,
+- `version.json` — bieżąca wersja,
 - `bookmark-loader.txt` — SMART loader.
 
-Stary `swir-patch-96.js` pozostaje w repo jako historia, ale bootstrap 9.7 go nie ładuje, ponieważ zawierał własny cykliczny Radar 9.6 i mógłby konkurować z nowym panelem 9.7.
+## Friend Radar — ważne
 
-## Friend Radar 9.7 — REBUILD
+Oficjalne dodanie znajomego wymaga numerycznego `userId`. SWIR zapamiętuje ID osób poznanych przez normalny ruch klienta i po znanym ID może użyć zwykłego `code 8 / subcode 4`, a potem `85 -> 159` do odczytu `rooms[]` znajomych APP.
 
-Audyt APK 2.6.3 wyjaśnił zachowanie poprzednich wersji: oficjalne dodanie znajomego wymaga numerycznego `userId`. Aplikacja mobilna nie posiada zwykłej globalnej ścieżki `sam nick -> userId`; szuka ID w znanych znajomych/wrogach oraz użytkownikach poznanych w otwartych pokojach i privach.
-
-Dlatego SWIR 9.7:
-
-- pasywnie zbiera `userId` z normalnego ruchu klienta (`183+132`, `184`) i z istniejących obiektów CHNS,
-- zapamiętuje ID w trwałym cache,
-- odbiera oficjalny stan APP przez `85 -> 159`, gdzie `159` zawiera `users[]` i `rooms[]`,
-- przy znanym ID może wykonać normalne dodanie znajomego: `code 8`, `subcode 4`, `userId`, `username`, `isFriend:true`,
-- nie wysyła Friend Protocol automatycznie przy samym wejściu na czat,
-- nie używa bezpośredniego `webSocket.send()` jako obejścia,
-- pokazuje jasno stany: APP / ID GOTOWE / CZEKA NA ID.
-
-W praktyce: jeżeli klient kiedykolwiek pozna ID danego nicka w otwartym pokoju lub privie, SWIR zapisuje je i później może użyć do oficjalnej synchronizacji APP. Po udanej synchronizacji `85 -> 159` może zwracać jego globalne pokoje.
-
-Diagnostyka:
+Diagnostyka Radaru:
 
 ```javascript
 SWIR_RADAR_DEBUG97.diagnostics()
 ```
 
-## Stabilne nicki i mobile badge
-
-`swir-ui-97.js` jest celowo niezależny od Radaru:
-- kolorowany jest wyłącznie nick autora wiadomości,
-- brak migania i animacji,
-- glow jest delikatny,
-- `📱` pojawia się tylko gdy CZATeria sama oznacza użytkownika jako mobilnego,
-- lista użytkowników i panel znajomych nie są neonowane.
-
 ## Bezpieczeństwo
 
-SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani ograniczeń serwera. Uprzywilejowane `whereIsUser` pozostaje dostępne wyłącznie dla kont, które naprawdę mają odpowiednie uprawnienia.
+SWIR nie nadaje admin/honour, nie omija CAPTCHA, antyspamu, banów ani innych ograniczeń serwera.
 
 ## Aktualna wersja
 
-SWIR 9.7 — FRIEND RADAR REBUILD + APK-ACCURATE ID CACHE
+SWIR 9.8 — UI + FRIEND UX + 5 THEMES + CLEAN MOD HEADER
