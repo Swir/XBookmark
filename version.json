@@ -1,13 +1,13 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.7",
+  "version": "9.8",
   "channel": "stable",
-  "title": "FRIEND RADAR REBUILD + APK-ACCURATE ID CACHE",
+  "title": "UI + FRIEND UX + 5 THEMES + CLEAN MOD HEADER",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
   "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
-  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-97.js",
+  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-98.js",
   "radar": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-radar-97.js",
   "loader": "bookmark-loader.txt"
 }
