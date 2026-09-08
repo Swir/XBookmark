@@ -1,13 +1,13 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.8",
+  "version": "9.9",
   "channel": "stable",
-  "title": "UI + FRIEND UX + 5 THEMES + CLEAN MOD HEADER",
+  "title": "FINAL POLISH + ICE LIGHT + SLIM FRIENDS PANEL",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
   "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
-  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-98.js",
+  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-99.js",
   "radar": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-radar-97.js",
   "loader": "bookmark-loader.txt"
 }
