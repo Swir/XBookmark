@@ -1,12 +1,13 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.6",
+  "version": "9.7",
   "channel": "stable",
-  "title": "PASSIVE FRIEND RADAR + STABLE CHAT NEON + MOBILE BADGE",
+  "title": "FRIEND RADAR REBUILD + APK-ACCURATE ID CACHE",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
   "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
-  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-96.js",
+  "ui_patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-96.js",
+  "radar": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-radar-97.js",
   "loader": "bookmark-loader.txt"
 }
