@@ -13,13 +13,15 @@ SMART loader pobiera aktualny SHA brancha `main` z GitHub API i ładuje dokładn
 ## Architektura 9.7
 
 - `swir.js` — bootstrap 9.7.
-- `swir-prepatch-96.js` — bramka anty-flood dla Friend Protocol.
+- `swir-prepatch-96.js` — bramka anty-flood dla starych automatycznych pakietów Friend Protocol z rdzenia.
 - `swir-core.js` — sprawdzony rdzeń SWIR.
-- `swir-patch-96.js` — stabilne nicki na czacie + mobile badge + UI.
-- `swir-radar-97.js` — przebudowany Friend Radar oparty o zweryfikowany flow APK.
+- `swir-ui-97.js` — wyłącznie stabilne nicki przy wiadomościach + mobile badge + nagłówek MOD.
+- `swir-radar-97.js` — całkowicie przebudowany Friend Radar oparty o zweryfikowany flow APK.
 - `FRIEND_RADAR_AUDIT_97.md` — opis audytu WEB + APK.
 - `version.json` — wersja/kanał.
 - `bookmark-loader.txt` — SMART loader.
+
+Stary `swir-patch-96.js` pozostaje w repo jako historia, ale bootstrap 9.7 go nie ładuje, ponieważ zawierał własny cykliczny Radar 9.6 i mógłby konkurować z nowym panelem 9.7.
 
 ## Friend Radar 9.7 — REBUILD
 
@@ -35,7 +37,7 @@ Dlatego SWIR 9.7:
 - nie używa bezpośredniego `webSocket.send()` jako obejścia,
 - pokazuje jasno stany: APP / ID GOTOWE / CZEKA NA ID.
 
-W praktyce: jeżeli klient kiedykolwiek pozna ID danego nicka w otwartym pokoju lub privie, SWIR może je zapamiętać i później użyć do oficjalnej synchronizacji APP. Po udanej synchronizacji `85 -> 159` może zwracać jego globalne pokoje.
+W praktyce: jeżeli klient kiedykolwiek pozna ID danego nicka w otwartym pokoju lub privie, SWIR zapisuje je i później może użyć do oficjalnej synchronizacji APP. Po udanej synchronizacji `85 -> 159` może zwracać jego globalne pokoje.
 
 Diagnostyka:
 
@@ -45,11 +47,12 @@ SWIR_RADAR_DEBUG97.diagnostics()
 
 ## Stabilne nicki i mobile badge
 
-Warstwa 9.6 pozostaje jako sprawdzony UI:
+`swir-ui-97.js` jest celowo niezależny od Radaru:
 - kolorowany jest wyłącznie nick autora wiadomości,
-- brak migania/animacji,
+- brak migania i animacji,
 - glow jest delikatny,
-- `📱` pojawia się tylko gdy CZATeria sama oznacza użytkownika jako mobilnego.
+- `📱` pojawia się tylko gdy CZATeria sama oznacza użytkownika jako mobilnego,
+- lista użytkowników i panel znajomych nie są neonowane.
 
 ## Bezpieczeństwo
 
