@@ -2,7 +2,7 @@ name: Build SWIR Cloud
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, swir-cloud-setup ]
     paths:
       - 'gzchunks/**'
       - 'build_cloud.py'
