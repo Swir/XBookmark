@@ -1,7 +1,7 @@
 {
   "version": "9.2",
   "title": "COLOR LAB + IMAGE DIAGNOSTICS",
-  "chunks": ["000.b64","001.b64","002.b64","003.b64","004.b64","005.b64","006.b64"],
+  "chunks": ["000.b64","001.b64","002.b64","003.b64","0040.b64","0041.b64","0042.b64","0043.b64","005.b64","006.b64"],
   "gzip_sha256": "65327196827e2a829512bf86fcabc2b02d8b587138674bb46347b5bf89fed87e",
   "source_sha256": "667e5bc9caccbabe4ebfb54ec3f493651e1474fd73a884bdda149990c1c7b388",
   "source_bytes": 141843
