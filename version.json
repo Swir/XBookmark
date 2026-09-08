@@ -1,13 +1,15 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.9",
-  "channel": "stable",
-  "title": "FINAL POLISH + ICE LIGHT + SLIM FRIENDS PANEL",
+  "launcher": "1.0",
+  "recommended": "9.9",
+  "beta": "10.0-beta",
+  "channel": "launcher",
+  "title": "VERSION LAUNCHER + 10.0 BETA NOTIFY EDITION",
   "source": "https://github.com/Swir/XBookmark",
-  "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
-  "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
-  "prepatch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-prepatch-96.js",
-  "ui": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-ui-99.js",
-  "radar": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-radar-97.js",
+  "entrypoint": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
+  "catalog": "versions.json",
+  "beta_file": "swir-beta-10.js",
+  "beta_notify": "swir-notify-100-beta.js",
+  "stable_9_9_ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
   "loader": "bookmark-loader.txt"
 }
