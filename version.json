@@ -1,11 +1,11 @@
 {
   "name": "SWIR XBookmark",
-  "version": "9.4",
+  "version": "9.5",
   "channel": "stable",
-  "title": "FRIEND APP SYNC + NEON NICKS + UI POLISH",
+  "title": "FRIEND RADAR REAL SYNC + CHAT-ONLY NEON NICKS + UI FIX",
   "source": "https://github.com/Swir/XBookmark",
   "script": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir.js",
   "core": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-core.js",
-  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-94.js",
+  "patch": "https://cdn.jsdelivr.net/gh/Swir/XBookmark@main/swir-patch-95.js",
   "loader": "bookmark-loader.txt"
 }
