@@ -1,15 +1,17 @@
 {
-  "launcher": "1.0",
+  "launcher": "1.1",
   "recommended": "9.9",
   "beta": "10.0-beta",
+  "channels": ["stable", "beta"],
+  "promotion_policy": "Testujemy w beta; po potwierdzeniu stabilności przenosimy wydanie do stable.",
   "versions": [
     {
       "id": "10.0-beta",
       "channel": "beta",
-      "label": "10.0 BETA — NOTIFY EDITION",
+      "label": "10.0 BETA — NOTIFY + TABBED MOD UI",
       "ref": "self",
       "file": "swir-beta-10.js",
-      "notes": "PRIV notifications, friend online/room change, VIP, DND, unread badges, reconnect and notification center"
+      "notes": "PRIV notifications, friend online/room change, VIP, DND, reconnect, notification center and tabbed MOD settings"
     },
     {
       "id": "9.9",
@@ -17,7 +19,7 @@
       "label": "9.9 RECOMMENDED",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Frozen working build: Friend Radar, right-click friends, Ice Light, slim Friends panel"
+      "notes": "Frozen working build: Friend Radar, right-click friends, Ice Light and slim Friends panel"
     },
     {
       "id": "9.8",
@@ -37,11 +39,12 @@
     },
     {
       "id": "9.6",
-      "channel": "safe",
+      "channel": "stable",
+      "tag": "safe",
       "label": "9.6 SAFE",
       "ref": "9c4528f269d931f483989dd4dff591bb2a93fa31",
       "file": "swir.js",
-      "notes": "Older passive friend radar build"
+      "notes": "Older passive friend radar build for rollback"
     }
   ]
 }
