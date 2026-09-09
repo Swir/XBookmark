@@ -1,0 +1,16 @@
+/* SWIR 10.3 — user-triggered APP sync helper for global friend rooms[] notifications */
+(()=>{try{
+if(window.__SWIR_FRIEND_SYNC103)return;window.__SWIR_FRIEND_SYNC103=1;
+const L='czateria_znajomi',key=s=>String(s||'').trim().toLocaleLowerCase('pl-PL');
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch(e){return d}};
+function local(){let a=load(L,[]);return Array.isArray(a)?a.map(x=>String(x||'').trim()).filter(Boolean):[]}
+function radar(){return window.SWIR_RADAR_DEBUG97||window.SWIR_FRIEND_RADAR}
+function info(){const r=radar(),a=local(),st=r?.serverState?.()||{users:{}};const app=new Set(Object.keys(st?.users||{}));let ready=[];a.forEach(n=>{if(app.has(key(n)))return;const x=r?.identity?.(n);if(+x?.id>0)ready.push(n)});return{local:a.length,app:a.filter(n=>app.has(key(n))).length,ready,names:a}}
+function toast(m){let d=document.getElementById('swirSync103Toast');if(!d){d=document.createElement('div');d.id='swirSync103Toast';d.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483646;background:#0b1724;color:#eef9ff;border:1px solid #55e69a88;border-radius:10px;padding:9px 13px;font:11px Segoe UI,Arial;box-shadow:0 12px 34px #0009';document.body.appendChild(d)}d.textContent=m;clearTimeout(d._t);d._t=setTimeout(()=>d.remove(),3500)}
+let running=false;
+async function syncReady(){if(running)return;const r=radar(),x=info();if(!r?.syncOne)return toast('Friend Radar jeszcze się ładuje');if(!x.ready.length)return toast(x.app===x.local?'✅ Wszyscy znajomi są już w APP':'Brak nowych userId do synchronizacji');running=true;const b=document.getElementById('sn103sync');if(b){b.disabled=true;b.textContent='☁ Synchronizuję…'}let sent=0;for(let i=0;i<x.ready.length;i++){const n=x.ready[i];toast(`☁ APP ${i+1}/${x.ready.length}: ${n}`);try{if(r.syncOne(n,1)!==false)sent++}catch(e){}if(i<x.ready.length-1)await new Promise(res=>setTimeout(res,6200))}await new Promise(res=>setTimeout(res,4400));try{r.requestServerState?.(1)}catch(e){}running=false;if(b){b.disabled=false;b.textContent='☁ Synchronizuj APP'}toast(`✅ Synchronizacja zakończona: ${sent}/${x.ready.length}`);setTimeout(update,1500)}
+function update(){const p=document.getElementById('swirNotify100');if(!p)return false;let row=p.querySelector('#sn103syncrow');if(!row){row=document.createElement('div');row.id='sn103syncrow';row.style.cssText='margin-top:7px;padding:7px 8px;border:1px solid #ffffff12;border-radius:8px;font-size:9px;color:#8ea5b8;display:flex;gap:7px;align-items:center;flex-wrap:wrap';row.innerHTML='<span id="sn103synctxt"></span><button id="sn103sync" type="button">☁ Synchronizuj APP</button>';const st=p.querySelector('#sn103status');st?.insertAdjacentElement('beforebegin',row);row.querySelector('#sn103sync').onclick=syncReady}const x=info(),t=row.querySelector('#sn103synctxt');if(t)t.textContent=`Globalne APP: ${x.app}/${x.local} • gotowi do sync: ${x.ready.length}`;return true}
+let tries=0,t=setInterval(()=>{tries++;if(update()||tries>50)clearInterval(t)},180);update();
+window.SWIR_FRIEND_SYNC103={version:'10.3',info,syncReady,refresh:update};
+console.log('✅ SWIR 10.3 APP sync helper aktywny — tylko po kliknięciu użytkownika');
+}catch(e){console.error('SWIR Friend Sync 10.3',e)}})();
