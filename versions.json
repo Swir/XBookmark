@@ -1,6 +1,6 @@
 {
-  "launcher": "1.2",
-  "recommended": "9.9",
+  "launcher": "1.3",
+  "recommended": "9.9.1",
   "beta": "10.1-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "Testujemy w beta; po potwierdzeniu stabilności przenosimy wydanie do stable.",
@@ -11,7 +11,7 @@
       "label": "10.1 BETA — CLEAN UI + COLOR TAB",
       "ref": "self",
       "file": "swir-beta-101.js",
-      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles and cleaner MOD layout"
+      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles, cleaner MOD layout and 9.9.1 native reply hotfix"
     },
     {
       "id": "10.0-beta",
@@ -22,12 +22,20 @@
       "notes": "Frozen previous beta with notifications and first tabbed MOD settings"
     },
     {
+      "id": "9.9.1",
+      "channel": "stable",
+      "label": "9.9.1 RECOMMENDED — NATIVE REPLY HOTFIX",
+      "ref": "8349eb3c1d1a0c01ab9270444da6a6a29f8d0f09",
+      "file": "swir-stable-991.js",
+      "notes": "Frozen 9.9 plus compatibility hotfix: SWIR contrast classes no longer break native Odpowiedz/Priv for originally dark nick colors"
+    },
+    {
       "id": "9.9",
       "channel": "stable",
-      "label": "9.9 RECOMMENDED",
+      "label": "9.9 ROLLBACK",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Frozen working build: Friend Radar, right-click friends, Ice Light and slim Friends panel"
+      "notes": "Original frozen 9.9 before native reply hotfix"
     },
     {
       "id": "9.8",
