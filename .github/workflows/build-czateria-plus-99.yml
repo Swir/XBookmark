@@ -1,0 +1,51 @@
+name: Build CZATeria Plus 9.9 APK
+
+on:
+  push:
+    branches:
+      - czateria-plus-99-build
+    paths:
+      - 'android/CzateriaPlus99/**'
+      - '.github/workflows/build-czateria-plus-99.yml'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        working-directory: android/CzateriaPlus99
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Rename APK
+        run: cp android/CzateriaPlus99/app/build/outputs/apk/debug/app-debug.apk CZATeria_Plus_9.9_RECOMMENDED.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CZATeria-Plus-9.9-RECOMMENDED-APK
+          path: CZATeria_Plus_9.9_RECOMMENDED.apk
+          if-no-files-found: error
+          retention-days: 14
