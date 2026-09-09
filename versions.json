@@ -1,49 +1,49 @@
 {
-  "launcher": "1.7",
-  "recommended": "9.9",
-  "beta": "9.9.1-beta-r5",
+  "launcher": "1.8",
+  "recommended": "9.9.1",
+  "beta": "10.2-beta",
   "channels": ["stable", "beta"],
-  "promotion_policy": "STABLE pozostaje zamrożone. Każdą poprawkę najpierw testujemy w BETA i dopiero po potwierdzeniu przenosimy do STABLE.",
+  "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
   "versions": [
     {
-      "id": "9.9.1-beta-r5",
+      "id": "10.2-beta",
       "channel": "beta",
-      "label": "9.9.1 BETA R5 — COLOR VISIBILITY",
+      "label": "10.2 BETA — CLEAN REBASE + FRIENDS FIX",
       "ref": "self",
-      "file": "swir-beta-991-reply-r5.js",
-      "notes": "Frozen 9.9 plus native-safe original nick colors and brighter message text. Dark navy nick/message colors are mapped to a readable light gaming blue; black/almost-black becomes off-white."
-    },
-    {
-      "id": "9.9.1-beta-r4",
-      "channel": "beta",
-      "label": "9.9.1 BETA R4 — ORIGINAL COLORS",
-      "ref": "self",
-      "file": "swir-beta-991-reply-r4.js",
-      "notes": "Previous beta: original CZATeria nick colors lightly brightened, black/almost-black off-white."
+      "file": "swir-beta-102.js",
+      "notes": "Rebased on tested 9.9.1 R5 stable and the known-working 10.0 Notify/Friends/tab modules. Adds the separate Color Writing view, removes Image Lab, restores quick actions and profiles, and deliberately does not load the problematic 10.1 UI hotfix loop."
     },
     {
       "id": "10.1-beta",
       "channel": "beta",
-      "label": "10.1 BETA — CLEAN UI + COLOR TAB",
+      "label": "10.1 BETA — ARCHIVE / KNOWN FRIEND BUG",
       "ref": "self",
       "file": "swir-beta-101.js",
-      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles and cleaner MOD layout."
+      "notes": "Archived test build. Cleaner tabbed UI, Color Writing tab, profiles and no Image Lab, but the Friends option has a known regression. Superseded by 10.2."
     },
     {
       "id": "10.0-beta",
       "channel": "beta",
-      "label": "10.0 BETA — NOTIFY + TABBED MOD UI",
+      "label": "10.0 BETA — WORKING BASE",
       "ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
       "file": "swir-beta-10.js",
-      "notes": "Frozen previous beta with notifications and first tabbed MOD settings"
+      "notes": "Frozen working base with Notify Edition, tabbed MOD settings and the Friends module used as the foundation for 10.2."
+    },
+    {
+      "id": "9.9.1",
+      "channel": "stable",
+      "label": "9.9.1 STABLE — RECOMMENDED",
+      "ref": "bd40a1f33f565092025a619bfe7742ee55569fba",
+      "file": "swir-stable-991.js",
+      "notes": "Promoted tested R5 build: native-safe original nick colors, stronger message readability, dark navy mapped to light blue and black/almost-black mapped to off-white."
     },
     {
       "id": "9.9",
       "channel": "stable",
-      "label": "9.9 STABLE — KNOWN NICK CLICK BUG",
+      "label": "9.9 ROLLBACK",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Frozen baseline. Friend Radar, right-click friends, Ice Light and slim Friends panel work, but message-author click handling has a known regression being fixed in beta."
+      "notes": "Previous frozen baseline with Friend Radar 9.7, right-click friends, Ice Light and slim Friends panel."
     },
     {
       "id": "9.8",
