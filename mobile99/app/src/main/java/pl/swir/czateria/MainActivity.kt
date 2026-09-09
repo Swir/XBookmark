@@ -17,6 +17,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import java.io.BufferedReader
@@ -25,7 +26,7 @@ import java.io.InputStreamReader
 class MainActivity : Activity() {
 
     companion object {
-        private const val CHAT_URL = "https://czateria.interia.pl/emb-chat"
+        private const val CHAT_URL = "https://czateria.interia.pl/"
         private const val FILE_CHOOSER_REQUEST = 7001
     }
 
@@ -33,17 +34,19 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var mobileScript = ""
+    private var hotfixScript = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mobileScript = readAsset("swir_mobile_99.js")
+        hotfixScript = readAsset("swir_mobile_hotfix_061.js")
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.rgb(7, 17, 27))
         }
 
-        root.addView(buildHeader())
+        root.addView(buildTopMenu())
 
         webView = WebView(this)
         root.addView(
@@ -55,7 +58,6 @@ class MainActivity : Activity() {
             )
         )
 
-        root.addView(buildBottomBar())
         setContentView(root)
         configureWebView()
 
@@ -66,69 +68,72 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun buildHeader(): View {
-        val bar = LinearLayout(this).apply {
+    private fun buildTopMenu(): View {
+        val outer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.rgb(7, 17, 27))
+        }
+
+        val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(7), dp(10), dp(7))
-            setBackgroundColor(Color.rgb(7, 17, 27))
+            setPadding(dp(10), dp(5), dp(8), dp(3))
         }
 
         val title = TextView(this).apply {
             text = "⚡ CZATeria Plus"
             setTextColor(Color.WHITE)
-            textSize = 16f
+            textSize = 15f
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, 0, dp(10), 0)
         }
-        bar.addView(title, LinearLayout.LayoutParams(0, dp(34), 1f))
+        header.addView(title, LinearLayout.LayoutParams(0, dp(30), 1f))
 
         statusText = TextView(this).apply {
-            text = "MOBILE • XBM 9.9"
+            text = "MOBILE 0.6.1"
             setTextColor(Color.rgb(117, 225, 245))
-            textSize = 10f
+            textSize = 9f
             gravity = Gravity.CENTER
-            setPadding(dp(8), 0, dp(8), 0)
+            setPadding(dp(7), 0, dp(7), 0)
             setBackgroundColor(Color.rgb(12, 38, 53))
         }
-        bar.addView(statusText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(28)))
-        return bar
-    }
+        header.addView(statusText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(24)))
+        outer.addView(header)
 
-    private fun buildBottomBar(): View {
-        val bar = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setPadding(dp(6), dp(5), dp(6), dp(7))
+        val scroll = HorizontalScrollView(this).apply {
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
             setBackgroundColor(Color.rgb(7, 17, 27))
+            isFillViewport = false
         }
 
-        bar.addView(navButton("💬\nCzat") {
-            runJs("window.SWIR_APP&&SWIR_APP.closeAll&&SWIR_APP.closeAll();")
-        })
-        bar.addView(navButton("👥\nZnajomi") {
-            runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();")
-        })
-        bar.addView(navButton("⚡\nUstawienia") {
-            runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();")
-        })
-        bar.addView(navButton("↻\nOdśwież") {
-            webView.reload()
-        })
-        return bar
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(5), dp(2), dp(5), dp(5))
+        }
+
+        row.addView(topButton("🏠 Pokoje") { webView.loadUrl(CHAT_URL) })
+        row.addView(topButton("💬 Czat") { runJs("window.SWIR_APP&&SWIR_APP.closeAll&&SWIR_APP.closeAll();") })
+        row.addView(topButton("👥 Znajomi") { runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();") })
+        row.addView(topButton("⚡ Ustawienia") { runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();") })
+        row.addView(topButton("↻ Odśwież") { webView.reload() })
+
+        scroll.addView(row)
+        outer.addView(scroll, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)))
+        return outer
     }
 
-    private fun navButton(label: String, click: () -> Unit): Button {
+    private fun topButton(label: String, click: () -> Unit): Button {
         return Button(this).apply {
             text = label
             isAllCaps = false
             textSize = 11f
             setTextColor(Color.WHITE)
             setBackgroundColor(Color.rgb(14, 35, 51))
-            setPadding(dp(2), 0, dp(2), 0)
+            setPadding(dp(10), 0, dp(10), 0)
             minWidth = 0
             minHeight = 0
-            layoutParams = LinearLayout.LayoutParams(0, dp(50), 1f).apply {
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(40)).apply {
                 marginStart = dp(3)
                 marginEnd = dp(3)
             }
@@ -153,6 +158,8 @@ class MainActivity : Activity() {
             mediaPlaybackRequiresUserGesture = false
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             textZoom = 100
+            useWideViewPort = false
+            loadWithOverviewMode = false
         }
 
         CookieManager.getInstance().apply {
@@ -178,10 +185,12 @@ class MainActivity : Activity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                statusText.text = "ŁADOWANIE…"
+                injectHotfix()
+                statusText.text = "DOPASOWUJĘ…"
+                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix() }, 350)
                 Handler(Looper.getMainLooper()).postDelayed({ injectMobile() }, 900)
-                Handler(Looper.getMainLooper()).postDelayed({ injectMobile() }, 2600)
-                Handler(Looper.getMainLooper()).postDelayed({ injectMobile() }, 5200)
+                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix(); injectMobile() }, 2400)
+                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix(); injectMobile() }, 5000)
             }
         }
 
@@ -210,6 +219,11 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun injectHotfix() {
+        if (hotfixScript.isBlank()) return
+        webView.evaluateJavascript(hotfixScript, null)
+    }
+
     private fun injectMobile() {
         if (mobileScript.isBlank()) return
         webView.evaluateJavascript(
@@ -225,10 +239,14 @@ class MainActivity : Activity() {
             when {
                 result?.contains("READY") == true -> {
                     webView.evaluateJavascript(mobileScript, null)
-                    statusText.text = "MOBILE • XBM 9.9 ✓"
+                    injectHotfix()
+                    statusText.text = "MOBILE 0.6.1 ✓"
                 }
-                result?.contains("ALREADY") == true -> statusText.text = "MOBILE • XBM 9.9 ✓"
-                else -> statusText.text = "CZEKAM NA CZAT…"
+                result?.contains("ALREADY") == true -> {
+                    injectHotfix()
+                    statusText.text = "MOBILE 0.6.1 ✓"
+                }
+                else -> statusText.text = "WYBIERZ POKÓJ"
             }
         }
     }
