@@ -13,6 +13,7 @@
   "stable_color_patch": "swir-color-contrast-r6.js",
   "beta_file": "swir-beta-103.js",
   "beta_notify": "swir-notify-103-beta.js",
+  "beta_friend_sync": "swir-friend-sync-103.js",
   "beta_ui_polish": "swir-mod-103-polish.js",
   "previous_beta": "swir-beta-102.js",
   "working_beta_10_0_ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
