@@ -1,25 +1,33 @@
 {
-  "launcher": "1.9",
+  "launcher": "2.0",
   "recommended": "9.9.2",
-  "beta": "10.2-beta",
+  "beta": "10.3-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
   "versions": [
     {
+      "id": "10.3-beta",
+      "channel": "beta",
+      "label": "10.3 BETA — FRIEND NOTIFY REBUILD",
+      "ref": "self",
+      "file": "swir-beta-103.js",
+      "notes": "Rebuilt friend notifications. The canonical watch list is czateria_znajomi; every friend is tracked automatically with no VIP concept. Presence merges official APP rooms[] with passive live CHNS presence in open rooms. Includes warm baseline to prevent startup floods, event deduplication, 45-second purpose-driven APP state refresh, manual check/test buttons, notification history and diagnostics. No automatic code-8 friend synchronization is performed."
+    },
+    {
       "id": "10.2-beta",
       "channel": "beta",
-      "label": "10.2 BETA — CLEAN REBASE + FRIENDS FIX",
-      "ref": "self",
+      "label": "10.2 BETA — ROLLBACK",
+      "ref": "1fc7afee85f7e043b99385bafe991c8b108d8bba",
       "file": "swir-beta-102.js",
-      "notes": "Rebased on the 9.9.2 R6 theme-aware stable base and the known-working 10.0 Notify/Friends/tab modules. Keeps Color Writing, no Image Lab, quick actions and profiles without the problematic 10.1 hotfix loop."
+      "notes": "Previous clean rebase. Friends UI works but its inherited 10.0 notification layer can miss friend appearance events because it relies primarily on APP server state."
     },
     {
       "id": "10.1-beta",
       "channel": "beta",
       "label": "10.1 BETA — ARCHIVE / KNOWN FRIEND BUG",
-      "ref": "self",
+      "ref": "1fc7afee85f7e043b99385bafe991c8b108d8bba",
       "file": "swir-beta-101.js",
-      "notes": "Archived test build with a known Friends regression. Superseded by 10.2."
+      "notes": "Archived test build with a known Friends regression."
     },
     {
       "id": "10.0-beta",
@@ -27,7 +35,7 @@
       "label": "10.0 BETA — WORKING BASE",
       "ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
       "file": "swir-beta-10.js",
-      "notes": "Frozen working base with Notify Edition, tabbed MOD settings and the Friends module used as the foundation for 10.2."
+      "notes": "Frozen working base with Notify Edition, tabbed MOD settings and Friend Radar integration."
     },
     {
       "id": "9.9.2",
@@ -35,7 +43,7 @@
       "label": "9.9.2 STABLE — RECOMMENDED",
       "ref": "c16d6ec57b9063cd9c731f501e5c0cc14adb5c60",
       "file": "swir-stable-992.js",
-      "notes": "R6 theme-aware contrast. Dark themes keep the tested R5 readability. Ice Light maps white/almost-white nicks to dark cyan, dark navy to a readable blue, black to dark graphite and automatically darkens overly bright message colors. Native nick classes remain untouched."
+      "notes": "R6 theme-aware contrast. Dark themes keep R5 readability. Ice Light maps white/almost-white nicks to dark cyan, dark navy to readable blue, black to graphite and darkens overly bright message colors while keeping native nick click behavior."
     },
     {
       "id": "9.9.1",
@@ -43,7 +51,7 @@
       "label": "9.9.1 STABLE — R5 ROLLBACK",
       "ref": "bd40a1f33f565092025a619bfe7742ee55569fba",
       "file": "swir-stable-991.js",
-      "notes": "Previous tested R5 build: native-safe original nick colors, stronger message readability, dark navy mapped to light blue and black/almost-black mapped to off-white."
+      "notes": "Previous tested R5 build with original colors and stronger readability."
     },
     {
       "id": "9.9",
