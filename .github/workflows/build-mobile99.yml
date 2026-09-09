@@ -33,10 +33,10 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug --stacktrace
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/CZATeria-Plus-Mobile-XBookmark-9.9.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/CZATeria-Plus-Mobile-0.6.2-XBookmark-9.9.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: CZATeria-Plus-Mobile-XBookmark-9.9
-          path: mobile99/app/build/outputs/apk/debug/CZATeria-Plus-Mobile-XBookmark-9.9.apk
+          name: CZATeria-Plus-Mobile-0.6.2-XBookmark-9.9
+          path: mobile99/app/build/outputs/apk/debug/CZATeria-Plus-Mobile-0.6.2-XBookmark-9.9.apk
           if-no-files-found: error

@@ -34,12 +34,14 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var mobileScript = ""
-    private var hotfixScript = ""
+    private var layoutScript = ""
+    private var featureScript = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mobileScript = readAsset("swir_mobile_99.js")
-        hotfixScript = readAsset("swir_mobile_hotfix_061.js")
+        layoutScript = readAsset("swir_mobile_hotfix_061.js")
+        featureScript = readAsset("swir_mobile_hotfix_062.js")
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -89,7 +91,7 @@ class MainActivity : Activity() {
         header.addView(title, LinearLayout.LayoutParams(0, dp(30), 1f))
 
         statusText = TextView(this).apply {
-            text = "MOBILE 0.6.1"
+            text = "MOBILE 0.6.2"
             setTextColor(Color.rgb(117, 225, 245))
             textSize = 9f
             gravity = Gravity.CENTER
@@ -114,8 +116,9 @@ class MainActivity : Activity() {
 
         row.addView(topButton("🏠 Pokoje") { webView.loadUrl(CHAT_URL) })
         row.addView(topButton("💬 Czat") { runJs("window.SWIR_APP&&SWIR_APP.closeAll&&SWIR_APP.closeAll();") })
+        row.addView(topButton("🌈 Kolor") { runJs("window.SWIR_COLOR_MOBILE&&SWIR_COLOR_MOBILE.open&&SWIR_COLOR_MOBILE.open();") })
         row.addView(topButton("👥 Znajomi") { runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();") })
-        row.addView(topButton("⚡ Ustawienia") { runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();") })
+        row.addView(topButton("⚙ Ustawienia") { runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();") })
         row.addView(topButton("↻ Odśwież") { webView.reload() })
 
         scroll.addView(row)
@@ -185,12 +188,12 @@ class MainActivity : Activity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                injectHotfix()
+                injectPatches()
                 statusText.text = "DOPASOWUJĘ…"
-                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix() }, 350)
+                Handler(Looper.getMainLooper()).postDelayed({ injectPatches() }, 350)
                 Handler(Looper.getMainLooper()).postDelayed({ injectMobile() }, 900)
-                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix(); injectMobile() }, 2400)
-                Handler(Looper.getMainLooper()).postDelayed({ injectHotfix(); injectMobile() }, 5000)
+                Handler(Looper.getMainLooper()).postDelayed({ injectPatches(); injectMobile() }, 2400)
+                Handler(Looper.getMainLooper()).postDelayed({ injectPatches(); injectMobile() }, 5000)
             }
         }
 
@@ -219,9 +222,9 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun injectHotfix() {
-        if (hotfixScript.isBlank()) return
-        webView.evaluateJavascript(hotfixScript, null)
+    private fun injectPatches() {
+        if (layoutScript.isNotBlank()) webView.evaluateJavascript(layoutScript, null)
+        if (featureScript.isNotBlank()) webView.evaluateJavascript(featureScript, null)
     }
 
     private fun injectMobile() {
@@ -239,12 +242,12 @@ class MainActivity : Activity() {
             when {
                 result?.contains("READY") == true -> {
                     webView.evaluateJavascript(mobileScript, null)
-                    injectHotfix()
-                    statusText.text = "MOBILE 0.6.1 ✓"
+                    injectPatches()
+                    statusText.text = "MOBILE 0.6.2 ✓"
                 }
                 result?.contains("ALREADY") == true -> {
-                    injectHotfix()
-                    statusText.text = "MOBILE 0.6.1 ✓"
+                    injectPatches()
+                    statusText.text = "MOBILE 0.6.2 ✓"
                 }
                 else -> statusText.text = "WYBIERZ POKÓJ"
             }
