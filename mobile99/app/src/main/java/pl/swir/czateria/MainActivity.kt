@@ -36,12 +36,14 @@ class MainActivity : Activity() {
     private var mobileScript = ""
     private var layoutScript = ""
     private var featureScript = ""
+    private var adFixScript = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mobileScript = readAsset("swir_mobile_99.js")
         layoutScript = readAsset("swir_mobile_hotfix_061.js")
         featureScript = readAsset("swir_mobile_hotfix_062.js")
+        adFixScript = readAsset("swir_mobile_hotfix_063.js")
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -91,7 +93,7 @@ class MainActivity : Activity() {
         header.addView(title, LinearLayout.LayoutParams(0, dp(30), 1f))
 
         statusText = TextView(this).apply {
-            text = "MOBILE 0.6.2"
+            text = "MOBILE 0.6.3"
             setTextColor(Color.rgb(117, 225, 245))
             textSize = 9f
             gravity = Gravity.CENTER
@@ -114,10 +116,8 @@ class MainActivity : Activity() {
             setPadding(dp(5), dp(2), dp(5), dp(5))
         }
 
-        row.addView(topButton("🏠 Pokoje") { webView.loadUrl(CHAT_URL) })
-        row.addView(topButton("💬 Czat") { runJs("window.SWIR_APP&&SWIR_APP.closeAll&&SWIR_APP.closeAll();") })
-        row.addView(topButton("🌈 Kolor") { runJs("window.SWIR_COLOR_MOBILE&&SWIR_COLOR_MOBILE.open&&SWIR_COLOR_MOBILE.open();") })
         row.addView(topButton("👥 Znajomi") { runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();") })
+        row.addView(topButton("🌈 Kolor") { runJs("window.SWIR_COLOR_MOBILE&&SWIR_COLOR_MOBILE.open&&SWIR_COLOR_MOBILE.open();") })
         row.addView(topButton("⚙ Ustawienia") { runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();") })
         row.addView(topButton("↻ Odśwież") { webView.reload() })
 
@@ -225,6 +225,7 @@ class MainActivity : Activity() {
     private fun injectPatches() {
         if (layoutScript.isNotBlank()) webView.evaluateJavascript(layoutScript, null)
         if (featureScript.isNotBlank()) webView.evaluateJavascript(featureScript, null)
+        if (adFixScript.isNotBlank()) webView.evaluateJavascript(adFixScript, null)
     }
 
     private fun injectMobile() {
@@ -243,11 +244,11 @@ class MainActivity : Activity() {
                 result?.contains("READY") == true -> {
                     webView.evaluateJavascript(mobileScript, null)
                     injectPatches()
-                    statusText.text = "MOBILE 0.6.2 ✓"
+                    statusText.text = "MOBILE 0.6.3 ✓"
                 }
                 result?.contains("ALREADY") == true -> {
                     injectPatches()
-                    statusText.text = "MOBILE 0.6.2 ✓"
+                    statusText.text = "MOBILE 0.6.3 ✓"
                 }
                 else -> statusText.text = "WYBIERZ POKÓJ"
             }
