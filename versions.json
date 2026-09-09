@@ -1,17 +1,25 @@
 {
-  "launcher": "1.3",
-  "recommended": "9.9.1",
-  "beta": "10.1-beta",
+  "launcher": "1.4",
+  "recommended": "9.9",
+  "beta": "9.9.1-beta-r2",
   "channels": ["stable", "beta"],
-  "promotion_policy": "Testujemy w beta; po potwierdzeniu stabilności przenosimy wydanie do stable.",
+  "promotion_policy": "STABLE pozostaje zamrożone. Każdą poprawkę najpierw testujemy w BETA i dopiero po potwierdzeniu przenosimy do STABLE.",
   "versions": [
+    {
+      "id": "9.9.1-beta-r2",
+      "channel": "beta",
+      "label": "9.9.1 BETA R2 — REPLY FIX",
+      "ref": "self",
+      "file": "swir-beta-991-reply-r2.js",
+      "notes": "Frozen 9.9 plus lightweight native reply fix for originally black nick colors. No polling and no attribute observer."
+    },
     {
       "id": "10.1-beta",
       "channel": "beta",
       "label": "10.1 BETA — CLEAN UI + COLOR TAB",
       "ref": "self",
       "file": "swir-beta-101.js",
-      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles, cleaner MOD layout and 9.9.1 native reply hotfix"
+      "notes": "Separate Color Writing tab, no Image Lab, quick actions, profiles and cleaner MOD layout. Unstable 9.9.1 polling hotfix removed."
     },
     {
       "id": "10.0-beta",
@@ -22,20 +30,12 @@
       "notes": "Frozen previous beta with notifications and first tabbed MOD settings"
     },
     {
-      "id": "9.9.1",
-      "channel": "stable",
-      "label": "9.9.1 RECOMMENDED — NATIVE REPLY HOTFIX",
-      "ref": "8349eb3c1d1a0c01ab9270444da6a6a29f8d0f09",
-      "file": "swir-stable-991.js",
-      "notes": "Frozen 9.9 plus compatibility hotfix: SWIR contrast classes no longer break native Odpowiedz/Priv for originally dark nick colors"
-    },
-    {
       "id": "9.9",
       "channel": "stable",
-      "label": "9.9 ROLLBACK",
+      "label": "9.9 RECOMMENDED",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Original frozen 9.9 before native reply hotfix"
+      "notes": "Restored original frozen stable build: Friend Radar, right-click friends, Ice Light and slim Friends panel"
     },
     {
       "id": "9.8",
