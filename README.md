@@ -2,6 +2,16 @@
 
 Centralne repozytorium bookmarka SWIR dla CZATerii.
 
+## Co to jest? / What is it?
+
+**XBookmark** to bookmarklet dla CZATerii: zakładka uruchamiająca launcher SWIR z wyborem wersji, motywami, ustawieniami interfejsu i powiadomieniami. Nie wymaga ręcznej podmiany adresu zakładki przy kolejnych wydaniach.
+
+**English:** XBookmark is a JavaScript bookmarklet for the Polish CZATeria chat service. It opens the SWIR version launcher, with stable and beta channels for interface customization, themes and notifications. The launcher and instructions are intended for Polish-speaking users.
+
+**Zacznij od [instrukcji poniżej](#jak-używać) i pliku [bookmark-loader.txt](bookmark-loader.txt).** Dostępne wersje i ich oznaczenia znajdziesz w sekcji Launcher.
+
+Szukasz ogólnego menedżera własnych skryptów do Chrome? Zobacz [PowerBookmark](https://github.com/Swir/PowerBookmark#readme). [Wszystkie projekty SWIR →](https://github.com/Swir#readme)
+
 ## Jak używać
 
 1. Otwórz `bookmark-loader.txt`.
