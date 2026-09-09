@@ -1,6 +1,6 @@
 {
-  "launcher": "1.8",
-  "recommended": "9.9.1",
+  "launcher": "1.9",
+  "recommended": "9.9.2",
   "beta": "10.2-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
@@ -11,7 +11,7 @@
       "label": "10.2 BETA — CLEAN REBASE + FRIENDS FIX",
       "ref": "self",
       "file": "swir-beta-102.js",
-      "notes": "Rebased on tested 9.9.1 R5 stable and the known-working 10.0 Notify/Friends/tab modules. Adds the separate Color Writing view, removes Image Lab, restores quick actions and profiles, and deliberately does not load the problematic 10.1 UI hotfix loop."
+      "notes": "Rebased on the 9.9.2 R6 theme-aware stable base and the known-working 10.0 Notify/Friends/tab modules. Keeps Color Writing, no Image Lab, quick actions and profiles without the problematic 10.1 hotfix loop."
     },
     {
       "id": "10.1-beta",
@@ -19,7 +19,7 @@
       "label": "10.1 BETA — ARCHIVE / KNOWN FRIEND BUG",
       "ref": "self",
       "file": "swir-beta-101.js",
-      "notes": "Archived test build. Cleaner tabbed UI, Color Writing tab, profiles and no Image Lab, but the Friends option has a known regression. Superseded by 10.2."
+      "notes": "Archived test build with a known Friends regression. Superseded by 10.2."
     },
     {
       "id": "10.0-beta",
@@ -30,12 +30,20 @@
       "notes": "Frozen working base with Notify Edition, tabbed MOD settings and the Friends module used as the foundation for 10.2."
     },
     {
+      "id": "9.9.2",
+      "channel": "stable",
+      "label": "9.9.2 STABLE — RECOMMENDED",
+      "ref": "c16d6ec57b9063cd9c731f501e5c0cc14adb5c60",
+      "file": "swir-stable-992.js",
+      "notes": "R6 theme-aware contrast. Dark themes keep the tested R5 readability. Ice Light maps white/almost-white nicks to dark cyan, dark navy to a readable blue, black to dark graphite and automatically darkens overly bright message colors. Native nick classes remain untouched."
+    },
+    {
       "id": "9.9.1",
       "channel": "stable",
-      "label": "9.9.1 STABLE — RECOMMENDED",
+      "label": "9.9.1 STABLE — R5 ROLLBACK",
       "ref": "bd40a1f33f565092025a619bfe7742ee55569fba",
       "file": "swir-stable-991.js",
-      "notes": "Promoted tested R5 build: native-safe original nick colors, stronger message readability, dark navy mapped to light blue and black/almost-black mapped to off-white."
+      "notes": "Previous tested R5 build: native-safe original nick colors, stronger message readability, dark navy mapped to light blue and black/almost-black mapped to off-white."
     },
     {
       "id": "9.9",
