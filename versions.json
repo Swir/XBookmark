@@ -1,17 +1,17 @@
 {
-  "launcher": "1.5",
+  "launcher": "1.6",
   "recommended": "9.9",
-  "beta": "9.9.1-beta-r3",
+  "beta": "9.9.1-beta-r4",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE pozostaje zamrożone. Każdą poprawkę najpierw testujemy w BETA i dopiero po potwierdzeniu przenosimy do STABLE.",
   "versions": [
     {
-      "id": "9.9.1-beta-r3",
+      "id": "9.9.1-beta-r4",
       "channel": "beta",
-      "label": "9.9.1 BETA R3 — NATIVE NICK FIX",
+      "label": "9.9.1 BETA R4 — ORIGINAL COLORS",
       "ref": "self",
-      "file": "swir-beta-991-reply-r3.js",
-      "notes": "Frozen 9.9 plus event-only native nick compatibility fix. No polling, no MutationObserver. Normalizes only the clicked message-author element and prevents child badges from stealing the event target."
+      "file": "swir-beta-991-reply-r4.js",
+      "notes": "Frozen 9.9 plus original CZATeria nick colors restored and only lightly brightened. Black/almost-black becomes off-white. Message nick class stays native-safe; no timers and no attribute observer."
     },
     {
       "id": "10.1-beta",
@@ -32,10 +32,10 @@
     {
       "id": "9.9",
       "channel": "stable",
-      "label": "9.9 RECOMMENDED",
+      "label": "9.9 STABLE — KNOWN NICK CLICK BUG",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Original frozen stable build: Friend Radar, right-click friends, Ice Light and slim Friends panel"
+      "notes": "Frozen stable baseline. Friend Radar, right-click friends, Ice Light and slim Friends panel work, but message-author click handling has a known regression being fixed in beta R4."
     },
     {
       "id": "9.8",
