@@ -1,49 +1,37 @@
 {
-  "launcher": "2.3",
+  "launcher": "2.4",
   "recommended": "9.9.2",
-  "beta": "10.6-beta",
-  "channels": ["stable", "beta"],
+  "beta": "10.7-beta",
+  "channels": [
+    "stable",
+    "beta"
+  ],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
+  "architecture": "10.7 BETA = frozen 10.0 beta base + one clean overlay. Older beta patch chains are not loaded.",
   "versions": [
+    {
+      "id": "10.7-beta",
+      "channel": "beta",
+      "label": "10.7 BETA — CLEAN REBASE",
+      "ref": "self",
+      "file": "swir-beta-107.js",
+      "notes": "Clean rebase on the frozen 10.0 beta. Loads only the tested 10.0 base and one swir-clean-107.js overlay. Radar 9.7 remains untouched. Adds clear APP/GLOBAL/READY friend states and user-triggered APP synchronization, immediate Themes placement, viewport-safe MOD scrolling, clean non-neon nick colors, native Bold/Italic/Underline controls and a MIX B+I ↔ I+U mode. No automatic bulk APP synchronization is performed at startup."
+    },
     {
       "id": "10.6-beta",
       "channel": "beta",
-      "label": "10.6 BETA — 10.0 BASE + CLEAN NICKS + WRITING MIX",
-      "ref": "self",
+      "label": "10.6 BETA — ROLLBACK",
+      "ref": "9f6124e32f6a50520f4e9da6c7d504b4dc91d163",
       "file": "swir-beta-106.js",
-      "notes": "Built again on the tested 10.0 Friend Radar workflow. Keeps Radar 9.7 untouched, removes Image Lab from the 10.6 UI/public API, replaces neon/random nick decoration with native-ish brighter colors and black-to-turquoise mapping without glow, moves Color Writing to its own tab, and adds a separate MIX Writing tab alternating native Bold+Italic with Italic+Underline for each non-command message."
-    },
-    {
-      "id": "10.5-beta",
-      "channel": "beta",
-      "label": "10.5 BETA — ROLLBACK",
-      "ref": "c643fe3aa4f95a4352fa244ea5c6473fcab498ed",
-      "file": "swir-beta-105.js",
-      "notes": "10.0 friend-scanner workflow with viewport-safe full scrolling, Ice Light contrast hardening, Fast Themes and native Bold/Italic."
-    },
-    {
-      "id": "10.4-beta",
-      "channel": "beta",
-      "label": "10.4 BETA — ROLLBACK FRIENDS 2.0",
-      "ref": "f4889bec729f080f193abbaa71376cfb8ae7ade3",
-      "file": "swir-beta-104.js",
-      "notes": "Frozen rollback of Friends 2.0 with readable ONLINE/APP/GOTOWY DO APP/BRAK ID states, Sync APP, Fast Themes and native Bold/Italic."
-    },
-    {
-      "id": "10.3-beta",
-      "channel": "beta",
-      "label": "10.3 BETA — ROLLBACK",
-      "ref": "ea61d5e2a66558bc5bd292bdc79b77ef402d5144",
-      "file": "swir-beta-103.js",
-      "notes": "Friend Notify Rebuild. Every local friend is tracked automatically with no VIP. Presence merges APP rooms[] with passive live CHNS presence."
+      "notes": "Frozen rollback of the prior multi-module 10.6 beta."
     },
     {
       "id": "10.0-beta",
       "channel": "beta",
-      "label": "10.0 BETA — BEST RADAR BASE",
+      "label": "10.0 BETA — FROZEN BASE",
       "ref": "0ed4f9710a435444b8299a03cf6181785c3c66e6",
       "file": "swir-beta-10.js",
-      "notes": "Frozen working base with Notify Edition, tabbed MOD settings and the best-tested Friend Radar integration."
+      "notes": "Frozen tested beta base with Notify Edition, tabbed MOD settings and Friend Radar 9.7 integration."
     },
     {
       "id": "9.9.2",
@@ -51,7 +39,7 @@
       "label": "9.9.2 STABLE — RECOMMENDED",
       "ref": "c16d6ec57b9063cd9c731f501e5c0cc14adb5c60",
       "file": "swir-stable-992.js",
-      "notes": "R6 theme-aware contrast. Dark themes keep R5 readability. Ice Light maps white/almost-white nicks to dark cyan, dark navy to readable blue, black to graphite and darkens overly bright message colors while keeping native nick click behavior."
+      "notes": "R6 theme-aware contrast stable."
     },
     {
       "id": "9.9.1",
@@ -59,7 +47,7 @@
       "label": "9.9.1 STABLE — R5 ROLLBACK",
       "ref": "bd40a1f33f565092025a619bfe7742ee55569fba",
       "file": "swir-stable-991.js",
-      "notes": "Previous tested R5 build with original colors and stronger readability."
+      "notes": "Previous tested R5 stable."
     },
     {
       "id": "9.9",
@@ -67,7 +55,7 @@
       "label": "9.9 ROLLBACK",
       "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
       "file": "swir.js",
-      "notes": "Previous frozen baseline with Friend Radar 9.7, right-click friends, Ice Light and slim Friends panel."
+      "notes": "Frozen baseline with Friend Radar 9.7, right-click friends, Ice Light and slim Friends panel."
     },
     {
       "id": "9.8",
@@ -75,7 +63,7 @@
       "label": "9.8 STABLE",
       "ref": "bf0ae7562016d82699baf834664b0945320102ba",
       "file": "swir.js",
-      "notes": "Friend UX, right click and theme system"
+      "notes": "Friend UX, right click and theme system."
     },
     {
       "id": "9.7",
@@ -83,7 +71,7 @@
       "label": "9.7 STABLE",
       "ref": "868963711b94d373eee7d6cc1a7444da3c89ef45",
       "file": "swir.js",
-      "notes": "Friend Radar rebuild and persistent userId cache"
+      "notes": "Friend Radar rebuild and persistent userId cache."
     },
     {
       "id": "9.6",
@@ -92,7 +80,7 @@
       "label": "9.6 SAFE",
       "ref": "9c4528f269d931f483989dd4dff591bb2a93fa31",
       "file": "swir.js",
-      "notes": "Older passive friend radar build for rollback"
+      "notes": "Older passive rollback build."
     }
   ]
 }
