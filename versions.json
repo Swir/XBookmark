@@ -1,17 +1,25 @@
 {
-  "launcher": "2.2",
+  "launcher": "2.3",
   "recommended": "9.9.2",
-  "beta": "10.5-beta",
+  "beta": "10.6-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
   "versions": [
     {
+      "id": "10.6-beta",
+      "channel": "beta",
+      "label": "10.6 BETA — 10.0 BASE + CLEAN NICKS + WRITING MIX",
+      "ref": "self",
+      "file": "swir-beta-106.js",
+      "notes": "Built again on the tested 10.0 Friend Radar workflow. Keeps Radar 9.7 untouched, removes Image Lab from the 10.6 UI/public API, replaces neon/random nick decoration with native-ish brighter colors and black-to-turquoise mapping without glow, moves Color Writing to its own tab, and adds a separate MIX Writing tab alternating native Bold+Italic with Italic+Underline for each non-command message."
+    },
+    {
       "id": "10.5-beta",
       "channel": "beta",
-      "label": "10.5 BETA — RADAR 10.0 + UI FIX",
-      "ref": "self",
+      "label": "10.5 BETA — ROLLBACK",
+      "ref": "c643fe3aa4f95a4352fa244ea5c6473fcab498ed",
       "file": "swir-beta-105.js",
-      "notes": "Returns to the exact 10.0 friend-scanner workflow: frozen 9.9 base with Radar 9.7 plus Notify 10.0 and the 10.0 tabbed MOD shell. Friends 2.0 and APP Sync overlays from 10.4 are intentionally not loaded. Adds viewport-safe full scrolling for the MOD panel, beta-only Ice Light contrast hardening, Fast Themes and native Bold/Italic."
+      "notes": "10.0 friend-scanner workflow with viewport-safe full scrolling, Ice Light contrast hardening, Fast Themes and native Bold/Italic."
     },
     {
       "id": "10.4-beta",
