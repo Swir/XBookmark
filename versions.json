@@ -1,33 +1,25 @@
 {
-  "launcher": "2.0",
+  "launcher": "2.1",
   "recommended": "9.9.2",
-  "beta": "10.3-beta",
+  "beta": "10.4-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
   "versions": [
     {
+      "id": "10.4-beta",
+      "channel": "beta",
+      "label": "10.4 BETA — FRIENDS 2.0 + FAST UI",
+      "ref": "self",
+      "file": "swir-beta-104.js",
+      "notes": "Friends 2.0 keeps Radar 9.7 intact but adds human-readable ONLINE/APP/GOTOWY DO APP/BRAK ID states, a prominent user-triggered Sync APP action for known IDs, and an APP refresh when the Friends panel is explicitly opened. Fast Themes renders the theme panel immediately instead of waiting on the older UI observer. Color Writing gains native CZATeria Bold and Italic controls using userMessageStyle/msgIsBold/msgIsItalic, without transforming message text. Notify 10.3 remains the notification engine and VIP stays removed."
+    },
+    {
       "id": "10.3-beta",
       "channel": "beta",
-      "label": "10.3 BETA — FRIEND NOTIFY REBUILD",
-      "ref": "self",
+      "label": "10.3 BETA — ROLLBACK",
+      "ref": "ea61d5e2a66558bc5bd292bdc79b77ef402d5144",
       "file": "swir-beta-103.js",
-      "notes": "Rebuilt friend notifications. The canonical watch list is czateria_znajomi; every friend is tracked automatically with no VIP concept. Presence merges official APP rooms[] with passive live CHNS presence in open rooms. Includes warm baseline to prevent startup floods, event deduplication, 45-second purpose-driven APP state refresh, manual check/test buttons, notification history and diagnostics. No automatic code-8 friend synchronization is performed."
-    },
-    {
-      "id": "10.2-beta",
-      "channel": "beta",
-      "label": "10.2 BETA — ROLLBACK",
-      "ref": "1fc7afee85f7e043b99385bafe991c8b108d8bba",
-      "file": "swir-beta-102.js",
-      "notes": "Previous clean rebase. Friends UI works but its inherited 10.0 notification layer can miss friend appearance events because it relies primarily on APP server state."
-    },
-    {
-      "id": "10.1-beta",
-      "channel": "beta",
-      "label": "10.1 BETA — ARCHIVE / KNOWN FRIEND BUG",
-      "ref": "1fc7afee85f7e043b99385bafe991c8b108d8bba",
-      "file": "swir-beta-101.js",
-      "notes": "Archived test build with a known Friends regression."
+      "notes": "Friend Notify Rebuild. Every local friend is tracked automatically with no VIP. Presence merges APP rooms[] with passive live CHNS presence."
     },
     {
       "id": "10.0-beta",
