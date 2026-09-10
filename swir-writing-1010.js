@@ -1,4 +1,4 @@
-/* SWIR 10.10 — FULL MIX: all 8 combinations of native Bold / Italic / Underline */
+/* SWIR 10.10 HOTFIX — FULL MIX without UI render loop */
 (()=>{try{
 if(window.__SWIR_WRITING1010)return;window.__SWIR_WRITING1010=1;
 const ON='swir_mix_write_1010',DECK='swir_mix_deck_1010',LAST='swir_mix_last_1010';
@@ -31,13 +31,18 @@ html[data-swir-theme99="ice"] #sw1010MixCard{background:linear-gradient(180deg,#
 `;document.head.appendChild(s)}
 function card(){const d=document.createElement('div');d.id='sw1010MixCard';d.innerHTML=`<h3>🔀 MIX pisania — pełne B / I / U</h3><div style="font-size:9px;opacity:.78;line-height:1.45">Każdy cykl wykorzystuje wszystkie 8 kombinacji dokładnie raz. Kolejność jest tasowana, a dwa identyczne style nie wystąpią pod rząd.</div><div class="sw1010-grid">${styles.map(s=>`<div class="sw1010-style"><b>${s.bold?'<strong>B</strong> ':''}${s.italic?'<i>I</i> ':''}${s.underline?'<u>U</u> ':''}${!s.bold&&!s.italic&&!s.underline?'Aa ':''}${esc(s.name)}</b><span>${esc(s.desc)}</span></div>`).join('')}</div><div class="sw1010-actions"><button type="button" id="sw1010MixToggle"></button><button type="button" id="sw1010Shuffle">🔀 Przetasuj</button></div><div id="sw1010MixStatus" class="sw1010-status"></div>`;d.querySelector('#sw1010MixToggle').onclick=()=>setMix(!mixOn);d.querySelector('#sw1010Shuffle').onclick=reshuffle;return d}
 function ensureUI(){css();const page=document.querySelector('#configPanel #swirModTabs100 .sw10-page[data-page="mix106"]');if(!page)return false;let d=document.getElementById('sw1010MixCard');if(!d){d=card();page.insertBefore(d,page.firstChild)}render();return true}
-function render(){const b=document.getElementById('sw1010MixToggle'),s=document.getElementById('sw1010MixStatus');if(b){b.classList.toggle('on',mixOn);b.textContent=mixOn?'🟢 PEŁNY MIX WŁĄCZONY':'⚪ PEŁNY MIX WYŁĄCZONY'}if(s){const n=next();s.innerHTML='<b>Status:</b> '+(mixOn?'AKTYWNY':'WYŁĄCZONY')+(lastStyle?'<br>Ostatnia: <b>'+esc(lastStyle.name)+'</b> — '+esc(lastStyle.desc):'')+'<br>Następna: <b>'+esc(n.name)+'</b> — '+esc(n.desc)+'<br>Pozostało w tym cyklu: <b>'+deck.length+'/8</b><br><span style="opacity:.72">Kolor wiadomości pozostaje niezależny od MIX-u.</span>'}}
+function render(){const b=document.getElementById('sw1010MixToggle'),s=document.getElementById('sw1010MixStatus');if(b){b.classList.toggle('on',mixOn);const txt=mixOn?'🟢 PEŁNY MIX WŁĄCZONY':'⚪ PEŁNY MIX WYŁĄCZONY';if(b.textContent!==txt)b.textContent=txt}if(s){const n=next();const html='<b>Status:</b> '+(mixOn?'AKTYWNY':'WYŁĄCZONY')+(lastStyle?'<br>Ostatnia: <b>'+esc(lastStyle.name)+'</b> — '+esc(lastStyle.desc):'')+'<br>Następna: <b>'+esc(n.name)+'</b> — '+esc(n.desc)+'<br>Pozostało w tym cyklu: <b>'+deck.length+'/8</b><br><span style="opacity:.72">Kolor wiadomości pozostaje niezależny od MIX-u.</span>';if(s.innerHTML!==html)s.innerHTML=html}}
 function install(){const proto=window.CHNS?.Channel?.prototype;if(!proto||typeof proto.sendMessage!=='function')return false;if(proto.sendMessage.__swirMix1010)return true;
  try{window.SWIR_WRITING106?.setMix?.(false)}catch(e){}
  const legacy=proto.sendMessage;
  function wrapped(e){const raw=String(e?.value||'').trim();if(!mixOn||!raw||raw.startsWith('/'))return legacy.apply(this,arguments);const x=u();if(!x)return legacy.apply(this,arguments);const chosen=next(),before={bold:!!x.bold,italic:!!x.italic,underline:!!x.underline};let result,sent=false;try{x.bold=chosen.bold;x.italic=chosen.italic;x.underline=chosen.underline;result=legacy.apply(this,arguments);sent=String(e?.value||'').trim()==='';return result}finally{x.bold=before.bold;x.italic=before.italic;x.underline=before.underline;if(sent){lastStyle=chosen;lastId=chosen.id;deck.shift();if(!deck.length)deck=newDeck(lastId);save();setTimeout(render,0)}}}
  wrapped.__swirMix1010=1;wrapped.__swirMix106=1;wrapped.__swirMix106Original=legacy.__swirMix106Original||legacy;wrapped.__swirMix1010Legacy=legacy;proto.sendMessage=wrapped;return true}
-css();let n=0;const t=setInterval(()=>{n++;const a=ensureUI(),b=install();if(a&&b&&n>8)clearInterval(t);if(n>100)clearInterval(t)},120);ensureUI();install();let raf=0;new MutationObserver(()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;ensureUI();install()})}).observe(document.body,{childList:true,subtree:true});
-window.SWIR_WRITING1010={version:'10.10 FULL MIX 8',styles,mixEnabled:()=>mixOn,setMix,reshuffle,next,refresh:()=>{ensureUI();install();render()}};
-console.log('✅ SWIR 10.10 Writing: all 8 B/I/U combinations, shuffled without repetition');
+css();
+let n=0;const boot=setInterval(()=>{n++;const a=ensureUI(),b=install();if(a&&b){clearInterval(boot)}else if(n>100)clearInterval(boot)},120);
+ensureUI();install();
+// HOTFIX: no MutationObserver on whole body. It previously caused a self-triggering render loop.
+document.addEventListener('click',e=>{if(e.target?.closest?.('#btnConfig,.sw10-tab,[data-swir-theme99-btn]'))setTimeout(()=>{ensureUI();install()},0)},true);
+setInterval(()=>{try{if(document.getElementById('configPanel')&&!document.getElementById('sw1010MixCard'))ensureUI();install()}catch(e){}},2500);
+window.SWIR_WRITING1010={version:'10.10 FULL MIX 8 HOTFIX',styles,mixEnabled:()=>mixOn,setMix,reshuffle,next,refresh:()=>{ensureUI();install();render()}};
+console.log('✅ SWIR 10.10 HOTFIX: MIX bez pętli renderowania UI');
 }catch(e){console.error('SWIR 10.10 Writing',e)}})();
