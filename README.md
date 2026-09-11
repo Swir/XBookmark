@@ -6,41 +6,33 @@ XBookmark uruchamia launcher z kanałami **STABLE** i **BETA**, dzięki czemu mo
 
 ## Aktualny stan
 
-- **Launcher:** 3.0
-- **BETA:** 10.12 — FRIENDS RELIABILITY
+- **Launcher:** 3.1
+- **BETA:** 10.13 — CLEAN RECOVERY
 - **STABLE / recommended:** 9.9.2
+- **10.12:** BROKEN / PAUSED po regresji mrugania UI i ikon
 - **10.11:** zamrożony rollback UI SAFE + PHONE CLEAN
-- **10.10:** wstrzymana po regresji klikalności panelu MOD
 - **10.6:** zamrożony oryginał UI / nicki / pisanie
 - **10.0:** zamrożony punkt odniesienia dla Friend Radaru
 
-## Co poprawia 10.12
+## Co robi 10.13
 
-10.12 ładuje zamrożone **10.11** i nakłada tylko jedną izolowaną warstwę: `swir-friends-1012.js`.
+10.13 ładuje bezpośrednio zamrożone **10.6** i nakłada tylko `swir-clean-recovery-1013.js`.
 
-Najważniejsze zmiany:
+Najważniejsze zasady:
 
-- **PC / SWIR → APP** działa przez kontrolowaną kolejkę zamiast jednorazowej próby,
-- pakiety Friends są wysyłane tylko przez połączenie z `WebSocket.readyState === OPEN`,
-- `code 159` jest przechwytywany bezpośrednio z WebSocketa,
-- po `code 8 / subcode 4` SWIR czeka na `85 → 159` i dopiero wtedy oznacza znajomego jako **CONFIRMED**,
-- jeśli socket jest zamknięty lub serwer nie potwierdzi relacji, zadanie trafia do retry zamiast znikać,
-- stany są rozróżnione: `QUEUED`, `WAIT_ID`, `WAIT_SOCKET`, `VERIFYING`, `CONFIRMED`, `ERROR`,
-- panel wyjaśnia różnicę: **APP = globalne rooms[]**, **PC = tylko lokalnie widoczny użytkownik**,
-- ręczny przycisk **PC→APP** wrzuca znanych lokalnych znajomych do bezpiecznej kolejki synchronizacji,
-- MIX, Ice i ogólne UI MOD pozostają nietknięte.
+- **nie ładuje 10.12** ani `swir-friends-1012.js`,
+- usuwa SWIR-owe znaczniki telefonu i mobile badge z natywnych nicków w rozmowie,
+- usuwa telefon z badge w panelu Friend Radar,
+- czyści wyłącznie tymczasowy stan `swir_friend_reliability_1012`,
+- zachowuje `czateria_znajomi`, cache `userId` i stan serwera,
+- nie zmienia treści wiadomości wpisanych przez użytkowników,
+- nie dodaje żadnych nowych emoji ani ikon do nicków.
 
-## Dlaczego wcześniej działało tylko „w połowie”
+Celem 10.13 jest odzyskanie spokojnej, stabilnej bazy bez mrugania i bez pozostałości po eksperymencie 10.12.
 
-Friend Radar 9.7 miał kilka warunków wyścigu:
+## Dlaczego 10.12 została wycofana
 
-- mógł uznać `Connection.send()` za sukces, mimo że socket nie był już otwarty,
-- po dodaniu znajomego weryfikacja `85` mogła zostać zablokowana przez własny cooldown,
-- brakowało kolejki retry,
-- zapisany `159` nie miał jasnego statusu świeżości,
-- użytkownik `PC/SWIR` był lokalnie widoczny, ale dopóki nie został potwierdzony jako `APP`, nie miał globalnego `rooms[]`.
-
-10.12 naprawia właśnie tę ścieżkę bez przebudowywania reszty moda.
+10.12 próbowała automatyzować PC/SWIR → APP i weryfikację 85 → 159, ale w praktyce doprowadziła do regresji interfejsu: częstych przebudów panelu, mrugania oraz ponownego pojawiania się ikon. Zamiast dokładać kolejne poprawki na tę warstwę, została zamrożona i oznaczona jako **BROKEN / PAUSED**.
 
 ## Jak używać
 
@@ -48,7 +40,7 @@ Friend Radar 9.7 miał kilka warunków wyścigu:
 2. Skopiuj linię `javascript:...` do adresu zakładki w Chrome/Edge.
 3. Wejdź na CZATerię i odśwież stronę.
 4. Kliknij zakładkę XBookmark.
-5. W Launcherze wybierz **BETA → 10.12 BETA — FRIENDS RELIABILITY**.
+5. W Launcherze wybierz **BETA → 10.13 BETA — CLEAN RECOVERY**.
 
 SMART loader pobiera aktualny commit `main` z GitHub API, a następnie ładuje przypięte pliki przez jsDelivr. Dzięki temu bookmarka nie trzeba ręcznie zmieniać po każdej aktualizacji.
 
@@ -58,7 +50,8 @@ SMART loader pobiera aktualny commit `main` z GitHub API, a następnie ładuje p
 
 | Wersja | Status | Opis |
 |---|---|---|
-| 10.12 | CURRENT | Friends Reliability: PC/SWIR → APP + retry + 159 CONFIRMED |
+| 10.13 | CURRENT | Clean Recovery: czyste 10.6 + usuwanie SWIR-owych badge/telefonów z nicków |
+| 10.12 | BROKEN / PAUSED | mruganie UI i niestabilny panel Znajomych |
 | 10.11 | ROLLBACK | UI SAFE + PHONE CLEAN |
 | 10.10 | PAUSED | regresja klikalności MOD |
 | 10.9 | ROLLBACK | Friends Clean control |
@@ -82,6 +75,7 @@ SMART loader pobiera aktualny commit `main` z GitHub API, a następnie ładuje p
 
 | Wersja | Commit |
 |---|---|
+| 10.12 | `237754b0149bccf8d12c46526c4a74b234c27170` |
 | 10.11 | `799dea8c4870a41219057f4cc555b270a5bb858d` |
 | 10.6 | `9f6124e32f6a50520f4e9da6c7d504b4dc91d163` |
 | 10.0 | `0ed4f9710a435444b8299a03cf6181785c3c66e6` |
@@ -91,26 +85,13 @@ SMART loader pobiera aktualny commit `main` z GitHub API, a następnie ładuje p
 | 9.7 | `868963711b94d373eee7d6cc1a7444da3c89ef45` |
 | 9.6 | `9c4528f269d931f483989dd4dff591bb2a93fa31` |
 
-## Diagnostyka
-
-Friend Radar 9.7:
+## Diagnostyka 10.13
 
 ```javascript
-SWIR_RADAR_DEBUG97?.diagnostics?.()
+SWIR_CLEAN_RECOVERY1013?.diagnostics?.()
 ```
 
-10.12 Friends Reliability:
-
-```javascript
-SWIR_FRIENDS1012?.diagnostics?.()
-SWIR_FRIENDS1012?.jobs?.()
-```
-
-Wymuszenie bezpiecznej synchronizacji wszystkich znanych PC/SWIR:
-
-```javascript
-SWIR_FRIENDS1012?.syncAll?.()
-```
+Powinno pokazać `leftPhoneInNativeNicks: 0`, `leftPhoneBadgesInRadar: 0` oraz `reliability1012State: null`.
 
 ## Zasada rozwoju
 
@@ -118,8 +99,8 @@ Nowe poprawki trafiają najpierw do BETA. Nie ruszamy kilku krytycznych modułó
 
 ## Bezpieczeństwo
 
-SWIR nie nadaje uprawnień administratora, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów CZATerii. Globalne pokoje znajomych pochodzą z normalnego mechanizmu APP Friends `85 → 159`.
+SWIR nie nadaje uprawnień administratora, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów CZATerii.
 
 ---
 
-**Aktualny układ: Launcher 3.0 • 10.12 BETA FRIENDS RELIABILITY • 9.9.2 STABLE RECOMMENDED**
+**Aktualny układ: Launcher 3.1 • 10.13 BETA CLEAN RECOVERY • 9.9.2 STABLE RECOMMENDED**
