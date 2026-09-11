@@ -1,15 +1,16 @@
 {
-  "launcher": "4.2",
+  "launcher": "4.3",
   "recommended": "10.17.2",
-  "beta": "10.18-beta",
+  "beta": "10.19-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE contains confirmed builds. BETA remains separate and is used for testing before promotion.",
-  "architecture": "10.18 BETA = exact frozen 10.17 APK Exact Friend Radar + MIX 8/8 single-hook fix + Ice dark-text visibility overlay. Friend Radar code is not modified.",
+  "architecture": "10.19 BETA = exact frozen 10.17 APK Exact Friend Radar + MIX 8/8 installed per live Channel instance exactly like Color Writing + Ice dark-text overlay. Color Writing tab shows color controls only.",
   "versions": [
     {"id":"10.17.2","channel":"stable","label":"10.17.2 STABLE — RECOMMENDED","ref":"82c16fa72b16ce8a83fc496ed3b33f5df665a53a","file":"swir-stable-10172.js","notes":"Current Stable. Friend Radar uses exact confirmed 10.17 core."},
     {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE — ROLLBACK","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"Previous Stable rollback."},
     {"id":"9.9.2","channel":"stable","label":"9.9.2 STABLE — ROLLBACK","ref":"c16d6ec57b9063cd9c731f501e5c0cc14adb5c60","file":"swir-stable-992.js","notes":"Older stable rollback."},
-    {"id":"10.18-beta","channel":"beta","label":"10.18 BETA — MIX FIX + ICE DARK TEXT","ref":"39124e1cfc46a270a1d45a2da6a6b474cd1fc852","file":"swir-beta-1018.js","notes":"Current test beta build 2. Exact confirmed 10.17 Friends core plus a single authoritative MIX 8/8 hook and Ice text visibility fix with dark message/nick colors and forced full opacity."},
-    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen user-confirmed working Friend Radar beta. Clean comparison baseline without 10.18 overlays."}
+    {"id":"10.19-beta","channel":"beta","label":"10.19 BETA — COLOR-ALIGNED MIX","ref":"345f201a2ceae4a619e8d96e8e5f54e1cbea77b1","file":"swir-beta-1019.js","notes":"Current test beta. Exact confirmed 10.17 Friends core. MIX no longer patches Channel.prototype; it wraps each live room/priv sendMessage exactly like working Color Writing. Full shuffled 8-style B/I/U deck. Legacy manual Style wiadomości card is hidden from Color Writing."},
+    {"id":"10.18-beta","channel":"beta","label":"10.18 BETA — ROLLBACK MIX FIX","ref":"39124e1cfc46a270a1d45a2da6a6b474cd1fc852","file":"swir-beta-1018.js","notes":"Previous beta using prototype/single-hook MIX plus Ice dark text."},
+    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen user-confirmed working Friend Radar beta. Clean comparison baseline."}
   ]
 }
