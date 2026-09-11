@@ -1,16 +1,17 @@
 {
-  "launcher": "4.4",
+  "launcher": "4.5",
   "recommended": "10.17.2",
-  "beta": "10.20-beta",
+  "beta": "10.21-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE contains confirmed builds. BETA remains separate and is used for testing before promotion.",
-  "architecture": "10.20 BETA = exact 10.19 writing/MIX build + preloaded Friend Identity Guard + frozen 10.17 APK Exact Rooms core. The guard canonicalizes friend identity without changing the confirmed server protocol.",
+  "architecture": "10.21 BETA = exact 10.20 base + Honour Path Probe. The probe never changes permissions; it scans native UserData lists including honours/admins and retries normal friend sync using the real UID.",
   "versions": [
     {"id":"10.17.2","channel":"stable","label":"10.17.2 STABLE — RECOMMENDED","ref":"82c16fa72b16ce8a83fc496ed3b33f5df665a53a","file":"swir-stable-10172.js","notes":"Current Stable."},
     {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE — ROLLBACK","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"Previous Stable rollback."},
     {"id":"9.9.2","channel":"stable","label":"9.9.2 STABLE — ROLLBACK","ref":"c16d6ec57b9063cd9c731f501e5c0cc14adb5c60","file":"swir-stable-992.js","notes":"Older stable rollback."},
-    {"id":"10.20-beta","channel":"beta","label":"10.20 BETA — FRIEND IDENTITY GUARD","ref":"181b05e42630c2fa0168225d8a7d90615595d7b9","file":"swir-beta-1020.js","notes":"Current test beta. Loads the confirmed 10.19 writing build unchanged. Cleans friend names before Friends Core starts, fixes legacy context-menu friend add, dedupes dirty list/cache entries, adds canonical UserData fallback and ignores/hides phone markers without treating them as login text."},
-    {"id":"10.19-beta","channel":"beta","label":"10.19 BETA — COLOR-ALIGNED MIX","ref":"345f201a2ceae4a619e8d96e8e5f54e1cbea77b1","file":"swir-beta-1019.js","notes":"Confirmed working MIX 8/8 build; writing rollback for 10.20."},
+    {"id":"10.21-beta","channel":"beta","label":"10.21 BETA — HONOUR PATH PROBE","ref":"9909003d7b712b44dcad90568e16721969bf24c7","file":"swir-beta-1021.js","notes":"Current test beta. Keeps 10.20 and MIX 10.19 intact. Scans every native UserData list including honours/admins/registered/ordinary, records real mobile/honour/admin/privs flags, seeds trusted cache from real UserCard UID and retries normal 8/4 → 159 without spoofing rank."},
+    {"id":"10.20-beta","channel":"beta","label":"10.20 BETA — FRIEND IDENTITY GUARD","ref":"181b05e42630c2fa0168225d8a7d90615595d7b9","file":"swir-beta-1020.js","notes":"Friend identity canonicalization baseline."},
+    {"id":"10.19-beta","channel":"beta","label":"10.19 BETA — COLOR-ALIGNED MIX","ref":"345f201a2ceae4a619e8d96e8e5f54e1cbea77b1","file":"swir-beta-1019.js","notes":"Confirmed working MIX 8/8 build; writing rollback."},
     {"id":"10.18-beta","channel":"beta","label":"10.18 BETA — ROLLBACK MIX FIX","ref":"39124e1cfc46a270a1d45a2da6a6b474cd1fc852","file":"swir-beta-1018.js","notes":"Older MIX/ICE beta."},
     {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen user-confirmed working Friend Radar baseline."}
   ]
