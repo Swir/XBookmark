@@ -1,16 +1,14 @@
 {
-  "launcher": "4.0",
-  "recommended": "10.17.1",
-  "channels": ["stable"],
-  "promotion_policy": "Publiczny launcher pokazuje tylko wersje STABLE. Eksperymentalne buildy nie są już oferowane użytkownikowi.",
-  "architecture": "10.17.1 STABLE = frozen 10.17 APK Exact Friend Radar + Nick Integrity + Rooms Only + MIX 8/8 + ICE Color Rework.",
+  "launcher": "4.1",
+  "recommended": "10.17.2",
+  "beta": "10.17-beta",
+  "channels": ["stable", "beta"],
+  "promotion_policy": "STABLE contains confirmed builds; BETA remains available separately for testing and rollback reference.",
+  "architecture": "10.17.2 STABLE = exact frozen 10.17 APK Exact Friend Radar + Nick Integrity + Rooms Only + isolated MIX 8/8 + visual-only ICE v2.",
   "versions": [
-    {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE — RECOMMENDED","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"Current recommended Stable. APK Exact global Friend Radar, fresh 159.rooms[], no APP/PC/mobile labels, MIX uses all 8 B/I/U combinations in a shuffled non-repeating deck, ICE has separated colored panels and restored readable message colors."},
-    {"id":"9.9.2","channel":"stable","label":"9.9.2 STABLE — ROLLBACK","ref":"c16d6ec57b9063cd9c731f501e5c0cc14adb5c60","file":"swir-stable-992.js","notes":"Previous recommended Stable rollback."},
-    {"id":"9.9.1","channel":"stable","label":"9.9.1 STABLE — ROLLBACK","ref":"bd40a1f33f565092025a619bfe7742ee55569fba","file":"swir-stable-991.js","notes":"Older Stable rollback."},
-    {"id":"9.9","channel":"stable","label":"9.9 ARCHIVE","ref":"8ef1a5773f98780094c65042c2e622852ea6eb29","file":"swir.js","notes":"Frozen historical stable baseline."},
-    {"id":"9.8","channel":"stable","label":"9.8 ARCHIVE","ref":"bf0ae7562016d82699baf834664b0945320102ba","file":"swir.js","notes":"Historical stable Friend UX + themes."},
-    {"id":"9.7","channel":"stable","label":"9.7 ARCHIVE","ref":"868963711b94d373eee7d6cc1a7444da3c89ef45","file":"swir.js","notes":"Historical Friend Radar stable."},
-    {"id":"9.6","channel":"stable","label":"9.6 SAFE ARCHIVE","ref":"9c4528f269d931f483989dd4dff591bb2a93fa31","file":"swir.js","notes":"Old safe fallback."}
+    {"id":"10.17.2","channel":"stable","label":"10.17.2 STABLE — RECOMMENDED","ref":"82c16fa72b16ce8a83fc496ed3b33f5df665a53a","file":"swir-stable-10172.js","notes":"Recommended. Friend Radar is loaded from exact confirmed 10.17 core ref 627f38c. MIX 8/8 and ICE v2 are isolated overlays."},
+    {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE — ROLLBACK","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"Previous Stable rollback."},
+    {"id":"9.9.2","channel":"stable","label":"9.9.2 STABLE — ROLLBACK","ref":"c16d6ec57b9063cd9c731f501e5c0cc14adb5c60","file":"swir-stable-992.js","notes":"Older stable rollback."},
+    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen user-confirmed working Friend Radar beta. No Stable MIX/ICE overlays."}
   ]
 }
