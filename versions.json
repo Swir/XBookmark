@@ -1,12 +1,12 @@
 {
-  "launcher": "3.5",
+  "launcher": "3.6",
   "recommended": "9.9.2",
   "beta": "10.17-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
-  "architecture": "10.17 BETA = frozen 10.6 + Nick Integrity + Primary Friend Transport + Rooms Only panel. One pinned open connection handles friend add and 85/159 verification; UI shows only rooms.",
+  "architecture": "10.17 BETA = frozen 10.6 + Nick Integrity + APK Exact Friend Core + Rooms Only panel. Friend add and global room snapshots follow the Android 2.6.3 protocol path; UI shows only rooms.",
   "versions": [
-    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — PRIMARY ROOMS","ref":"self","file":"swir-beta-1017.js","notes":"Current beta. Confirms the official Android friend packet shape code 8/subcode 4 + userId + username + isFriend=true, but changes transport selection. code 85 discovers the connection that actually returns code 159; that same pinned connection is then used for friend add and verification. Legacy Radar friend writes are isolated. Friends UI contains only nick and rooms."},
+    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"self","file":"swir-beta-1017.js","notes":"Current beta. Android 2.6.3 confirmed add-friend packet code 8/subcode 4 + userId + username + isFriend=true. 10.17 now mirrors APK ID selection: fresh server friend ID, then live UserCard UID, then short trusted cache only. Transport uses the first OPEN session connection, matching APK first NORMAL connection. Old rooms snapshots are discarded at boot and only fresh 159.rooms[] is treated as global. Friends panel has no APP/PC/SWIR/mobile labels and no periodic rebuild/flicker."},
     {"id":"10.16-beta","channel":"beta","label":"10.16 BETA — ROOMS ONLY ROLLBACK","ref":"30cb844008f3c79301f306459c42703ac9c463bd","file":"swir-beta-1016.js","notes":"Rollback of Rooms Only UI using the 10.15 Global Rooms core."},
     {"id":"10.15-beta","channel":"beta","label":"10.15 BETA — GLOBAL ROOMS ROLLBACK","ref":"e8e56f127b6a6478171af3c5eed79ebd593e245b","file":"swir-beta-1015.js","notes":"Rollback of Global Rooms core with the old 9.7 panel presentation."},
     {"id":"10.14-beta","channel":"beta","label":"10.14 BETA — NICK INTEGRITY + FRIENDS CORE","ref":"6b14d7b5cd03b889a4209ae066da20a71f0a2abf","file":"swir-beta-1014.js","notes":"Rollback. Clean native nick structure plus background Friends Core."},
