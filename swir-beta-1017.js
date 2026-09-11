@@ -1,5 +1,6 @@
-/* SWIR 10.17 BETA — PRIMARY ROOMS
- * Frozen 10.6 + Nick Integrity + APK-aligned primary friend transport + rooms-only panel.
+/* SWIR 10.17 BETA — APK EXACT ROOMS
+ * Frozen 10.6 + Nick Integrity + APK-exact Friend Core + rooms-only panel.
+ * Android 2.6.3 aligned: code 8/subcode 4, first normal/open session connection, fresh 85 -> 159 rooms[].
  * Does NOT load 10.15 Global Rooms core.
  */
 (()=>{try{
@@ -14,7 +15,7 @@ function wait106(){return new Promise(resolve=>{let n=0;(function tick(){n++;con
  await add(CDN+selfRef+'/swir-nick-integrity-1014.js?v='+Date.now());
  await add(CDN+selfRef+'/swir-friends-primary-1017.js?v='+Date.now());
  await add(CDN+selfRef+'/swir-rooms-panel-1017.js?v='+Date.now());
- window.SWIR_CLOUD_VERSION='10.17 BETA — PRIMARY ROOMS';
- console.log('SWIR 10.17 ready — one primary friend transport + rooms only');
+ window.SWIR_CLOUD_VERSION='10.17 BETA — APK EXACT ROOMS';
+ console.log('SWIR 10.17 ready — APK-exact Friends transport + rooms only');
 })().catch(e=>{console.error('SWIR 10.17 bootstrap',e);alert('SWIR 10.17: błąd startu. Odśwież stronę i wróć do 10.16.')});
 }catch(e){console.error('SWIR 10.17 bootstrap',e)}})();
