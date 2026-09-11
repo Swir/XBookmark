@@ -1,12 +1,13 @@
 {
-  "launcher": "3.4",
+  "launcher": "3.5",
   "recommended": "9.9.2",
-  "beta": "10.16-beta",
+  "beta": "10.17-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
-  "architecture": "10.16 BETA = frozen 10.6 + Nick Integrity + Global Rooms Core + Rooms Only panel. Friends UI shows only nick and rooms; no APP/PC/SWIR/mobile labels.",
+  "architecture": "10.17 BETA = frozen 10.6 + Nick Integrity + Primary Friend Transport + Rooms Only panel. One pinned open connection handles friend add and 85/159 verification; UI shows only rooms.",
   "versions": [
-    {"id":"10.16-beta","channel":"beta","label":"10.16 BETA — ROOMS ONLY","ref":"self","file":"swir-beta-1016.js","notes":"Current beta. Replaces the misleading Friend Radar presentation with a rooms-only panel. Preferred location source is server code 159 rooms[]. While server synchronization is pending, only actually observed rooms from open connections/cache are shown. No APP, PC, SWIR or mobile badges are displayed."},
+    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — PRIMARY ROOMS","ref":"self","file":"swir-beta-1017.js","notes":"Current beta. Confirms the official Android friend packet shape code 8/subcode 4 + userId + username + isFriend=true, but changes transport selection. code 85 discovers the connection that actually returns code 159; that same pinned connection is then used for friend add and verification. Legacy Radar friend writes are isolated. Friends UI contains only nick and rooms."},
+    {"id":"10.16-beta","channel":"beta","label":"10.16 BETA — ROOMS ONLY ROLLBACK","ref":"30cb844008f3c79301f306459c42703ac9c463bd","file":"swir-beta-1016.js","notes":"Rollback of Rooms Only UI using the 10.15 Global Rooms core."},
     {"id":"10.15-beta","channel":"beta","label":"10.15 BETA — GLOBAL ROOMS ROLLBACK","ref":"e8e56f127b6a6478171af3c5eed79ebd593e245b","file":"swir-beta-1015.js","notes":"Rollback of Global Rooms core with the old 9.7 panel presentation."},
     {"id":"10.14-beta","channel":"beta","label":"10.14 BETA — NICK INTEGRITY + FRIENDS CORE","ref":"6b14d7b5cd03b889a4209ae066da20a71f0a2abf","file":"swir-beta-1014.js","notes":"Rollback. Clean native nick structure plus background Friends Core."},
     {"id":"10.13-beta","channel":"beta","label":"10.13 BETA — CLEAN RECOVERY","ref":"2ffa29ee9d5a52484a3b938103728a013e2d774c","file":"swir-beta-1013.js","notes":"Rollback clean-recovery build."},
