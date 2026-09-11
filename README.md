@@ -4,113 +4,116 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 4.3 — **STABLE + BETA**
+- **Launcher:** 4.4 — **STABLE + BETA**
 - **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.19 — COLOR-ALIGNED MIX**
-- **BETA rollback:** 10.18
-- **BETA baseline:** **10.17 APK EXACT ROOMS** — zamrożona wersja Friend Radaru potwierdzona jako działająca
+- **BETA:** **10.20 — FRIEND IDENTITY GUARD**
+- **BETA writing rollback:** **10.19 — COLOR-ALIGNED MIX**
+- **BETA baseline:** **10.17 — APK EXACT ROOMS**
 
-## 10.19 BETA — dlaczego powstała
+## 10.20 BETA — FRIEND IDENTITY GUARD
 
-10.18 nadal nie zmieniała stylów MIX podczas realnego wysyłania. Analiza oryginalnego kodu CZATerii pokazała, że problem nie leżał w polach `bold / italic / underline`.
+10.19 potwierdziła działanie MIX 8/8. W 10.20 kod pisania jest więc traktowany jako zamrożony i ładowany dokładnie z builda 10.19.
 
-Natywny `Channel.sendMessage()` buduje pakiet z:
+10.20 skupia się wyłącznie na ścieżce:
 
-- `userMessageStyle.isBoldMsg()`,
-- `userMessageStyle.isItalicMsg()`,
-- `userMessageStyle.isUnderlineMsg()`.
+`nick → UserData/UserCardData → userId → code 8/subcode 4 → code 85 → code 159 → rooms[]`
 
-Jednocześnie sprawdzone **Kolorowe pisanie** nie patchuje `CHNS.Channel.prototype.sendMessage`. Zamiast tego owija `sendMessage()` **na każdym istniejącym obiekcie pokoju/priva**. Ponieważ Color Writing robi to wcześniej, późniejsza zmiana prototypu mogła zostać całkowicie pominięta przez istniejące kanały.
+### Co wykazała analiza oryginalnego klienta
 
-### MIX 10.19
+Oryginalna ikonka telefonu użytkownika mobilnego nie jest tekstem nicka. CZATeria tworzy ją jako osobny element:
 
-10.19 kopiuje architekturę działającego Color Writing:
+`.m-list-user-item-icon-mobile`
 
-1. pobiera aktualny kanał oraz wszystkie obiekty z `CHNS.channelManager.channels`,
-2. owija `sendMessage()` bezpośrednio na każdym pokoju/privie,
-3. przed wywołaniem istniejącego wrappera ustawia tymczasowo B/I/U,
-4. istniejący Color Writing nadal może ustawić `msgColorId`,
-5. natywny klient odczytuje jednocześnie kolor oraz B/I/U,
-6. po synchronicznym wysłaniu poprzedni ręczny styl zostaje przywrócony.
+Prawdziwy login pozostaje w osobnym `span`. Natywny ContextMenu również dla kliknięcia w ikonę telefonu pobiera login z wiersza użytkownika, a nie z samej ikonki.
 
-MIX nadal wykorzystuje pełną losową talię 8/8:
+Znaleziono natomiast błąd legacy SWIR: własna pozycja „Dodaj do znajomych” próbowała odczytać `innerText` nagłówka ContextMenu. Natywny nagłówek ma tekst `Menu`, więc ta ścieżka mogła zapisywać błędną nazwę zamiast prawdziwego loginu.
 
-- normalne,
-- B,
-- I,
-- U,
-- B+I,
-- B+U,
-- I+U,
-- B+I+U.
+### Friend Identity Guard 10.20
 
-Wszystkie osiem stylów jest używanych przed ponownym tasowaniem, bez powtórzenia tego samego stylu na granicy talii.
+Guard uruchamia się **przed** Friends Core i:
 
-### Kolorowe pisanie — porządek w UI
+- tworzy jednorazowy backup starej listy znajomych i cache ID,
+- usuwa z identyfikatora wyłącznie znane zanieczyszczenia: `📱`, `📲`, `☎`, variation selector, zero-width, NBSP oraz końcowy `:`,
+- scala duplikaty tego samego nicka,
+- czyści legacy wpis `Menu` powstały przez stary context-menu bug,
+- normalizuje klucze `swir_friend_identity_cache_97`,
+- zachowuje natywne `getUserWithName()` jako pierwszą metodę,
+- jeśli dokładne wyszukiwanie zawiedzie, porównuje czysty login z rzeczywistymi obiektami `UserData` na aktywnym połączeniu,
+- poprawia dodawanie/usuwanie znajomego z menu kontekstowego tak, aby używać nicka klikniętej osoby,
+- ukrywa natywną ikonkę mobile wizualnie, ale nie usuwa ani nie zmienia `UserData.isMobile()`,
+- nie modyfikuje protokołu 10.17 Friends Core.
 
-W 10.19 zakładka **Kolorowe pisanie** zawiera tylko ustawienia koloru.
+Backup migracji jest przechowywany lokalnie pod kluczem:
 
-Stary blok **„Styl wiadomości”** z B/I/U jest ukryty. Style wiadomości należą teraz wyłącznie do zakładki **MIX pisania**. Blok jest ukrywany CSS-em zamiast ciągłego kasowania DOM, aby nie walczyć z obserwatorem legacy 10.6, który próbowałby go odtwarzać.
+`swir_friend_guard_backup_1020`
 
-### Diagnostyka MIX 10.19
+### Diagnostyka
+
+```javascript
+SWIR_FRIEND_GUARD1020?.diagnostics?.()
+SWIR_FRIENDS_PRIMARY1017?.diagnostics?.()
+SWIR_ROOMS_PANEL1017?.diagnostics?.()
+```
+
+W Guardzie warto sprawdzić:
+
+- `friends` — liczba czystych lokalnych znajomych,
+- `migrated` — ile starych wpisów/cache zostało poprawionych,
+- `patchedConnections` — ile połączeń ma fallback canonical lookup,
+- `connections` — liczba wykrytych połączeń,
+- `nativePhoneIcons` / `hiddenPhoneIcons` — liczba natywnych ikonek mobile i liczba ukrytych.
+
+## MIX 8/8 — zamrożony z 10.19
+
+10.20 nie zmienia mechanizmu pisania. Nadal działa pełna talia:
+
+1. normalne,
+2. B,
+3. I,
+4. U,
+5. B+I,
+6. B+U,
+7. I+U,
+8. B+I+U.
+
+MIX działa tą samą architekturą co Color Writing — wrapper jest instalowany na każdym aktywnym pokoju/privie.
+
+Diagnostyka:
 
 ```javascript
 SWIR_MIX1019?.diagnostics?.()
 ```
 
-Najważniejsze pola:
+## Friend Radar — protokół bez zmian
 
-- `enabled` — MIX włączony,
-- `channels` — wykryte pokoje/privy,
-- `wrapped` — ile kanałów ma realny wrapper 10.19,
-- `next` — następny styl,
-- `sendCount` — liczba wiadomości rzeczywiście wysłanych przez MIX.
+10.20 nadal korzysta z potwierdzonego mechanizmu:
 
-Przy normalnej pracy `wrapped` powinno być równe `channels`, a `sendCount` powinien rosnąć po wysłaniu wiadomości.
+`code 8 / subcode 4 + userId + username + isFriend=true`
 
-## ICE
+oraz:
 
-10.19 zachowuje poprawkę **ICE DARK TEXT** z 10.18:
+`code 85 → code 159 → users[].rooms[]`
 
-- brak białych/prawie białych nicków,
-- brak białego/prawie białego tekstu wiadomości,
-- ciemne, czytelne mapowanie natywnych `data-col="0..11"`,
-- pełne `opacity:1` i `visibility:visible` dla tekstu wiadomości i nicków.
+Guard naprawia jedynie identyfikację nicka przed tym mechanizmem.
 
-Diagnostyka:
-
-```javascript
-SWIR_ICE1018?.audit?.()
-```
-
-Celem jest `whiteMessages: 0` i `whiteNicks: 0`.
-
-## Friend Radar — bez zmian
-
-10.19 nadal ładuje dokładnie zamrożony Friend Radar 10.17 z commita:
-
-`627f38c79ca474f53b266c74fa2136c3f4df7c76`
-
-Mechanizm Znajomych nie został zmieniony.
-
-## Launcher 4.3
+## Launcher 4.4
 
 - **STABLE** — bez zmian,
-- **BETA 10.19** — bieżący test MIX,
-- **BETA 10.18** — rollback,
-- **BETA 10.17** — czysta baza Friend Radar do porównania.
+- **BETA 10.20** — Friend Identity Guard,
+- **BETA 10.19** — potwierdzone działające pisanie / rollback,
+- **BETA 10.18** — starszy rollback,
+- **BETA 10.17** — czysta baza Friend Radar.
 
-## Jak testować 10.19
+## Jak testować 10.20
 
-1. **Ctrl+F5** na CZATerii.
-2. XBookmark → **BETA → 10.19 BETA — COLOR-ALIGNED MIX**.
-3. Otwórz **Kolorowe pisanie** — blok „Styl wiadomości” nie powinien być widoczny.
-4. Ustaw np. tryb kolorów Rainbow albo Random.
-5. Otwórz **MIX pisania**, włącz MIX 8/8.
-6. Wyślij kilka zwykłych wiadomości. Kolor i B/I/U powinny działać jednocześnie.
-7. Sprawdź `SWIR_MIX1019.diagnostics()` — `wrapped === channels`, a `sendCount` powinien rosnąć.
-8. Sprawdź Znajomych — powinny działać identycznie jak w 10.17 Beta.
+1. Zrób **Ctrl+F5**.
+2. XBookmark → **BETA → 10.20 BETA — FRIEND IDENTITY GUARD**.
+3. Otwórz Znajomych i kliknij **ODŚWIEŻ**.
+4. Sprawdź osobę, która wcześniej miała natywną ikonkę telefonu/mobile.
+5. Dodaj jednego znajomego z menu kontekstowego i sprawdź, czy do panelu trafia właściwy nick.
+6. Sprawdź kilka globalnych lokalizacji `rooms[]`.
+7. Dla pewności sprawdź MIX — powinien zachowywać się dokładnie jak w 10.19.
 
 ---
 
-**Aktualny układ: Launcher 4.3 • 10.17.2 STABLE • 10.19 BETA COLOR-ALIGNED MIX • 10.18 rollback • 10.17 baseline**
+**Aktualny układ: Launcher 4.4 • 10.17.2 STABLE • 10.20 BETA FRIEND IDENTITY GUARD • 10.19 writing rollback • 10.17 Friends baseline**
