@@ -4,116 +4,117 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 4.4 — **STABLE + BETA**
+- **Launcher:** 4.5 — **STABLE + BETA**
 - **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.20 — FRIEND IDENTITY GUARD**
-- **BETA writing rollback:** **10.19 — COLOR-ALIGNED MIX**
-- **BETA baseline:** **10.17 — APK EXACT ROOMS**
+- **BETA:** **10.21 — HONOUR PATH PROBE**
+- **BETA rollback:** 10.20 Friend Identity Guard
+- **BETA writing rollback:** 10.19 Color-Aligned MIX
+- **BETA baseline:** 10.17 APK Exact Rooms
 
-## 10.20 BETA — FRIEND IDENTITY GUARD
+## 10.21 BETA — HONOUR PATH PROBE
 
-10.19 potwierdziła działanie MIX 8/8. W 10.20 kod pisania jest więc traktowany jako zamrożony i ładowany dokładnie z builda 10.19.
+Ta wersja powstała do sprawdzenia hipotezy, czy użytkownicy znajdujący się w innych natywnych listach CZATerii — np. honour/admin — są rozwiązywani przez klienta inaczej niż zwykli użytkownicy.
 
-10.20 skupia się wyłącznie na ścieżce:
+10.21 **nie zmienia rangi ani uprawnień użytkownika**. Nie ustawia `isHonour()`, `isAdmin()` ani `perm`. Zamiast tego skanuje prawdziwe obiekty `UserData` i porównuje ich ścieżkę identyfikacji.
 
-`nick → UserData/UserCardData → userId → code 8/subcode 4 → code 85 → code 159 → rooms[]`
+### Co robi probe
 
-### Co wykazała analiza oryginalnego klienta
+Dla każdego lokalnego znajomego przeszukuje natywne źródła:
 
-Oryginalna ikonka telefonu użytkownika mobilnego nie jest tekstem nicka. CZATeria tworzy ją jako osobny element:
+- `adminsList`,
+- `honoursList`,
+- `registeredList`,
+- `ordinaryList`,
+- `closestList`,
+- `userSet`,
+- `getUsers()`.
 
-`.m-list-user-item-icon-mobile`
+Jeżeli znajdzie dokładnie ten sam canonical nick, odczytuje z prawdziwego `UserData/UserCardData`:
 
-Prawdziwy login pozostaje w osobnym `span`. Natywny ContextMenu również dla kliknięcia w ikonę telefonu pobiera login z wiersza użytkownika, a nie z samej ikonki.
+- `UID`,
+- `isMobile()`,
+- `isHonour()`,
+- `isAdmin()`,
+- `isRegistered()`,
+- `hasPrivs()`,
+- `isHiddenAdmin()` jeśli istnieje.
 
-Znaleziono natomiast błąd legacy SWIR: własna pozycja „Dodaj do znajomych” próbowała odczytać `innerText` nagłówka ContextMenu. Natywny nagłówek ma tekst `Menu`, więc ta ścieżka mogła zapisywać błędną nazwę zamiast prawdziwego loginu.
+Realny UID jest zapisywany do istniejącego, zaufanego cache jako źródło `CHNS-user`, po czym uruchamiana jest normalna, potwierdzona ścieżka Friend Radaru:
 
-### Friend Identity Guard 10.20
+`UID → code 8/subcode 4 → code 85 → code 159 → rooms[]`
 
-Guard uruchamia się **przed** Friends Core i:
+Nie ma żadnego specjalnego pakietu „honour”. Celem wersji jest porównanie, czy problem siedzi w identyfikacji `UserData`, a nie w samym `rooms[]`.
 
-- tworzy jednorazowy backup starej listy znajomych i cache ID,
-- usuwa z identyfikatora wyłącznie znane zanieczyszczenia: `📱`, `📲`, `☎`, variation selector, zero-width, NBSP oraz końcowy `:`,
-- scala duplikaty tego samego nicka,
-- czyści legacy wpis `Menu` powstały przez stary context-menu bug,
-- normalizuje klucze `swir_friend_identity_cache_97`,
-- zachowuje natywne `getUserWithName()` jako pierwszą metodę,
-- jeśli dokładne wyszukiwanie zawiedzie, porównuje czysty login z rzeczywistymi obiektami `UserData` na aktywnym połączeniu,
-- poprawia dodawanie/usuwanie znajomego z menu kontekstowego tak, aby używać nicka klikniętej osoby,
-- ukrywa natywną ikonkę mobile wizualnie, ale nie usuwa ani nie zmienia `UserData.isMobile()`,
-- nie modyfikuje protokołu 10.17 Friends Core.
+### Panel i diagnostyka
 
-Backup migracji jest przechowywany lokalnie pod kluczem:
+Po otwarciu Znajomych 10.21 dodaje mały blok **HONOUR PATH PROBE** z przyciskiem **SKANUJ**.
 
-`swir_friend_guard_backup_1020`
-
-### Diagnostyka
-
-```javascript
-SWIR_FRIEND_GUARD1020?.diagnostics?.()
-SWIR_FRIENDS_PRIMARY1017?.diagnostics?.()
-SWIR_ROOMS_PANEL1017?.diagnostics?.()
-```
-
-W Guardzie warto sprawdzić:
-
-- `friends` — liczba czystych lokalnych znajomych,
-- `migrated` — ile starych wpisów/cache zostało poprawionych,
-- `patchedConnections` — ile połączeń ma fallback canonical lookup,
-- `connections` — liczba wykrytych połączeń,
-- `nativePhoneIcons` / `hiddenPhoneIcons` — liczba natywnych ikonek mobile i liczba ukrytych.
-
-## MIX 8/8 — zamrożony z 10.19
-
-10.20 nie zmienia mechanizmu pisania. Nadal działa pełna talia:
-
-1. normalne,
-2. B,
-3. I,
-4. U,
-5. B+I,
-6. B+U,
-7. I+U,
-8. B+I+U.
-
-MIX działa tą samą architekturą co Color Writing — wrapper jest instalowany na każdym aktywnym pokoju/privie.
-
-Diagnostyka:
+Pełna diagnostyka:
 
 ```javascript
-SWIR_MIX1019?.diagnostics?.()
+SWIR_HONOUR_PROBE1021?.diagnostics?.()
 ```
 
-## Friend Radar — protokół bez zmian
+Najważniejsze pola:
 
-10.20 nadal korzysta z potwierdzonego mechanizmu:
+- `uid` — rzeczywisty UID znaleziony w UserData,
+- `mobile` — natywne `isMobile()`,
+- `honour` — natywne `isHonour()`,
+- `admin` — natywne `isAdmin()`,
+- `registered` — stan rejestracji,
+- `privs` — czy użytkownik ma aktywne privy,
+- `lists` — w których natywnych listach został znaleziony,
+- `localRooms` — pokoje widziane lokalnie,
+- `server` — pokoje z `159.rooms[]`,
+- `status` — np. `SERVER_OK`, `SEEDED_NATIVE_UID`, `NATIVE_WITHOUT_UID`, `UID_CONFLICT`, `NO_NATIVE_USER`.
 
-`code 8 / subcode 4 + userId + username + isFriend=true`
+Można też zebrać wszystko naraz:
 
-oraz:
+```javascript
+SWIR_BETA1021?.diagnostics?.()
+```
 
-`code 85 → code 159 → users[].rooms[]`
+## Pisanie / MIX
 
-Guard naprawia jedynie identyfikację nicka przed tym mechanizmem.
+10.21 nie zmienia działającego MIX-u z 10.19. Nadal działa pełna talia 8/8:
 
-## Launcher 4.4
+- normalne,
+- B,
+- I,
+- U,
+- B+I,
+- B+U,
+- I+U,
+- B+I+U.
+
+## Friend Identity Guard
+
+10.21 dziedziczy 10.20, więc nadal działa:
+
+- canonical nick,
+- usuwanie zakłóceń typu phone marker/zero-width/NBSP z identyfikatora,
+- poprawione dodawanie znajomego z context menu,
+- fallback `getUserWithName()` po prawdziwych obiektach `UserData`,
+- backup starej listy/cache przed migracją.
+
+## Launcher 4.5
 
 - **STABLE** — bez zmian,
-- **BETA 10.20** — Friend Identity Guard,
-- **BETA 10.19** — potwierdzone działające pisanie / rollback,
-- **BETA 10.18** — starszy rollback,
+- **BETA 10.21** — Honour Path Probe,
+- **BETA 10.20** — Friend Identity Guard rollback,
+- **BETA 10.19** — działający MIX rollback,
 - **BETA 10.17** — czysta baza Friend Radar.
 
-## Jak testować 10.20
+## Jak testować 10.21
 
-1. Zrób **Ctrl+F5**.
-2. XBookmark → **BETA → 10.20 BETA — FRIEND IDENTITY GUARD**.
-3. Otwórz Znajomych i kliknij **ODŚWIEŻ**.
-4. Sprawdź osobę, która wcześniej miała natywną ikonkę telefonu/mobile.
-5. Dodaj jednego znajomego z menu kontekstowego i sprawdź, czy do panelu trafia właściwy nick.
-6. Sprawdź kilka globalnych lokalizacji `rooms[]`.
-7. Dla pewności sprawdź MIX — powinien zachowywać się dokładnie jak w 10.19.
+1. **Ctrl+F5** na CZATerii.
+2. XBookmark → **BETA → 10.21 BETA — HONOUR PATH PROBE**.
+3. Otwórz **Znajomi**.
+4. Kliknij **SKANUJ** w bloku Honour Path Probe.
+5. Odczekaj kilka sekund i kliknij **ODŚWIEŻ** w Radarze.
+6. Sprawdź szczególnie użytkownika mobile, którego wcześniej nie dało się poprawnie zlokalizować.
+7. W razie problemu uruchom `SWIR_BETA1021.diagnostics()` i porównaj `mobile / honour / privs / UID / server rooms`.
 
 ---
 
-**Aktualny układ: Launcher 4.4 • 10.17.2 STABLE • 10.20 BETA FRIEND IDENTITY GUARD • 10.19 writing rollback • 10.17 Friends baseline**
+**Aktualny układ: Launcher 4.5 • 10.17.2 STABLE • 10.21 BETA HONOUR PATH PROBE • 10.20 rollback • 10.19 writing rollback • 10.17 Friends baseline**
