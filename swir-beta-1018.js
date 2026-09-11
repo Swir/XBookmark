@@ -1,5 +1,5 @@
-/* SWIR 10.18 BETA — MIX FIX + ICE DARK TEXT
- * Exact user-confirmed 10.17 Friend Radar + isolated MIX 8/8 single-hook + Ice visibility fix.
+/* SWIR 10.18 BETA — MIX FIX + ICE DARK TEXT — BUILD 2
+ * Exact user-confirmed 10.17 Friend Radar + isolated MIX 8/8 single-hook + latest Ice visibility fix.
  */
 (()=>{try{
 if(window.__SWIR_BETA1018_BOOT)return;window.__SWIR_BETA1018_BOOT=1;
@@ -16,7 +16,7 @@ function paint(){try{const p=document.getElementById('configPanel');if(!p)return
  await add(CDN+selfRef+'/swir-ice-beta-1018.js?v='+Date.now());
  window.SWIR_CLOUD_VERSION='10.18 BETA — MIX FIX + ICE DARK TEXT';
  paint();document.addEventListener('click',e=>{if(e.target?.closest?.('#btnConfig'))setTimeout(paint,30)},true);
- window.SWIR_BETA1018={version:'10.18 BETA',coreRef:EXACT_CORE_REF,selfRef,paint,diagnostics:()=>({friends:window.SWIR_FRIENDS_PRIMARY1017?.diagnostics?.(),mix:window.SWIR_MIX1018?.diagnostics?.(),ice:window.SWIR_ICE1018?.audit?.()})};
- console.log('SWIR 10.18 BETA ready — exact Friends + MIX hook fix + Ice dark text');
+ window.SWIR_BETA1018={version:'10.18 BETA BUILD 2',coreRef:EXACT_CORE_REF,selfRef,paint,diagnostics:()=>({friends:window.SWIR_FRIENDS_PRIMARY1017?.diagnostics?.(),mix:window.SWIR_MIX1018?.diagnostics?.(),ice:window.SWIR_ICE1018?.audit?.()})};
+ console.log('SWIR 10.18 BETA build 2 ready — exact Friends + MIX hook fix + latest Ice dark text');
 })().catch(e=>{console.error('SWIR 10.18 bootstrap',e);alert('SWIR 10.18 BETA: błąd startu. Odśwież stronę i wróć do 10.17 BETA.')});
 }catch(e){console.error('SWIR 10.18 bootstrap',e)}})();
