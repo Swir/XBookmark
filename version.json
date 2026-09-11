@@ -11,12 +11,12 @@
   "stable_file": "swir-stable-10172.js",
   "stable_ref": "82c16fa72b16ce8a83fc496ed3b33f5df665a53a",
   "beta_file": "swir-beta-1018.js",
-  "beta_ref": "ef2d24d0473025871e0b3537bfe5f66a2c0cad31",
+  "beta_ref": "39124e1cfc46a270a1d45a2da6a6b474cd1fc852",
   "friend_core_ref": "627f38c79ca474f53b266c74fa2136c3f4df7c76",
   "beta_overlays": ["swir-writing-beta-1018.js", "swir-ice-beta-1018.js"],
   "friends_policy": "10.18 loads the exact user-confirmed 10.17 APK Exact Rooms Friend Radar without modification",
   "mix_policy": "single authoritative sendMessage hook marked compatible with legacy 10.6; shuffled deck of all 8 native B/I/U combinations",
-  "ice_policy": "no white or near-white message/nick text in Ice; native message data-col 0..11 mapped to dark readable colors; nick DOM remains untouched",
+  "ice_policy": "no white or near-white message/nick text in Ice; native message data-col 0..11 mapped to dark readable colors; full opacity/visibility forced for message and nick text",
   "launcher_policy": "Stable and Beta tabs remain separate; 10.18 is test beta and 10.17 beta stays available as clean comparison baseline",
   "loader": "bookmark-loader.txt"
 }
