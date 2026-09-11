@@ -4,99 +4,113 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 4.2 — **STABLE + BETA**
+- **Launcher:** 4.3 — **STABLE + BETA**
 - **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.18 — MIX FIX + ICE DARK TEXT**
-- **BETA baseline:** **10.17 APK EXACT ROOMS** — zamrożona wersja potwierdzona jako działająca
-- Friend Radar 10.18 korzysta dokładnie z tego samego zamrożonego core 10.17.
+- **BETA:** **10.19 — COLOR-ALIGNED MIX**
+- **BETA rollback:** 10.18
+- **BETA baseline:** **10.17 APK EXACT ROOMS** — zamrożona wersja Friend Radaru potwierdzona jako działająca
 
-## 10.18 BETA
+## 10.19 BETA — dlaczego powstała
 
-Ta wersja służy wyłącznie do testowania dwóch poprawek. Kod Friend Radaru nie jest modyfikowany.
+10.18 nadal nie zmieniała stylów MIX podczas realnego wysyłania. Analiza oryginalnego kodu CZATerii pokazała, że problem nie leżał w polach `bold / italic / underline`.
 
-### MIX 8/8 — single hook
+Natywny `Channel.sendMessage()` buduje pakiet z:
 
-Stary moduł Writing 10.6 posiada własny instalator `sendMessage()`. Poprzednia nakładka MIX mogła zostać ponownie owinięta przez legacy hook i oba mechanizmy zaczynały ze sobą konkurować.
+- `userMessageStyle.isBoldMsg()`,
+- `userMessageStyle.isItalicMsg()`,
+- `userMessageStyle.isUnderlineMsg()`.
 
-10.18:
+Jednocześnie sprawdzone **Kolorowe pisanie** nie patchuje `CHNS.Channel.prototype.sendMessage`. Zamiast tego owija `sendMessage()` **na każdym istniejącym obiekcie pokoju/priva**. Ponieważ Color Writing robi to wcześniej, późniejsza zmiana prototypu mogła zostać całkowicie pominięta przez istniejące kanały.
 
-- wyłącza legacy MIX 10.6,
-- instaluje jeden nadrzędny hook `sendMessage`,
-- oznacza go również jako zgodny z `__swirMix106`, dzięki czemu stary instalator nie owija go ponownie,
-- używa wszystkich 8 natywnych kombinacji B / I / U:
-  1. normalne,
-  2. B,
-  3. I,
-  4. U,
-  5. B+I,
-  6. B+U,
-  7. I+U,
-  8. B+I+U,
-- wszystkie 8 kombinacji występuje przed ponownym tasowaniem,
-- ręczny styl jest przywracany po wysłaniu wiadomości.
+### MIX 10.19
 
-Diagnostyka MIX:
+10.19 kopiuje architekturę działającego Color Writing:
+
+1. pobiera aktualny kanał oraz wszystkie obiekty z `CHNS.channelManager.channels`,
+2. owija `sendMessage()` bezpośrednio na każdym pokoju/privie,
+3. przed wywołaniem istniejącego wrappera ustawia tymczasowo B/I/U,
+4. istniejący Color Writing nadal może ustawić `msgColorId`,
+5. natywny klient odczytuje jednocześnie kolor oraz B/I/U,
+6. po synchronicznym wysłaniu poprzedni ręczny styl zostaje przywrócony.
+
+MIX nadal wykorzystuje pełną losową talię 8/8:
+
+- normalne,
+- B,
+- I,
+- U,
+- B+I,
+- B+U,
+- I+U,
+- B+I+U.
+
+Wszystkie osiem stylów jest używanych przed ponownym tasowaniem, bez powtórzenia tego samego stylu na granicy talii.
+
+### Kolorowe pisanie — porządek w UI
+
+W 10.19 zakładka **Kolorowe pisanie** zawiera tylko ustawienia koloru.
+
+Stary blok **„Styl wiadomości”** z B/I/U jest ukryty. Style wiadomości należą teraz wyłącznie do zakładki **MIX pisania**. Blok jest ukrywany CSS-em zamiast ciągłego kasowania DOM, aby nie walczyć z obserwatorem legacy 10.6, który próbowałby go odtwarzać.
+
+### Diagnostyka MIX 10.19
 
 ```javascript
-SWIR_MIX1018?.diagnostics?.()
+SWIR_MIX1019?.diagnostics?.()
 ```
 
-Pole `hooked` powinno mieć wartość `true`. `sendCount` zwiększa się po wiadomościach wysłanych z aktywnym MIX-em.
+Najważniejsze pola:
 
-### ICE — DARK TEXT
+- `enabled` — MIX włączony,
+- `channels` — wykryte pokoje/privy,
+- `wrapped` — ile kanałów ma realny wrapper 10.19,
+- `next` — następny styl,
+- `sendCount` — liczba wiadomości rzeczywiście wysłanych przez MIX.
 
-10.18 korzysta z prawdziwego elementu wiadomości CZATerii `.m-msg-item-user-message` i natywnego `data-col="0..11"`.
+Przy normalnej pracy `wrapped` powinno być równe `channels`, a `sendCount` powinien rosnąć po wysłaniu wiadomości.
 
-Zasada motywu Ice w tej becie:
+## ICE
 
-- **brak białego lub prawie białego tekstu wiadomości**,
-- **brak białych lub prawie białych nicków**,
-- 12 kolorów wiadomości jest mapowanych na ciemne, kontrastowe kolory,
-- dzieci wiadomości dziedziczą kolor rodzica zamiast wracać do bieli,
-- nicki dostają ciemną paletę wyłącznie wizualnie; tekst i struktura nicka nie są zmieniane,
-- po wyjściu z Ice poprzedni kolor nicka jest przywracany,
-- listy użytkowników, pola tekstowe i panel MOD mają kontrast odpowiedni do jasnego tła.
+10.19 zachowuje poprawkę **ICE DARK TEXT** z 10.18:
 
-Diagnostyka Ice:
+- brak białych/prawie białych nicków,
+- brak białego/prawie białego tekstu wiadomości,
+- ciemne, czytelne mapowanie natywnych `data-col="0..11"`,
+- pełne `opacity:1` i `visibility:visible` dla tekstu wiadomości i nicków.
+
+Diagnostyka:
 
 ```javascript
 SWIR_ICE1018?.audit?.()
 ```
 
-Najważniejsze pola to `whiteMessages` oraz `whiteNicks` — celem jest `0` i `0`.
+Celem jest `whiteMessages: 0` i `whiteNicks: 0`.
 
 ## Friend Radar — bez zmian
 
-10.18 ładuje dokładnie zamrożony, potwierdzony stan:
+10.19 nadal ładuje dokładnie zamrożony Friend Radar 10.17 z commita:
 
 `627f38c79ca474f53b266c74fa2136c3f4df7c76`
 
-Mechanizm pozostaje:
+Mechanizm Znajomych nie został zmieniony.
 
-`code 8 / subcode 4 + userId + username + isFriend=true`
+## Launcher 4.3
 
-oraz:
+- **STABLE** — bez zmian,
+- **BETA 10.19** — bieżący test MIX,
+- **BETA 10.18** — rollback,
+- **BETA 10.17** — czysta baza Friend Radar do porównania.
 
-`code 85 → code 159 → users[].rooms[]`
+## Jak testować 10.19
 
-## Launcher 4.2
-
-Launcher ma dwie zakładki:
-
-- **STABLE** — 10.17.2 Recommended + rollbacki,
-- **BETA** — 10.18 MIX FIX + ICE DARK TEXT oraz czysta 10.17 APK EXACT ROOMS do porównania.
-
-## Jak testować 10.18
-
-1. Zrób **Ctrl+F5** na CZATerii.
-2. Uruchom XBookmark.
-3. Wybierz **BETA → 10.18 BETA — MIX FIX + ICE DARK TEXT**.
-4. Otwórz MIX, włącz go i wyślij kilka wiadomości — powinny zmieniać B/I/U według talii 8/8.
-5. Włącz **Ice Light** i sprawdź nicki oraz tekst wiadomości — nie powinien być biały.
-6. Sprawdź Znajomych — mają działać identycznie jak w czystej 10.17 Beta.
-
-Jeżeli chcesz porównać sam Friend Radar bez nakładek, wybierz **BETA → 10.17 BETA — APK EXACT ROOMS**.
+1. **Ctrl+F5** na CZATerii.
+2. XBookmark → **BETA → 10.19 BETA — COLOR-ALIGNED MIX**.
+3. Otwórz **Kolorowe pisanie** — blok „Styl wiadomości” nie powinien być widoczny.
+4. Ustaw np. tryb kolorów Rainbow albo Random.
+5. Otwórz **MIX pisania**, włącz MIX 8/8.
+6. Wyślij kilka zwykłych wiadomości. Kolor i B/I/U powinny działać jednocześnie.
+7. Sprawdź `SWIR_MIX1019.diagnostics()` — `wrapped === channels`, a `sendCount` powinien rosnąć.
+8. Sprawdź Znajomych — powinny działać identycznie jak w 10.17 Beta.
 
 ---
 
-**Aktualny układ: Launcher 4.2 • 10.17.2 STABLE • 10.18 BETA MIX FIX + ICE DARK TEXT • 10.17 BETA baseline**
+**Aktualny układ: Launcher 4.3 • 10.17.2 STABLE • 10.19 BETA COLOR-ALIGNED MIX • 10.18 rollback • 10.17 baseline**
