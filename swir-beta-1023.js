@@ -1,5 +1,5 @@
 /* SWIR 10.23 BETA — QUEUE WATCH
- * Frozen 10.6 UI + 10.22 ACK core + bounded queue retries/diagnostics
+ * Frozen 10.6 UI + 10.22 ACK core + bounded quiet queue retries/diagnostics
  * + clean Friends panel + confirmed 10.19 MIX + ICE. STABLE untouched.
  */
 (()=>{try{
