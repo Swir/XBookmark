@@ -1,12 +1,12 @@
 {
-  "launcher": "2.8",
+  "launcher": "2.9",
   "recommended": "9.9.2",
   "beta": "10.11-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
-  "architecture": "10.11 BETA = exact frozen 10.6 beta with no 10.10 overlays. It is a control build to restore and verify MOD interactivity before fixes are reintroduced one by one.",
+  "architecture": "10.11 BETA = frozen 10.6 beta plus one isolated phone-badge cleanup. No 10.10 writing, Ice or reply overlays are loaded and Friends remain unchanged.",
   "versions": [
-    {"id":"10.11-beta","channel":"beta","label":"10.11 BETA — UI SAFE CONTROL","ref":"self","file":"swir-beta-1011.js","notes":"Exact frozen 10.6 only. No 10.10 reply, writing or Ice overlays are loaded. Purpose: verify that the MOD panel is fully clickable again before reintroducing changes individually."},
+    {"id":"10.11-beta","channel":"beta","label":"10.11 BETA — UI SAFE + PHONE CLEAN","ref":"self","file":"swir-beta-1011.js","notes":"Frozen 10.6 plus only swir-phone-clean-1011.js. Removes SWIR-injected phone badges from native message nick elements without touching message content. No MIX, Ice or Friends changes are introduced here."},
     {"id":"10.10-beta","channel":"beta","label":"10.10 BETA — FIX PACK PAUSED","ref":"5295c9f5288fe57c7f53b6f5e2bc020f517096c5","file":"swir-beta-1010.js","notes":"Paused after MOD interactivity regression. Do not use as the current development base."},
     {"id":"10.9-beta","channel":"beta","label":"10.9 BETA — FRIENDS CLEAN","ref":"e6096fcf8ad42678bad830f1c6b9c760ae3557f9","file":"swir-beta-109.js","notes":"Control build using exact frozen 9.9.2 with untouched Friend Radar."},
     {"id":"10.8-beta","channel":"beta","label":"10.8 BETA — ROLLBACK BRIDGE","ref":"dad80be780ef2ac532ef8cc6a34b619600b69cc8","file":"swir-beta-108.js","notes":"Rollback of the Friends bridge experiment."},
