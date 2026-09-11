@@ -4,87 +4,83 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 3.3
-- **BETA:** 10.15 — GLOBAL ROOMS
+- **Launcher:** 3.4
+- **BETA:** 10.16 — ROOMS ONLY
 - **STABLE / recommended:** 9.9.2
-- **10.14:** rollback Nick Integrity + Friends Core
+- **10.15:** rollback Global Rooms
 - **10.12:** BROKEN / PAUSED
 - **10.6:** zamrożona baza UI / nicków / pisania
 
-## Cel 10.15 — GLOBAL ROOMS
+## Cel 10.16 — ROOMS ONLY
 
-Najważniejsza zasada tej wersji: status **mobile/APKA lub PC nie zmienia sposobu obsługi znajomego**.
+Panel Znajomych odpowiada teraz tylko na jedno pytanie: **na jakich pokojach znajduje się znajomy?**
 
-Każdy lokalny znajomy z poznanym `userId` przechodzi tą samą normalną ścieżką protokołu:
+Usunęliśmy z widoku mylące oznaczenia `APP`, `PC`, `SWIR` oraz status mobile/telefon. Nie mają one wpływu na sposób synchronizacji i nie są potrzebne do odczytu lokalizacji.
 
-`code 8 / subcode 4` → `code 85` → `code 159` → `rooms[]`
+Dla każdego znajomego:
 
-To właśnie `rooms[]` z odpowiedzi serwera jest źródłem globalnej lokalizacji znajomego.
+- najpierw preferujemy pełne dane serwerowe z `code 159 → rooms[]`,
+- jeśli pełnego rekordu serwerowego jeszcze nie ma, pokazujemy wyłącznie pokoje faktycznie widziane przez otwarte połączenia/cache,
+- w tle Global Rooms Core nadal próbuje zsynchronizować znajomego normalną ścieżką `code 8 / subcode 4 → code 85 → code 159`,
+- jeśli serwer zwróci kilka pokoi, pokazujemy wszystkie,
+- jeśli serwer zwróci jeden pokój, pokazujemy jeden — SWIR nie dopisuje lokalizacji, których serwer nie podał.
 
-### Dlaczego wcześniejsze wersje myliły sytuację
+## Dlaczego poprzedni panel był mylący
 
-Oryginalny czat sam oznacza, czy użytkownik korzysta z aplikacji/mobile. To jest tylko informacja o kliencie użytkownika.
+Friend Radar 9.7 używał badge `APP` jako oznaczenia **rekordu z serwerowej listy znajomych**, a nie jako informacji o tym, czy dana osoba faktycznie korzysta z aplikacji mobilnej. Jednocześnie `PC` oznaczało lokalną obserwację pokoju. Przez to panel wyglądał tak, jakby status urządzenia był odwrócony.
 
-SWIR miał drugi, niezależny stan: czy dany nick znajduje się już na **serwerowej liście znajomych**. Jeśli nick był tylko lokalnym `SWIR`, Radar znał głównie pokoje, które nasz klient sam aktualnie widział. Dlatego osoba mobile mogła wyglądać tak, jakby znajdowała się wyłącznie w pokoju, w którym jesteśmy razem.
-
-10.15 próbuje doprowadzić każdego znanego znajomego — również mobile — do potwierdzonego stanu serwerowego. Dopiero wtedy Radar korzysta z `159.rooms[]`.
-
-### Ważne ograniczenie
-
-SWIR pokazuje **dokładnie te pokoje, które serwer zwróci w `rooms[]`**. Nie używamy uprzywilejowanego `whereIsUser` i nie obchodzimy ograniczeń serwera. Jeśli serwer zwróci kilka pokoi — pokażemy wszystkie. Jeśli dla konkretnej osoby zwróci jeden — SWIR nie wymyśla pozostałych.
+10.16 usuwa całe to rozróżnienie z interfejsu.
 
 ## Nick Integrity
 
-10.15 zachowuje poprawkę z 10.14:
+10.16 zachowuje poprawkę z 10.14:
 
 - natywny nick w rozmowie ma czysty tekst `Nick:`,
 - brak SWIR-owych telefonów, emoji i badge wewnątrz elementu nicka,
-- kolor może być poprawiany tylko CSS-em,
-- kliknięcie nicka ma pozostać kompatybilne z oryginalnym klientem CZATerii.
+- kolor nicka może być poprawiany tylko CSS-em,
+- kliknięcie nicka pozostaje kompatybilne z oryginalnym klientem CZATerii.
 
 ## Jak testować
 
 1. Wykonaj **Ctrl+F5** na CZATerii.
 2. Uruchom XBookmark.
-3. Wybierz **BETA → 10.15 BETA — GLOBAL ROOMS**.
+3. Wybierz **BETA → 10.16 BETA — ROOMS ONLY**.
 4. Otwórz panel Znajomi.
-5. Sprawdź osoby oznaczone przez oryginalny czat jako mobile/APKA, które wcześniej były tylko `SWIR`.
+5. Kliknij **ODŚWIEŻ** i odczekaj kilka sekund.
 
-Po synchronizacji powinny pojawić się w serwerowym stanie i Radar powinien używać ich `rooms[]`.
+Panel powinien pokazywać tylko nick oraz:
+
+- `Pokoje: ...` — gdy mamy pełne `159.rooms[]`,
+- `Widoczny teraz: ...` — gdy mamy tylko lokalną obserwację,
+- `Brak aktualnej lokalizacji — czekam na dane serwera` — gdy nie mamy jeszcze żadnych danych.
 
 ## Diagnostyka
 
 ```javascript
+SWIR_ROOMS_PANEL1016?.diagnostics?.()
 SWIR_FRIENDS_GLOBAL1015?.diagnostics?.()
 SWIR_FRIENDS_GLOBAL1015?.jobs?.()
-```
-
-Dla konkretnego testu najważniejsze są pola `state`, `attempts` i `rooms`.
-
-Ręczne uruchomienie synchronizacji wszystkich znanych lokalnych znajomych:
-
-```javascript
-SWIR_FRIENDS_GLOBAL1015?.syncAll?.()
 ```
 
 ## Kanały
 
 | Wersja | Status | Opis |
 |---|---|---|
-| 10.15 | CURRENT BETA | Global Rooms: wszyscy znajomi, także mobile, przez 8/4 → 85 → 159 |
+| 10.16 | CURRENT BETA | Rooms Only: nick → pokoje, bez APP/PC/SWIR/mobile |
+| 10.15 | ROLLBACK | Global Rooms Core + stary panel 9.7 |
 | 10.14 | ROLLBACK | Nick Integrity + Friends Core |
 | 10.13 | ROLLBACK | Clean Recovery |
 | 10.12 | BROKEN / PAUSED | regresja UI |
 | 10.11 | ROLLBACK | UI Safe + Phone Clean |
 | 10.10 | PAUSED | regresja klikalności MOD |
 | 10.9 | ROLLBACK | Friends Clean |
-| 10.6 | FROZEN | baza 10.15 |
+| 10.6 | FROZEN | baza 10.16 |
 | 9.9.2 | STABLE RECOMMENDED | sprawdzona wersja stabilna |
 
 ## Bezpieczeństwo
 
-SWIR nie nadaje uprawnień administratora, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów CZATerii. Globalne pokoje pochodzą wyłącznie z normalnego mechanizmu znajomych `85 → 159`.
+SWIR nie nadaje uprawnień administratora i nie używa uprzywilejowanego `whereIsUser`. Globalne pokoje pochodzą z normalnego mechanizmu znajomych `85 → 159`.
 
 ---
 
-**Aktualny układ: Launcher 3.3 • 10.15 BETA GLOBAL ROOMS • 9.9.2 STABLE RECOMMENDED**
+**Aktualny układ: Launcher 3.4 • 10.16 BETA ROOMS ONLY • 9.9.2 STABLE RECOMMENDED**
