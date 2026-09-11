@@ -7,7 +7,7 @@
 if(window.__SWIR_CLEAN_RECOVERY1013)return;window.__SWIR_CLEAN_RECOVERY1013=1;
 const MSG_NICK='[id^="m-messages_"] .m-msg-item-user-login';
 const SWIR_BADGES='.swir-mobile-99,.swir-mobile-98,.swir-mobile-97,[data-swir-mobile-badge],[class*="swir-mobile"]';
-const PHONE_TEST=/[📱📲☎️☎]/u,PHONE_RE=/[📱📲☎️☎]/gu;
+const PHONE_TEST=/(?:📱|📲|☎️?)/u,PHONE_RE=/(?:📱|📲|☎️?)/gu;
 let removed=0;
 try{localStorage.removeItem('swir_friend_reliability_1012')}catch(e){}
 function hasPhone(s){return PHONE_TEST.test(String(s||''))}
