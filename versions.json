@@ -1,12 +1,13 @@
 {
-  "launcher": "3.3",
+  "launcher": "3.4",
   "recommended": "9.9.2",
-  "beta": "10.15-beta",
+  "beta": "10.16-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE zawiera tylko wersje potwierdzone w testach. Nowe funkcje i poprawki najpierw trafiają do BETA.",
-  "architecture": "10.15 BETA = frozen 10.6 + Nick Integrity + Global Rooms Core. Mobile/PC status does not change synchronization. Global rooms come from code 159 rooms[].",
+  "architecture": "10.16 BETA = frozen 10.6 + Nick Integrity + Global Rooms Core + Rooms Only panel. Friends UI shows only nick and rooms; no APP/PC/SWIR/mobile labels.",
   "versions": [
-    {"id":"10.15-beta","channel":"beta","label":"10.15 BETA — GLOBAL ROOMS","ref":"self","file":"swir-beta-1015.js","notes":"Current beta. Every local friend with known userId, including users marked mobile/APKA by the original chat, is synchronized through the same normal friend path: code 8/subcode 4, then code 85 and code 159 confirmation. Location is read from server-provided rooms[]. No Friends panel rebuilding and no emoji/phone injection into native nick/message DOM."},
+    {"id":"10.16-beta","channel":"beta","label":"10.16 BETA — ROOMS ONLY","ref":"self","file":"swir-beta-1016.js","notes":"Current beta. Replaces the misleading Friend Radar presentation with a rooms-only panel. Preferred location source is server code 159 rooms[]. While server synchronization is pending, only actually observed rooms from open connections/cache are shown. No APP, PC, SWIR or mobile badges are displayed."},
+    {"id":"10.15-beta","channel":"beta","label":"10.15 BETA — GLOBAL ROOMS ROLLBACK","ref":"e8e56f127b6a6478171af3c5eed79ebd593e245b","file":"swir-beta-1015.js","notes":"Rollback of Global Rooms core with the old 9.7 panel presentation."},
     {"id":"10.14-beta","channel":"beta","label":"10.14 BETA — NICK INTEGRITY + FRIENDS CORE","ref":"6b14d7b5cd03b889a4209ae066da20a71f0a2abf","file":"swir-beta-1014.js","notes":"Rollback. Clean native nick structure plus background Friends Core."},
     {"id":"10.13-beta","channel":"beta","label":"10.13 BETA — CLEAN RECOVERY","ref":"2ffa29ee9d5a52484a3b938103728a013e2d774c","file":"swir-beta-1013.js","notes":"Rollback clean-recovery build."},
     {"id":"10.12-beta","channel":"beta","label":"10.12 BETA — BROKEN / PAUSED","ref":"237754b0149bccf8d12c46526c4a74b234c27170","file":"swir-beta-1012.js","notes":"Paused after UI regression."},
