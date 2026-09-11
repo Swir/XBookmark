@@ -4,97 +4,87 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 3.2
-- **BETA:** 10.14 — NICK INTEGRITY + FRIENDS CORE
+- **Launcher:** 3.3
+- **BETA:** 10.15 — GLOBAL ROOMS
 - **STABLE / recommended:** 9.9.2
-- **10.13:** rollback CLEAN RECOVERY
+- **10.14:** rollback Nick Integrity + Friends Core
 - **10.12:** BROKEN / PAUSED
 - **10.6:** zamrożona baza UI / nicków / pisania
-- **10.0:** zamrożony punkt odniesienia dla Znajomych
 
-## Co naprawia 10.14
+## Cel 10.15 — GLOBAL ROOMS
 
-### Nick Integrity
+Najważniejsza zasada tej wersji: status **mobile/APKA lub PC nie zmienia sposobu obsługi znajomego**.
 
-CZATeria rozpoznaje nick z wiadomości bardzo restrykcyjnie. Oryginalny klient oczekuje elementu z dokładną klasą `m-msg-item-user-login` i tekstem w postaci `Nick:`. Dodatkowe dzieci, badge lub emoji mogą zepsuć rozpoznanie i wywołać komunikat, że użytkownik opuścił pokój.
+Każdy lokalny znajomy z poznanym `userId` przechodzi tą samą normalną ścieżką protokołu:
 
-10.14 przed kliknięciem i prawym kliknięciem normalizuje nick do natywnej postaci:
+`code 8 / subcode 4` → `code 85` → `code 159` → `rooms[]`
 
-- dokładna klasa `m-msg-item-user-login`,
-- czysty tekst `Nick: `,
-- brak SWIR-owych emoji, telefonów i badge wewnątrz nicka,
-- kolor nicka może być poprawiany wyłącznie przez CSS — bez zmiany tekstu i struktury DOM.
+To właśnie `rooms[]` z odpowiedzi serwera jest źródłem globalnej lokalizacji znajomego.
 
-### Friends Core
+### Dlaczego wcześniejsze wersje myliły sytuację
 
-10.14 nie przebudowuje panelu Znajomych i nie dodaje do niego żadnych nowych statusów ani ikon. Naprawa działa w tle:
+Oryginalny czat sam oznacza, czy użytkownik korzysta z aplikacji/mobile. To jest tylko informacja o kliencie użytkownika.
 
-- używa tylko połączeń z otwartym WebSocketem,
-- synchronizacja działa jako `code 8 / subcode 4`,
-- stan APP jest odświeżany przez `code 85`,
-- potwierdzenie następuje dopiero po `code 159`,
-- niepotwierdzone operacje są ponawiane maksymalnie kilka razy,
-- panel Friend Radar pozostaje wizualnie taki sam jak w bazie 10.6.
+SWIR miał drugi, niezależny stan: czy dany nick znajduje się już na **serwerowej liście znajomych**. Jeśli nick był tylko lokalnym `SWIR`, Radar znał głównie pokoje, które nasz klient sam aktualnie widział. Dlatego osoba mobile mogła wyglądać tak, jakby znajdowała się wyłącznie w pokoju, w którym jesteśmy razem.
 
-## Jak używać
+10.15 próbuje doprowadzić każdego znanego znajomego — również mobile — do potwierdzonego stanu serwerowego. Dopiero wtedy Radar korzysta z `159.rooms[]`.
 
-1. Otwórz `bookmark-loader.txt`.
-2. Skopiuj linię `javascript:...` do adresu zakładki w Chrome/Edge.
-3. Wejdź na CZATerię i wykonaj pełne odświeżenie strony.
-4. Kliknij zakładkę XBookmark.
-5. Wybierz **BETA → 10.14 BETA — NICK INTEGRITY + FRIENDS CORE**.
+### Ważne ograniczenie
 
-Przy przechodzeniu z wcześniejszej bety wykonaj **Ctrl+F5**, aby stare timery i skrypty nie pozostały w pamięci strony.
+SWIR pokazuje **dokładnie te pokoje, które serwer zwróci w `rooms[]`**. Nie używamy uprzywilejowanego `whereIsUser` i nie obchodzimy ograniczeń serwera. Jeśli serwer zwróci kilka pokoi — pokażemy wszystkie. Jeśli dla konkretnej osoby zwróci jeden — SWIR nie wymyśla pozostałych.
+
+## Nick Integrity
+
+10.15 zachowuje poprawkę z 10.14:
+
+- natywny nick w rozmowie ma czysty tekst `Nick:`,
+- brak SWIR-owych telefonów, emoji i badge wewnątrz elementu nicka,
+- kolor może być poprawiany tylko CSS-em,
+- kliknięcie nicka ma pozostać kompatybilne z oryginalnym klientem CZATerii.
+
+## Jak testować
+
+1. Wykonaj **Ctrl+F5** na CZATerii.
+2. Uruchom XBookmark.
+3. Wybierz **BETA → 10.15 BETA — GLOBAL ROOMS**.
+4. Otwórz panel Znajomi.
+5. Sprawdź osoby oznaczone przez oryginalny czat jako mobile/APKA, które wcześniej były tylko `SWIR`.
+
+Po synchronizacji powinny pojawić się w serwerowym stanie i Radar powinien używać ich `rooms[]`.
+
+## Diagnostyka
+
+```javascript
+SWIR_FRIENDS_GLOBAL1015?.diagnostics?.()
+SWIR_FRIENDS_GLOBAL1015?.jobs?.()
+```
+
+Dla konkretnego testu najważniejsze są pola `state`, `attempts` i `rooms`.
+
+Ręczne uruchomienie synchronizacji wszystkich znanych lokalnych znajomych:
+
+```javascript
+SWIR_FRIENDS_GLOBAL1015?.syncAll?.()
+```
 
 ## Kanały
 
 | Wersja | Status | Opis |
 |---|---|---|
-| 10.14 | CURRENT BETA | Nick Integrity + Friends Core |
+| 10.15 | CURRENT BETA | Global Rooms: wszyscy znajomi, także mobile, przez 8/4 → 85 → 159 |
+| 10.14 | ROLLBACK | Nick Integrity + Friends Core |
 | 10.13 | ROLLBACK | Clean Recovery |
-| 10.12 | BROKEN / PAUSED | mruganie i regresja panelu Znajomych |
+| 10.12 | BROKEN / PAUSED | regresja UI |
 | 10.11 | ROLLBACK | UI Safe + Phone Clean |
 | 10.10 | PAUSED | regresja klikalności MOD |
-| 10.9 | ROLLBACK | Friends Clean control |
-| 10.6 | FROZEN | baza 10.14 |
-| 10.0 | FROZEN | punkt odniesienia Friends |
+| 10.9 | ROLLBACK | Friends Clean |
+| 10.6 | FROZEN | baza 10.15 |
 | 9.9.2 | STABLE RECOMMENDED | sprawdzona wersja stabilna |
-
-## Diagnostyka 10.14
-
-Nicki:
-
-```javascript
-SWIR_NICK_INTEGRITY1014?.diagnostics?.()
-```
-
-Pole `badNativeShape` powinno wynosić `0`.
-
-Znajomi:
-
-```javascript
-SWIR_FRIENDS_CORE1014?.diagnostics?.()
-SWIR_FRIENDS_CORE1014?.jobs?.()
-```
-
-Ręczna synchronizacja znanych znajomych PC/SWIR:
-
-```javascript
-SWIR_FRIENDS_CORE1014?.syncMissing?.()
-```
-
-## Zamrożone referencje
-
-- 10.13: `2ffa29ee9d5a52484a3b938103728a013e2d774c`
-- 10.12: `237754b0149bccf8d12c46526c4a74b234c27170`
-- 10.6: `9f6124e32f6a50520f4e9da6c7d504b4dc91d163`
-- 10.0: `0ed4f9710a435444b8299a03cf6181785c3c66e6`
-- 9.9.2: `c16d6ec57b9063cd9c731f501e5c0cc14adb5c60`
 
 ## Bezpieczeństwo
 
-SWIR nie nadaje uprawnień administratora, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów CZATerii.
+SWIR nie nadaje uprawnień administratora, nie omija CAPTCHA, antyspamu, banów ani serwerowych filtrów CZATerii. Globalne pokoje pochodzą wyłącznie z normalnego mechanizmu znajomych `85 → 159`.
 
 ---
 
-**Aktualny układ: Launcher 3.2 • 10.14 BETA • 9.9.2 STABLE RECOMMENDED**
+**Aktualny układ: Launcher 3.3 • 10.15 BETA GLOBAL ROOMS • 9.9.2 STABLE RECOMMENDED**
