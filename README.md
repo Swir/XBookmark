@@ -4,95 +4,105 @@ Centralne repozytorium bookmarka **SWIR dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 3.6
-- **BETA:** 10.17 — APK EXACT ROOMS
-- **STABLE / recommended:** 9.9.2
-- **10.16:** rollback Rooms Only
-- **10.12:** BROKEN / PAUSED
-- **10.6:** zamrożona baza UI / nicków / pisania
+- **Launcher:** 4.0 — STABLE ONLY
+- **STABLE / recommended:** **10.17.1**
+- Publiczny launcher nie pokazuje już kanału BETA.
+- Starsze buildy beta pozostają wyłącznie w historii/repo jako zaplecze techniczne do rollbacku i analizy.
 
-## Cel 10.17 — APK EXACT ROOMS
+## SWIR 10.17.1 STABLE
 
-Friend Radar ma odpowiadać tylko na jedno pytanie: **na jakich pokojach znajduje się znajomy?**
+10.17.1 powstała z działającej 10.17 APK EXACT ROOMS i zachowuje poprawiony Friend Radar bez zmian w jego działającym protokole.
 
-10.17 została poprawiona po bezpośredniej analizie oryginalnego Android APK CZATeria 2.6.3. Potwierdziliśmy format dodawania znajomego:
+### Friend Radar — APK EXACT
+
+Friend Radar odpowiada na jedno pytanie: **na jakich pokojach znajduje się znajomy?**
+
+Mechanizm został odwzorowany po analizie oryginalnego Android APK CZATeria 2.6.3:
 
 `code 8 / subcode 4 + userId + username + isFriend=true`
 
-oraz globalny snapshot znajomych:
+oraz:
 
 `code 85 → code 159 → users[].rooms[]`
 
-### Co 10.17 robi teraz tak jak APK
+- UID nowej relacji pochodzi z aktualnego `UserData/UserCard`, a nie ze starego, nieograniczonego cache.
+- Pakiety idą przez pierwsze otwarte połączenie sesji.
+- Globalne pokoje są uznawane dopiero po świeżym `159` w bieżącej sesji.
+- Panel pokazuje tylko lokalizację: `Pokoje: ...` albo lokalny fallback `Widoczny teraz: ...`.
+- Brak statusów `APP`, `PC`, `SWIR` i brak telefonów/emoji dodawanych do nicków.
+- Panel nie jest cyklicznie przebudowywany, więc nie powinien mrugać.
 
-- ID znajomego najpierw bierze ze świeżego `159`, jeśli relacja już istnieje.
-- Dla nowej relacji bierze aktualny UID z `UserData/UserCard` osoby widzianej w otwartym pokoju lub privie.
-- Stary cache może być użyty tylko krótko i tylko z zaufanego źródła; nie wysyłamy wielokrotnie starego ID w ciemno.
-- `8/4` i `85` idą przez pierwsze otwarte połączenie sesji, co odpowiada wyborowi pierwszego połączenia `NORMAL` w aplikacji Android.
-- Wysyłka następuje tylko przy `WebSocket.readyState === OPEN`.
-- Po starcie kasowany jest stary snapshot 10.17; globalne pokoje są uznawane dopiero po **świeżej odpowiedzi 159 w bieżącej sesji**.
-- Stary Radar 9.7 nie może równolegle wysyłać konkurencyjnych `8/4` i `85`.
+## MIX pisania 8/8
 
-## Panel Znajomi
+MIX korzysta z pełnego zestawu natywnych kombinacji `msgIsBold / msgIsItalic / msgIsUnderline`:
 
-Panel nie pokazuje już statusów `APP`, `PC`, `SWIR` ani telefonu. Typ urządzenia nie ma znaczenia dla Radaru.
+1. Normalne
+2. Pogrubione — B
+3. Kursywa — I
+4. Podkreślone — U
+5. Pogrubione + kursywa — B+I
+6. Pogrubione + podkreślone — B+U
+7. Kursywa + podkreślone — I+U
+8. Pogrubione + kursywa + podkreślone — B+I+U
 
-Dla znajomego wyświetlane jest:
+MIX działa jak **losowa talia 8 stylów**: każda kombinacja występuje raz przed kolejnym przetasowaniem. Pierwszy styl nowej talii nie może być taki sam jak ostatni poprzedniej, więc nie ma natychmiastowego powtórzenia na granicy talii. Ręczny styl użytkownika jest przywracany po wysłaniu wiadomości.
 
-- `Pokoje: ...` — świeże serwerowe `159.rooms[]`,
-- `Widoczny teraz: ...` — tylko pokój faktycznie widziany przez bieżącego klienta, gdy nie mamy jeszcze wyniku serwerowego,
-- informacja o oczekiwaniu na ID/serwer, jeśli danych jeszcze nie ma.
+## ICE Color Rework
 
-Panel nie jest już przebudowywany cyklicznie co kilka sekund, więc nie powinien mrugać.
+Motyw **Ice Light** został przebudowany, ponieważ poprzednia wersja była zbyt biała i elementy zlewały się ze sobą.
+
+10.17.1 dodaje:
+
+- niebieskie nagłówki i aktywne zakładki,
+- oddzielone kolorystycznie panele i listy,
+- kontrastowe pola tekstowe i przyciski,
+- kolorowy Friend Radar,
+- naprzemienne delikatne tła w listach,
+- przywrócone czytelne mapowanie **12 kolorów wiadomości** zamiast wymuszania jednego koloru na całym czacie.
 
 ## Nick Integrity
 
-10.17 zachowuje poprawkę 10.14:
+- Natywny nick w rozmowie pozostaje czystym `Nick:`.
+- SWIR nie dodaje telefonu ani emoji do elementu nicka.
+- Kolor nicka jest modyfikowany wyłącznie wizualnie przez CSS.
+- Klikanie nicków pozostaje kompatybilne z oryginalnym klientem CZATerii.
 
-- natywny nick w rozmowie pozostaje czystym `Nick:`,
-- brak telefonów, emoji i badge dodawanych przez SWIR do nicka,
-- kolor zmieniany jest wyłącznie CSS-em,
-- kliknięcie nicka pozostaje zgodne z oryginalnym klientem CZATerii.
-
-## Jak testować
+## Jak uruchomić
 
 1. Zrób **Ctrl+F5** na CZATerii.
 2. Uruchom XBookmark.
-3. Wybierz **BETA → 10.17 BETA — APK EXACT ROOMS**.
-4. Otwórz **Znajomi** i kliknij **ODŚWIEŻ**.
-5. Najważniejszy test: osoba korzystająca z aplikacji mobilnej, którą widzisz w pokoju. Po zdobyciu jej aktualnego UID SWIR wysyła oficjalny `8/4`, a następnie weryfikuje relację przez `85 → 159`.
+3. W Launcherze 4.0 wybierz **SWIR 10.17.1 — RECOMMENDED**.
 
 ## Diagnostyka
+
+Friend Radar:
 
 ```javascript
 SWIR_FRIENDS_PRIMARY1017?.diagnostics?.()
 SWIR_FRIENDS_PRIMARY1017?.jobs?.()
-SWIR_FRIENDS_PRIMARY1017?.resolveId?.("NICK")
 SWIR_ROOMS_PANEL1017?.diagnostics?.()
 ```
 
-Najważniejsze pola to `idSource`, `state`, `attempts`, `serverFresh` i `rooms`.
+MIX:
 
-## Kanały
+```javascript
+SWIR_MIX_STABLE10171?.deck?.()
+SWIR_MIX_STABLE10171?.next?.()
+```
+
+## Publiczne wersje
 
 | Wersja | Status | Opis |
 |---|---|---|
-| 10.17 | CURRENT BETA | APK Exact Rooms: APK-owy UID/transport + świeże 159.rooms[] |
-| 10.16 | ROLLBACK | Rooms Only + Global Rooms Core 10.15 |
-| 10.15 | ROLLBACK | Global Rooms Core + stary panel 9.7 |
-| 10.14 | ROLLBACK | Nick Integrity + Friends Core |
-| 10.13 | ROLLBACK | Clean Recovery |
-| 10.12 | BROKEN / PAUSED | regresja UI |
-| 10.11 | ROLLBACK | UI Safe + Phone Clean |
-| 10.10 | PAUSED | regresja klikalności MOD |
-| 10.9 | ROLLBACK | Friends Clean |
-| 10.6 | FROZEN | baza 10.17 |
-| 9.9.2 | STABLE RECOMMENDED | sprawdzona wersja stabilna |
+| **10.17.1** | **STABLE RECOMMENDED** | APK Exact Rooms + MIX 8/8 + ICE Color Rework |
+| 9.9.2 | ROLLBACK | poprzedni recommended Stable |
+| 9.9.1 | ROLLBACK | starszy Stable |
+| 9.9 / 9.8 / 9.7 / 9.6 | ARCHIVE | historyczne wersje stabilne |
 
 ## Bezpieczeństwo
 
-SWIR nie nadaje uprawnień administratora i nie używa uprzywilejowanego `whereIsUser`. Globalne pokoje pochodzą wyłącznie z normalnego mechanizmu znajomych `85 → 159`.
+SWIR nie nadaje uprawnień administratora i nie używa uprzywilejowanego `whereIsUser`. Globalne pokoje pochodzą z normalnego mechanizmu znajomych `85 → 159`.
 
 ---
 
-**Aktualny układ: Launcher 3.6 • 10.17 BETA APK EXACT ROOMS • 9.9.2 STABLE RECOMMENDED**
+**Aktualny układ: Launcher 4.0 STABLE ONLY • SWIR 10.17.1 STABLE RECOMMENDED**
