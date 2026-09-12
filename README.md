@@ -4,34 +4,34 @@ Centralne repozytorium bookmarka **SWIR MOD dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 5.0 — STABLE + BETA
+- **Launcher:** 5.1 — STABLE + BETA
 - **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.26 — ACK ROUTE TRACE**
-- **BETA rollback:** 10.25 Snapshot Merge / 10.24 Snapshot Trace / 10.23 Queue Watch / 10.22 Friend ACK Sync
+- **BETA:** **10.27 — ACK ROUTE PIN**
+- **BETA rollback:** 10.26 ACK Route Trace / 10.25 Snapshot Merge / 10.24 Snapshot Trace / 10.23 Queue Watch / 10.22 Friend ACK Sync
 - **BETA writing rollback:** **10.19 — potwierdzony działający MIX 8/8**
 - **Honour Probe:** usunięty i nie jest ładowany
 
-## 10.26 BETA — ACK ROUTE TRACE
+## 10.27 BETA — ACK ROUTE PIN
 
-10.26 schodzi krok niżej niż Snapshot Merge. Rdzeń 10.22 po odebraniu ACK `8/4` nie wiąże jawnie późniejszego `85` z socketem, który ten ACK dostarczył. `85` jest wysyłane przez wybór `primaryConn()`. Przy wielu pokojach może to prowadzić do sytuacji, w której ACK przychodzi z jednego połączenia, a odpytywanie `85 → 159` idzie innym socketem.
+10.27 robi pierwszą odizolowaną poprawkę po diagnostyce 10.26. Rdzeń 10.22 po odebraniu ACK `8/4` przechodzi do `85 → 159`, ale jego `request85()` wybiera `primaryConn()`. Przy kilku pokojach oznacza to, że ACK może przyjść jednym socketem, a `85` zostać wysłane innym.
 
-Ta beta **nie zmienia jeszcze routingu ani timingów**. Jest celowo diagnostyczna: zapisuje źródło każdego ACK `8/4`, następne wychodzące `85` i oznacza `ROUTE_MISMATCH`, gdy oba zdarzenia dotyczą różnych socketów.
+10.27 **nie zmienia timingów, kolejki ani formatu pakietów**. Dodaje wąski router: po świeżym ACK `8/4` kod `85` jest kierowany na dokładnie ten WebSocket, który dostarczył ACK. Jeśli ten socket jest już zamknięty albo ACK jest starszy niż 20 sekund, moduł nie wymusza trasy i pozostawia dotychczasowe zachowanie.
 
-### Co mierzymy
+### Co pozostaje bez zmian
 
-- socket i pokój, z którego przyszedł ACK `8/4`,
-- socket i pokój, którym wysłano kolejne `85`,
-- odstęp czasu między ACK i `85`,
-- zgodność `sameAsAck`,
-- przypadki `ROUTE_MISMATCH`.
-
-10.25 Snapshot Merge pozostaje aktywny, więc częściowe `159` nadal nie powinny kasować świeżych danych z innych połączeń. Queue Watch 10.23 i ACK Core 10.22 pozostają bez zmiany timingów.
+- ACK Core 10.22 i jego czasy `WAIT_ACK / ACKED / WAIT_159`,
+- Queue Watch 10.23,
+- Snapshot Trace 10.24,
+- Snapshot Merge 10.25 z TTL 15 s,
+- działający MIX 10.19,
+- STABLE 10.17.2,
+- brak Honour Probe.
 
 ## Flow znajomych
 
-`UID → send 8/4 → WAIT_ACK → incoming ACK 8/4 → code 85 → code 159 → rooms[]`
+`UID → send 8/4 → WAIT_ACK → incoming ACK 8/4 → code 85 na tym samym socketcie → code 159 → rooms[]`
 
-Hipoteza 10.26: problem może występować **pomiędzy ACK i 85**, gdy oba etapy nie są wykonywane na tym samym połączeniu.
+Hipoteza 10.27: część brakujących znajomych wynika z rozdzielenia etapów ACK i `85` pomiędzy różne aktywne połączenia/pokoje.
 
 ## Panel Znajomi — czysty
 
@@ -39,27 +39,30 @@ Główny branding pozostaje **SWIR MOD**. W panelu używane są proste nazwy typ
 
 ## MIX pisania — zamrożony
 
-10.26 ładuje niezmieniony moduł MIX z 10.19. Mechanizm pisania nie jest częścią testu.
+10.27 ładuje niezmieniony moduł MIX z 10.19. Mechanizm pisania nie jest częścią testu.
 
-## Diagnostyka 10.26
+## Diagnostyka 10.27
 
 ```javascript
+SWIR_ACK_ROUTE_PIN1027?.diagnostics?.()
 SWIR_ACK_ROUTE_TRACE1026?.diagnostics?.()
-SWIR_BETA1026?.diagnostics?.()
+SWIR_BETA1027?.diagnostics?.()
 ```
 
 Najważniejsze pola:
 
-- `mismatches` — ACK i późniejsze `85` na różnych socketach,
-- `recent85` — ostatnie wysłania `85` z informacją `sameAsAck`,
-- `lastAck` — ostatni ACK wraz z pokojem/socketem,
+- `routePin.pins` / `pins` — rzeczywiste przekierowania `85` na socket ACK,
+- `routePin.fallbacks` / `fallbacks` — przypadki, gdy pin nie został użyty, bo ACK był stary lub socket zamknięty,
+- `routePin.redirects` — liczba skorygowanych tras,
+- `routeTrace.mismatches` — kontrola diagnostyczna z 10.26,
 - `snapshot` / `merge` — diagnostyka 10.24/10.25,
 - `friends` / `queue` — stan ACK Core i Queue Watch.
 
-## Launcher 5.0
+## Launcher 5.1
 
 - **STABLE 10.17.2** — bez zmian,
-- **BETA 10.26** — ACK Route Trace,
+- **BETA 10.27** — ACK Route Pin,
+- **BETA 10.26** — ACK Route Trace rollback,
 - **BETA 10.25** — Snapshot Merge rollback,
 - **BETA 10.24** — Snapshot Trace rollback,
 - **BETA 10.23** — Queue Watch rollback,
@@ -69,17 +72,18 @@ Najważniejsze pola:
 ## Co sprawdzić rano
 
 1. Zrób **Ctrl+F5**.
-2. Otwórz launcher → **BETA → 10.26 BETA — ACK ROUTE TRACE**.
+2. Otwórz launcher → **BETA → 10.27 BETA — ACK ROUTE PIN**.
 3. Otwórz **Znajomi** i zostaw panel kilka minut bez ciągłego klikania Odśwież.
 4. Testuj szczególnie przy kilku otwartych pokojach i kilku znajomych.
-5. Jeśli znowu jednego znajomego wykryje, a drugiego nie, uruchom:
+5. Sprawdź, czy wykrycie kolejnego znajomego przestało gubić poprzedniego i czy lokalizacje/pokoje są stabilniejsze.
+6. Jeśli nadal któregoś znajomego nie wykryje, uruchom:
 
 ```javascript
-SWIR_ACK_ROUTE_TRACE1026?.diagnostics?.()
+SWIR_BETA1027?.diagnostics?.()
 ```
 
-Jeśli `mismatches` nie jest puste, następna beta powinna już zrobić odizolowaną zmianę routingu: zapamiętać `ackConnection` dla aktywnego joba i wysłać `85` dokładnie tym samym połączeniem zamiast przez ogólne `primaryConn()`.
+Jeżeli `routePin.redirects > 0`, ale problem nadal występuje, kolejny krok powinien skupić się nie na tempie skanowania, tylko na korelacji konkretnego aktywnego joba z odpowiadającym mu `159` oraz na tym, czy `159` z właściwego socketu rzeczywiście zawiera szukanego użytkownika.
 
 ---
 
-**Aktualny układ: Launcher 5.0 • 10.17.2 STABLE • 10.26 BETA ACK ROUTE TRACE • 10.25 Snapshot Merge rollback • 10.24 Snapshot Trace rollback • 10.23 Queue Watch rollback • 10.19 working MIX rollback**
+**Aktualny układ: Launcher 5.1 • 10.17.2 STABLE • 10.27 BETA ACK ROUTE PIN • 10.26 Route Trace rollback • 10.25 Snapshot Merge rollback • 10.24 Snapshot Trace rollback • 10.23 Queue Watch rollback • 10.19 working MIX rollback**
