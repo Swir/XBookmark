@@ -1,0 +1,84 @@
+name: Sync Android launcher channels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'version.json'
+      - '.github/workflows/sync-mobile-launcher-channels.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-mobile-channels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mobile branch with full history
+        uses: actions/checkout@v4
+        with:
+          ref: czateria-plus-mobile-99
+          fetch-depth: 0
+
+      - name: Fetch current main
+        run: git fetch origin main
+
+      - name: Build mobile channel manifest from canonical version.json
+        shell: bash
+        run: |
+          git show origin/main:version.json > /tmp/version.json
+          python3 - <<'PY'
+          import json
+          from datetime import datetime, timezone
+
+          with open('/tmp/version.json', 'r', encoding='utf-8') as f:
+              v = json.load(f)
+
+          required = ['recommended', 'beta', 'stable_file', 'stable_ref', 'beta_file', 'beta_ref']
+          missing = [k for k in required if not v.get(k)]
+          if missing:
+              raise SystemExit('Missing keys in version.json: ' + ', '.join(missing))
+
+          beta_label = str(v.get('title') or v['beta']).strip()
+          out = {
+              'schema': 1,
+              'launcherVersion': 'auto-main',
+              'updatedAt': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
+              'stable': {
+                  'id': str(v['recommended']),
+                  'label': f"XBookmark {v['recommended']} STABLE",
+                  'badge': 'RECOMMENDED',
+                  'ref': str(v['stable_ref']),
+                  'file': str(v['stable_file']),
+                  'description': 'Aktualny Stable — automatycznie zsynchronizowany z głównym version.json.',
+                  'accent': '#00E5FF'
+              },
+              'beta': {
+                  'id': str(v['beta']),
+                  'label': 'XBookmark ' + beta_label,
+                  'badge': 'BETA',
+                  'ref': str(v['beta_ref']),
+                  'file': str(v['beta_file']),
+                  'description': 'Aktualna Beta — automatycznie zsynchronizowana z głównym version.json.',
+                  'accent': '#FF69DF'
+              }
+          }
+
+          with open('mobile99/channel-manifest.json', 'w', encoding='utf-8') as f:
+              json.dump(out, f, ensure_ascii=False, indent=2)
+              f.write('\n')
+          PY
+
+      - name: Commit only when channels changed
+        shell: bash
+        run: |
+          if git diff --quiet -- mobile99/channel-manifest.json; then
+            echo "Mobile launcher catalog already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mobile99/channel-manifest.json
+          git commit -m "Auto-sync mobile launcher channels from main"
+          git push origin HEAD:czateria-plus-mobile-99
