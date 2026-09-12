@@ -45,14 +45,15 @@ jobs:
           name: CZATeria-Plus-Mobile-0.6.3-XBookmark-9.9
           path: mobile99/app/build/outputs/apk/debug/CZATeria-Plus-Mobile-0.6.3-XBookmark-9.9.apk
           if-no-files-found: error
-      - name: Publish temporary dist APK
+      - name: Publish temporary dist APK and checksum
         working-directory: .
         run: |
           mkdir -p dist
           cp mobile99/app/build/outputs/apk/debug/CZATeria-Plus-Mobile-0.6.3-XBookmark-9.9.apk dist/Czateria_PLUS_Android_v0.6.3.apk
-          echo "2437fab6cff48bd9d2f0928e80cd734047ae9bbc2a6efcef69585c56eddd27a0  dist/Czateria_PLUS_Android_v0.6.3.apk" | sha256sum -c -
+          (cd dist && sha256sum Czateria_PLUS_Android_v0.6.3.apk > Czateria_PLUS_Android_v0.6.3.sha256)
+          cat dist/Czateria_PLUS_Android_v0.6.3.sha256
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/Czateria_PLUS_Android_v0.6.3.apk
+          git add dist/Czateria_PLUS_Android_v0.6.3.apk dist/Czateria_PLUS_Android_v0.6.3.sha256
           git diff --cached --quiet || git commit -m "Temporary APK transfer for Czateria_PLUS_Android v0.6.3"
           git push origin HEAD:czateria-plus-mobile-99
