@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "launcherVersion": "2.0-mobile",
+  "updatedAt": "2026-09-12T09:30:00Z",
+  "stable": {
+    "id": "9.9",
+    "label": "XBookmark 9.9",
+    "badge": "RECOMMENDED",
+    "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
+    "file": "swir.js",
+    "description": "Sprawdzona wersja Stable. Friend Radar, szybkie akcje, motywy i stabilna baza 9.9.",
+    "accent": "#00E5FF"
+  },
+  "beta": {
+    "id": "10.1-beta",
+    "label": "XBookmark 10.1 BETA",
+    "badge": "BETA",
+    "ref": "czateria-plus-mobile-99",
+    "file": "swir-beta-101.js",
+    "description": "Najnowszy kanał testowy z nowymi funkcjami. Może zmieniać się częściej niż Stable.",
+    "accent": "#FF69DF"
+  }
+}
