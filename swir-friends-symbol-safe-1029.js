@@ -28,6 +28,10 @@ function openConns(){return conns().filter(isOpen)}
 function primary(){try{const c=CHNS?.connManager?.getFirstConnection?.();if(isOpen(c))return c}catch(e){}return openConns()[0]||null}
 function meRegistered(){try{return!!CHNS?.connManager?.getMeUser?.()?.isRegistered?.()}catch(e){return false}}
 function parse(v){try{let p=v?.data??v;if(typeof p==='string')p=JSON.parse(p);return p&&typeof p==='object'?p:null}catch(e){return null}}
+function isFriendPacket(v){const p=parse(v);return!!p&&(Number(p.code)===85||(Number(p.code)===8&&[4,5].includes(Number(p.subcode))))}
+/* Base 10.6 still has the old 9.7 timer. Block its friend packets so only this core owns 8/4 and 85. */
+const previousWsSend=WebSocket.prototype.send;
+if(!previousWsSend.__swirSymbol1029Guard){const guarded=function(data){try{if(isFriendPacket(data)&&!(+window.__SWIR_ACK_SEND1022>0)){console.debug('[SWIR 10.29] legacy friend packet blocked',data);return}}catch(e){}return previousWsSend.apply(this,arguments)};guarded.__swirSymbol1029Guard=true;guarded.__previous=previousWsSend;WebSocket.prototype.send=guarded}
 function roomList(a){return uniq((Array.isArray(a)?a:[]).map(r=>typeof r==='string'?r:r?.name))}
 function permitted(fn){window.__SWIR_ACK_SEND1022=(+window.__SWIR_ACK_SEND1022||0)+1;window.__SWIR_ALLOW_FRIEND_SEND96=(+window.__SWIR_ALLOW_FRIEND_SEND96||0)+1;try{return fn()}finally{window.__SWIR_ALLOW_FRIEND_SEND96=Math.max(0,(+window.__SWIR_ALLOW_FRIEND_SEND96||1)-1);window.__SWIR_ACK_SEND1022=Math.max(0,(+window.__SWIR_ACK_SEND1022||1)-1)}}
 function send(c,p){if(!c||!isOpen(c))return false;const raw=JSON.stringify(p);try{if(typeof c.send==='function')return permitted(()=>c.send(raw)===true);permitted(()=>ws(c).send(raw));return true}catch(e){diag({lastError:'send '+String(e?.message||e)});return false}}
