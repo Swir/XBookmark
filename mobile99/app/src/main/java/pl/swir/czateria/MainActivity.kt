@@ -40,15 +40,17 @@ class MainActivity : Activity() {
         val file: String,
         val description: String,
         val accent: String
-    )
+    ) {
+        val key: String get() = "$channel:$id"
+    }
 
     companion object {
         private const val CHAT_URL = "https://czateria.interia.pl/"
         private const val FILE_CHOOSER_REQUEST = 7001
         private const val PREFS_NAME = "czateria_plus_launcher"
-        private const val PREF_CHANNEL = "selected_channel"
-        private const val PREF_MANIFEST = "channel_manifest_cache"
-        private const val MANIFEST_URL = "https://raw.githubusercontent.com/Swir/XBookmark/czateria-plus-mobile-99/mobile99/channel-manifest.json"
+        private const val PREF_VERSION = "selected_version"
+        private const val PREF_CATALOG = "versions_catalog_cache"
+        private const val CATALOG_URL = "https://raw.githubusercontent.com/Swir/XBookmark/main/versions.json"
         private const val CDN_BASE = "https://cdn.jsdelivr.net/gh/Swir/XBookmark@"
     }
 
@@ -57,14 +59,16 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private var launcherOverlay: View? = null
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+
     private var mobileScript = ""
     private var layoutScript = ""
     private var featureScript = ""
     private var adFixScript = ""
+
     private var chatStarted = false
-    private var selectedChannel = "stable"
-    private var manifestSource = "fallback"
-    private val channels = linkedMapOf<String, ChannelVersion>()
+    private var selectedVersionKey = "stable:10.17.2"
+    private var catalogSource = "fallback"
+    private val versions = mutableListOf<ChannelVersion>()
 
     private val prefs by lazy { getSharedPreferences(PREFS_NAME, MODE_PRIVATE) }
 
@@ -78,9 +82,10 @@ class MainActivity : Activity() {
         featureScript = readAsset("swir_mobile_hotfix_062.js")
         adFixScript = readAsset("swir_mobile_hotfix_063.js")
 
-        seedFallbackChannels()
-        selectedChannel = prefs.getString(PREF_CHANNEL, "stable")?.takeIf { it == "stable" || it == "beta" } ?: "stable"
-        loadCachedManifest()
+        seedFallbackVersions()
+        selectedVersionKey = prefs.getString(PREF_VERSION, versions.first().key) ?: versions.first().key
+        loadCachedCatalog()
+        ensureSelectedVersion()
 
         rootFrame = FrameLayout(this).apply {
             setBackgroundColor(Color.rgb(7, 17, 27))
@@ -118,47 +123,60 @@ class MainActivity : Activity() {
         }
 
         showLauncher()
-        refreshChannelManifest(silent = true)
+        refreshCatalog(silent = true)
     }
 
-    private fun seedFallbackChannels() {
-        channels["stable"] = ChannelVersion(
-            channel = "stable",
-            id = "9.9",
-            label = "XBookmark 9.9",
-            badge = "RECOMMENDED",
-            ref = "8ef1a5773f98780094c65042c2e622852ea6eb29",
-            file = "swir.js",
-            description = "Sprawdzona wersja Stable. Friend Radar, szybkie akcje, motywy i stabilna baza 9.9.",
-            accent = "#00E5FF"
+    private fun seedFallbackVersions() {
+        versions.clear()
+        versions += ChannelVersion(
+            "stable", "10.17.2", "10.17.2 STABLE — RECOMMENDED", "RECOMMENDED",
+            "82c16fa72b16ce8a83fc496ed3b33f5df665a53a", "swir-stable-10172.js",
+            "Aktualny Stable.", "#00E5FF"
         )
-        channels["beta"] = ChannelVersion(
-            channel = "beta",
-            id = "10.1-beta",
-            label = "XBookmark 10.1 BETA",
-            badge = "BETA",
-            ref = "czateria-plus-mobile-99",
-            file = "swir-beta-101.js",
-            description = "Najnowszy kanał testowy z nowymi funkcjami. Może zmieniać się częściej niż Stable.",
-            accent = "#FF69DF"
+        versions += ChannelVersion(
+            "stable", "10.17.1", "10.17.1 STABLE — ROLLBACK", "STABLE",
+            "ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4", "swir-stable-10171.js",
+            "Poprzedni Stable — szybki rollback.", "#00C6E8"
+        )
+        versions += ChannelVersion(
+            "stable", "9.9.2", "9.9.2 STABLE — ROLLBACK", "STABLE",
+            "c16d6ec57b9063cd9c731f501e5c0cc14adb5c60", "swir-stable-992.js",
+            "Starszy sprawdzony Stable.", "#00AFCF"
+        )
+        versions += ChannelVersion(
+            "beta", "10.29-beta", "10.29 BETA — SYMBOL SAFE NICKS", "BETA",
+            "f5f9d7fd27fcd4e6e8eca13115cf5daf26a0ac9b", "swir-beta-1029.js",
+            "Najnowsza Beta — bezpieczne nicki z symbolami.", "#FF69DF"
+        )
+        versions += ChannelVersion(
+            "beta", "10.28-beta", "10.28 BETA — ACK ROUTE GUARD", "BETA",
+            "805ef6445c59ad1e0bee6c0a86e0d0d90aac6ded", "swir-beta-1028.js",
+            "Poprzednia Beta — rollback.", "#E95CCB"
+        )
+        versions += ChannelVersion(
+            "beta", "10.27-beta", "10.27 BETA — ACK ROUTE PIN", "BETA",
+            "f92d5a06a4281f3835e55319d7fcd0a54ce2751a", "swir-beta-1027.js",
+            "Trzecia najnowsza Beta — rollback.", "#D94FBC"
         )
     }
 
-    private fun loadCachedManifest() {
-        val cached = prefs.getString(PREF_MANIFEST, null) ?: return
-        val parsed = parseManifest(cached) ?: return
-        channels.clear()
-        channels.putAll(parsed)
-        manifestSource = "cache"
+    private fun loadCachedCatalog() {
+        val raw = prefs.getString(PREF_CATALOG, null) ?: return
+        val parsed = parseCatalog(raw) ?: return
+        versions.clear()
+        versions.addAll(parsed)
+        catalogSource = "cache"
     }
 
-    private fun refreshChannelManifest(silent: Boolean) {
+    private fun refreshCatalog(silent: Boolean) {
         if (!silent) {
-            launcherOverlay?.findViewWithTag<TextView>("catalog_status")?.text = "⏳ Sprawdzam najnowsze Stable i Beta…"
+            launcherOverlay?.findViewWithTag<TextView>("catalog_status")?.text =
+                "⏳ Pobieram 3 najnowsze Stable i 3 najnowsze Beta…"
         }
+
         Thread {
             try {
-                val conn = (URL(MANIFEST_URL).openConnection() as HttpURLConnection).apply {
+                val conn = (URL(CATALOG_URL).openConnection() as HttpURLConnection).apply {
                     connectTimeout = 7000
                     readTimeout = 7000
                     requestMethod = "GET"
@@ -170,50 +188,78 @@ class MainActivity : Activity() {
                 if (code !in 200..299) throw IllegalStateException("HTTP $code")
                 val raw = conn.inputStream.bufferedReader().use { it.readText() }
                 conn.disconnect()
-                val parsed = parseManifest(raw) ?: throw IllegalStateException("Nieprawidłowy katalog")
-                prefs.edit().putString(PREF_MANIFEST, raw).apply()
+
+                val parsed = parseCatalog(raw) ?: throw IllegalStateException("Nieprawidłowy versions.json")
+                prefs.edit().putString(PREF_CATALOG, raw).apply()
+
                 runOnUiThread {
-                    channels.clear()
-                    channels.putAll(parsed)
-                    manifestSource = "online"
-                    if (launcherOverlay != null) showLauncher()
+                    versions.clear()
+                    versions.addAll(parsed)
+                    catalogSource = "online"
+                    ensureSelectedVersion()
                     updateHeaderStatus()
+                    if (launcherOverlay != null) showLauncher()
                 }
             } catch (_: Exception) {
                 runOnUiThread {
-                    manifestSource = if (prefs.contains(PREF_MANIFEST)) "cache" else "fallback"
-                    launcherOverlay?.findViewWithTag<TextView>("catalog_status")?.text = when (manifestSource) {
-                        "cache" -> "📦 Offline — używam ostatniego zapamiętanego katalogu"
-                        else -> "📦 Offline — używam bezpiecznych wersji awaryjnych"
+                    catalogSource = if (prefs.contains(PREF_CATALOG)) "cache" else "fallback"
+                    launcherOverlay?.findViewWithTag<TextView>("catalog_status")?.text = when (catalogSource) {
+                        "cache" -> "📦 Offline — używam ostatniego katalogu"
+                        else -> "📦 Offline — używam 6 wersji awaryjnych"
                     }
                 }
             }
         }.start()
     }
 
-    private fun parseManifest(raw: String): LinkedHashMap<String, ChannelVersion>? {
+    private fun parseCatalog(raw: String): List<ChannelVersion>? {
         return try {
             val root = JSONObject(raw)
-            val out = linkedMapOf<String, ChannelVersion>()
-            listOf("stable", "beta").forEach { channel ->
-                val o = root.getJSONObject(channel)
+            val array = root.getJSONArray("versions")
+            val stable = mutableListOf<ChannelVersion>()
+            val beta = mutableListOf<ChannelVersion>()
+
+            for (i in 0 until array.length()) {
+                val o = array.getJSONObject(i)
+                val channel = o.optString("channel").lowercase()
+                if (channel != "stable" && channel != "beta") continue
+
+                val target = if (channel == "stable") stable else beta
+                if (target.size >= 3) continue
+
+                val id = o.getString("id").trim()
                 val ref = o.getString("ref").trim()
                 val file = o.getString("file").trim()
-                if (ref.isBlank() || file.isBlank()) return null
-                out[channel] = ChannelVersion(
+                if (id.isBlank() || ref.isBlank() || file.isBlank()) continue
+
+                val newest = target.isEmpty()
+                target += ChannelVersion(
                     channel = channel,
-                    id = o.getString("id"),
-                    label = o.optString("label", o.getString("id")),
-                    badge = o.optString("badge", channel.uppercase()),
+                    id = id,
+                    label = o.optString("label", id),
+                    badge = when {
+                        channel == "stable" && newest -> "RECOMMENDED"
+                        channel == "stable" -> "STABLE"
+                        else -> "BETA"
+                    },
                     ref = ref,
                     file = file,
-                    description = o.optString("description", ""),
-                    accent = o.optString("accent", if (channel == "beta") "#FF69DF" else "#00E5FF")
+                    description = o.optString("notes", ""),
+                    accent = if (channel == "beta") "#FF69DF" else "#00E5FF"
                 )
             }
-            out
+
+            if (stable.isEmpty() || beta.isEmpty()) null else stable + beta
         } catch (_: Exception) {
             null
+        }
+    }
+
+    private fun ensureSelectedVersion() {
+        if (versions.none { it.key == selectedVersionKey }) {
+            selectedVersionKey = versions.firstOrNull { it.channel == "stable" }?.key
+                ?: versions.first().key
+            prefs.edit().putString(PREF_VERSION, selectedVersionKey).apply()
         }
     }
 
@@ -262,10 +308,18 @@ class MainActivity : Activity() {
         }
 
         row.addView(topButton("🚀 Wersje") { showLauncher() })
-        row.addView(topButton("👥 Znajomi") { runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();") })
-        row.addView(topButton("🌈 Kolor") { runJs("window.SWIR_COLOR_MOBILE&&SWIR_COLOR_MOBILE.open&&SWIR_COLOR_MOBILE.open();") })
-        row.addView(topButton("⚙ Ustawienia") { runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();") })
-        row.addView(topButton("↻ Odśwież") { if (chatStarted) webView.reload() })
+        row.addView(topButton("👥 Znajomi") {
+            runJs("window.SWIR_APP&&SWIR_APP.openFriends&&SWIR_APP.openFriends();")
+        })
+        row.addView(topButton("🌈 Kolor") {
+            runJs("window.SWIR_COLOR_MOBILE&&SWIR_COLOR_MOBILE.open&&SWIR_COLOR_MOBILE.open();")
+        })
+        row.addView(topButton("⚙ Ustawienia") {
+            runJs("window.SWIR_APP&&SWIR_APP.openPanel&&SWIR_APP.openPanel();")
+        })
+        row.addView(topButton("↻ Odśwież") {
+            if (chatStarted) webView.reload()
+        })
 
         scroll.addView(row)
         outer.addView(scroll, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)))
@@ -282,7 +336,10 @@ class MainActivity : Activity() {
             setPadding(dp(10), 0, dp(10), 0)
             minWidth = 0
             minHeight = 0
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(40)).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                dp(40)
+            ).apply {
                 marginStart = dp(3)
                 marginEnd = dp(3)
             }
@@ -294,7 +351,7 @@ class MainActivity : Activity() {
         launcherOverlay?.let { rootFrame.removeView(it) }
 
         val overlay = FrameLayout(this).apply {
-            setBackgroundColor(Color.argb(242, 3, 9, 15))
+            setBackgroundColor(Color.argb(244, 3, 9, 15))
             isClickable = true
             isFocusable = true
         }
@@ -314,7 +371,7 @@ class MainActivity : Activity() {
         val body = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(14), dp(24), dp(14), dp(24))
+            setPadding(dp(12), dp(18), dp(12), dp(24))
         }
         scroll.addView(
             body,
@@ -326,18 +383,15 @@ class MainActivity : Activity() {
 
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(16))
-            background = roundedBg("#081522", "#176681", 20)
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            background = roundedBg("#081522", "#176681", 18)
         }
         body.addView(
             card,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = dp(10)
-                bottomMargin = dp(10)
-            }
+            )
         )
 
         val titleRow = LinearLayout(this).apply {
@@ -348,7 +402,7 @@ class MainActivity : Activity() {
 
         val title = TextView(this).apply {
             text = "⚡ CZATeria Plus Launcher"
-            textSize = 20f
+            textSize = 19f
             setTextColor(Color.WHITE)
             setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
@@ -369,28 +423,35 @@ class MainActivity : Activity() {
         }
 
         val sub = TextView(this).apply {
-            text = "Wybierasz kanał, nie numer wersji. Launcher zawsze pobiera najnowszy opublikowany Stable albo Beta."
+            text = "Wybierz jedną z 3 najnowszych wersji Stable albo 3 najnowszych Beta. Lista jest pobierana bezpośrednio z versions.json."
             textSize = 12f
             setTextColor(Color.rgb(151, 176, 194))
-            setPadding(0, dp(7), 0, dp(10))
+            setPadding(0, dp(7), 0, dp(8))
         }
         card.addView(sub)
 
         val catalogStatus = TextView(this).apply {
             tag = "catalog_status"
-            text = when (manifestSource) {
-                "online" -> "● Katalog online — aktualny"
+            text = when (catalogSource) {
+                "online" -> "● Katalog online — 3 Stable + 3 Beta"
                 "cache" -> "📦 Katalog z pamięci — sprawdzam aktualizację…"
-                else -> "⏳ Sprawdzam katalog wersji…"
+                else -> "⏳ Sprawdzam najnowsze wersje…"
             }
             textSize = 11f
             setTextColor(Color.rgb(117, 225, 245))
-            setPadding(0, 0, 0, dp(12))
+            setPadding(0, 0, 0, dp(10))
         }
         card.addView(catalogStatus)
 
-        card.addView(buildChannelCard("stable"))
-        card.addView(buildChannelCard("beta"))
+        addSectionHeader(card, "🛡️ STABLE", "3 ostatnie stabilne wersje", "#00E5FF")
+        versions.filter { it.channel == "stable" }.take(3).forEachIndexed { index, v ->
+            card.addView(buildVersionCard(v, index == 0))
+        }
+
+        addSectionHeader(card, "🧪 BETA", "3 ostatnie wersje testowe", "#FF69DF")
+        versions.filter { it.channel == "beta" }.take(3).forEachIndexed { index, v ->
+            card.addView(buildVersionCard(v, index == 0))
+        }
 
         val refresh = Button(this).apply {
             text = "↻ Sprawdź najnowsze wersje"
@@ -398,21 +459,21 @@ class MainActivity : Activity() {
             textSize = 12f
             setTextColor(Color.WHITE)
             background = roundedBg("#102333", "#2C5268", 12)
-            setOnClickListener { refreshChannelManifest(silent = false) }
+            setOnClickListener { refreshCatalog(silent = false) }
         }
         card.addView(
             refresh,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 dp(46)
-            ).apply { topMargin = dp(10) }
+            ).apply { topMargin = dp(8) }
         )
 
         val note = TextView(this).apply {
-            text = "Stable jest przypięty do sprawdzonego commita. Beta może aktualizować się częściej. Przy braku internetu używany jest ostatni zapamiętany katalog."
+            text = "Po aktualizacji XBookmark launcher automatycznie pokaże nowe TOP 3. Wybrana wersja jest zapamiętywana, dopóki pozostaje w aktualnej liście."
             textSize = 10f
             setTextColor(Color.rgb(108, 134, 153))
-            setPadding(dp(2), dp(12), dp(2), 0)
+            setPadding(dp(2), dp(10), dp(2), 0)
         }
         card.addView(note)
 
@@ -426,14 +487,40 @@ class MainActivity : Activity() {
         )
     }
 
-    private fun buildChannelCard(channel: String): View {
-        val v = channels[channel] ?: return View(this)
-        val accent = safeColor(v.accent, if (channel == "beta") Color.rgb(255, 105, 223) else Color.rgb(0, 229, 255))
+    private fun addSectionHeader(parent: LinearLayout, title: String, subtitle: String, accent: String) {
+        val wrap = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(2), dp(10), dp(2), dp(7))
+        }
+        wrap.addView(TextView(this).apply {
+            text = title
+            textSize = 14f
+            setTextColor(safeColor(accent, Color.WHITE))
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+        })
+        wrap.addView(TextView(this).apply {
+            text = subtitle
+            textSize = 10f
+            setTextColor(Color.rgb(116, 143, 161))
+        })
+        parent.addView(wrap)
+    }
+
+    private fun buildVersionCard(v: ChannelVersion, newest: Boolean): View {
+        val accent = safeColor(
+            v.accent,
+            if (v.channel == "beta") Color.rgb(255, 105, 223) else Color.rgb(0, 229, 255)
+        )
+        val selected = selectedVersionKey == v.key
 
         val box = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(14), dp(13), dp(14), dp(13))
-            background = roundedBg("#0D1C2A", v.accent, 15)
+            setPadding(dp(12), dp(11), dp(12), dp(11))
+            background = roundedBg(
+                if (selected) "#123044" else "#0D1C2A",
+                if (selected) "#FFFFFF" else v.accent,
+                13
+            )
         }
 
         val heading = LinearLayout(this).apply {
@@ -443,45 +530,45 @@ class MainActivity : Activity() {
         box.addView(heading)
 
         val name = TextView(this).apply {
-            text = if (channel == "beta") "🧪 ${v.label}" else "🛡️ ${v.label}"
-            textSize = 16f
+            text = v.label
+            textSize = 14f
             setTextColor(Color.WHITE)
             setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
         heading.addView(name, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
 
         val badge = TextView(this).apply {
-            text = v.badge
-            textSize = 9f
-            setTextColor(accent)
+            text = if (selected) "WYBRANA" else if (newest) v.badge else v.channel.uppercase()
+            textSize = 8f
+            setTextColor(if (selected) Color.WHITE else accent)
             gravity = Gravity.CENTER
-            setPadding(dp(8), dp(4), dp(8), dp(4))
-            background = roundedBg("#111C27", v.accent, 20)
+            setPadding(dp(7), dp(3), dp(7), dp(3))
+            background = roundedBg("#111C27", if (selected) "#FFFFFF" else v.accent, 16)
         }
         heading.addView(badge)
 
-        val desc = TextView(this).apply {
-            text = v.description
-            textSize = 11f
-            setTextColor(Color.rgb(154, 177, 194))
-            setPadding(0, dp(7), 0, dp(10))
+        if (v.description.isNotBlank()) {
+            box.addView(TextView(this).apply {
+                text = v.description
+                textSize = 10f
+                setTextColor(Color.rgb(154, 177, 194))
+                setPadding(0, dp(6), 0, dp(8))
+            })
         }
-        box.addView(desc)
 
-        val selected = selectedChannel == channel
         val button = Button(this).apply {
-            text = when {
-                selected && chatStarted -> "✓ AKTYWNY KANAŁ — URUCHOM PONOWNIE"
-                channel == "beta" -> "URUCHOM NAJNOWSZĄ BETĘ"
-                else -> "URUCHOM NAJNOWSZY STABLE"
-            }
+            text = if (selected && chatStarted) "✓ URUCHOM PONOWNIE ${v.id}" else "URUCHOM ${v.id}"
             isAllCaps = false
-            textSize = 12f
+            textSize = 11f
             setTextColor(Color.WHITE)
-            background = roundedBg(if (channel == "beta") "#36142F" else "#0A3040", v.accent, 11)
-            setOnClickListener { chooseChannel(channel) }
+            background = roundedBg(
+                if (v.channel == "beta") "#36142F" else "#0A3040",
+                v.accent,
+                10
+            )
+            setOnClickListener { chooseVersion(v) }
         }
-        box.addView(button, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)))
+        box.addView(button, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44)))
 
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -490,18 +577,16 @@ class MainActivity : Activity() {
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = dp(10) }
+                ).apply { bottomMargin = dp(8) }
             )
         }
     }
 
-    private fun chooseChannel(channel: String) {
-        if (!channels.containsKey(channel)) return
-        selectedChannel = channel
-        prefs.edit().putString(PREF_CHANNEL, channel).apply()
+    private fun chooseVersion(v: ChannelVersion) {
+        selectedVersionKey = v.key
+        prefs.edit().putString(PREF_VERSION, selectedVersionKey).apply()
         removeLauncher()
-        val v = currentVersion()
-        statusText.text = "${channel.uppercase()} ${v.id} • START"
+        statusText.text = "${v.channel.uppercase()} ${v.id} • START"
 
         if (!chatStarted) {
             chatStarted = true
@@ -511,13 +596,10 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun removeLauncher() {
-        launcherOverlay?.let { rootFrame.removeView(it) }
-        launcherOverlay = null
-    }
-
     private fun currentVersion(): ChannelVersion {
-        return channels[selectedChannel] ?: channels["stable"]!!
+        return versions.firstOrNull { it.key == selectedVersionKey }
+            ?: versions.firstOrNull { it.channel == "stable" }
+            ?: versions.first()
     }
 
     private fun updateHeaderStatus() {
@@ -526,7 +608,12 @@ class MainActivity : Activity() {
             return
         }
         val v = currentVersion()
-        statusText.text = "${selectedChannel.uppercase()} ${v.id}"
+        statusText.text = "${v.channel.uppercase()} ${v.id}"
+    }
+
+    private fun removeLauncher() {
+        launcherOverlay?.let { rootFrame.removeView(it) }
+        launcherOverlay = null
     }
 
     private fun configureWebView() {
@@ -575,11 +662,11 @@ class MainActivity : Activity() {
                 super.onPageFinished(view, url)
                 injectPatches()
                 val v = currentVersion()
-                statusText.text = "${selectedChannel.uppercase()} ${v.id} • DOPASOWUJĘ…"
-                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedChannel() }, 350)
-                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedChannel() }, 1100)
-                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedChannel() }, 2600)
-                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedChannel() }, 5200)
+                statusText.text = "${v.channel.uppercase()} ${v.id} • DOPASOWUJĘ…"
+                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedVersion() }, 350)
+                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedVersion() }, 1100)
+                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedVersion() }, 2600)
+                Handler(Looper.getMainLooper()).postDelayed({ injectSelectedVersion() }, 5200)
             }
         }
 
@@ -608,10 +695,10 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun injectSelectedChannel() {
+    private fun injectSelectedVersion() {
         if (!chatStarted) return
         val v = currentVersion()
-        val key = "${v.channel}:${v.id}:${v.ref}"
+        val key = v.key + ":" + v.ref
         val src = "$CDN_BASE${v.ref}/${v.file}?czp=${System.currentTimeMillis()}"
         val jsKey = jsString(key)
         val jsSrc = jsString(src)
@@ -642,28 +729,28 @@ class MainActivity : Activity() {
         ) { result ->
             when {
                 result?.contains("WAIT") == true -> {
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} • WYBIERZ POKÓJ"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} • WYBIERZ POKÓJ"
                 }
                 result?.contains("ERROR") == true -> {
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} • BŁĄD"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} • BŁĄD"
                 }
                 result?.contains("READY") == true -> {
                     injectMobileCompanion()
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} ✓"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} ✓"
                 }
                 else -> {
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} • ŁADUJĘ…"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} • ŁADUJĘ…"
                     Handler(Looper.getMainLooper()).postDelayed({ injectMobileCompanion() }, 800)
-                    Handler(Looper.getMainLooper()).postDelayed({ verifySelectedChannel() }, 1700)
-                    Handler(Looper.getMainLooper()).postDelayed({ verifySelectedChannel() }, 3600)
+                    Handler(Looper.getMainLooper()).postDelayed({ verifySelectedVersion() }, 1700)
+                    Handler(Looper.getMainLooper()).postDelayed({ verifySelectedVersion() }, 3600)
                 }
             }
         }
     }
 
-    private fun verifySelectedChannel() {
+    private fun verifySelectedVersion() {
         val v = currentVersion()
-        val key = jsString("${v.channel}:${v.id}:${v.ref}")
+        val key = jsString(v.key + ":" + v.ref)
         webView.evaluateJavascript(
             """
             (function(){
@@ -676,11 +763,11 @@ class MainActivity : Activity() {
             when {
                 result?.contains("READY") == true -> {
                     injectMobileCompanion()
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} ✓"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} ✓"
                 }
                 result?.contains("ERROR") == true -> {
                     injectMobileCompanion()
-                    statusText.text = "${selectedChannel.uppercase()} ${v.id} • CORE BŁĄD / MOBILE ✓"
+                    statusText.text = "${v.channel.uppercase()} ${v.id} • CORE BŁĄD / MOBILE ✓"
                 }
             }
         }
@@ -737,7 +824,11 @@ class MainActivity : Activity() {
     }
 
     private fun safeColor(value: String, fallback: Int): Int {
-        return try { Color.parseColor(value) } catch (_: Exception) { fallback }
+        return try {
+            Color.parseColor(value)
+        } catch (_: Exception) {
+            fallback
+        }
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
@@ -746,7 +837,11 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_REQUEST) {
-            val results = if (resultCode == RESULT_OK && data?.data != null) arrayOf(data.data!!) else null
+            val results = if (resultCode == RESULT_OK && data?.data != null) {
+                arrayOf(data.data!!)
+            } else {
+                null
+            }
             filePathCallback?.onReceiveValue(results)
             filePathCallback = null
         }
@@ -757,7 +852,11 @@ class MainActivity : Activity() {
             removeLauncher()
             return
         }
-        if (::webView.isInitialized && webView.canGoBack()) webView.goBack() else super.onBackPressed()
+        if (::webView.isInitialized && webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
