@@ -4,38 +4,34 @@ Centralne repozytorium bookmarka **SWIR MOD dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 4.9 — STABLE + BETA
+- **Launcher:** 5.0 — STABLE + BETA
 - **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.25 — SNAPSHOT MERGE**
-- **BETA rollback:** 10.24 Snapshot Trace / 10.23 Queue Watch / 10.22 Friend ACK Sync
+- **BETA:** **10.26 — ACK ROUTE TRACE**
+- **BETA rollback:** 10.25 Snapshot Merge / 10.24 Snapshot Trace / 10.23 Queue Watch / 10.22 Friend ACK Sync
 - **BETA writing rollback:** **10.19 — potwierdzony działający MIX 8/8**
 - **Honour Probe:** usunięty i nie jest ładowany
 
-## 10.25 BETA — SNAPSHOT MERGE
+## 10.26 BETA — ACK ROUTE TRACE
 
-10.25 atakuje konkretny problem wykryty w architekturze 10.22: każdy przychodzący pakiet `159` był zapisywany jako jeden globalny `users`, więc późniejszy, mniejszy snapshot z innego socketu/pokoju mógł usunąć znajomego widzianego chwilę wcześniej na innym połączeniu.
+10.26 schodzi krok niżej niż Snapshot Merge. Rdzeń 10.22 po odebraniu ACK `8/4` nie wiąże jawnie późniejszego `85` z socketem, który ten ACK dostarczył. `85` jest wysyłane przez wybór `primaryConn()`. Przy wielu pokojach może to prowadzić do sytuacji, w której ACK przychodzi z jednego połączenia, a odpytywanie `85 → 159` idzie innym socketem.
 
-Nowa beta **nie zmienia** protokołu ACK, kolejki ani timingów. Zamiast tego utrzymuje osobny ostatni snapshot `159` dla każdego połączenia i składa wynik tylko ze świeżych źródeł.
+Ta beta **nie zmienia jeszcze routingu ani timingów**. Jest celowo diagnostyczna: zapisuje źródło każdego ACK `8/4`, następne wychodzące `85` i oznacza `ROUTE_MISMATCH`, gdy oba zdarzenia dotyczą różnych socketów.
 
-### Zasady merge
+### Co mierzymy
 
-- każdy socket ma własny snapshot,
-- snapshot jest ważny maksymalnie **15 sekund**,
-- stare źródła są automatycznie usuwane,
-- użytkownicy z aktywnych snapshotów są łączeni zamiast wzajemnie się kasować,
-- `rooms[]` tego samego użytkownika są scalane,
-- ID jest zachowywane z dostępnego świeżego źródła,
-- 10.24 Snapshot Trace nadal działa równolegle jako diagnostyka.
+- socket i pokój, z którego przyszedł ACK `8/4`,
+- socket i pokój, którym wysłano kolejne `85`,
+- odstęp czasu między ACK i `85`,
+- zgodność `sameAsAck`,
+- przypadki `ROUTE_MISMATCH`.
 
-To jest celowo ostrożny kompromis: merge ma zatrzymać znikanie znajomych po nadejściu częściowego `159`, ale TTL ogranicza ryzyko trzymania starego statusu z martwego połączenia.
+10.25 Snapshot Merge pozostaje aktywny, więc częściowe `159` nadal nie powinny kasować świeżych danych z innych połączeń. Queue Watch 10.23 i ACK Core 10.22 pozostają bez zmiany timingów.
 
-## Flow znajomych — bez zmian
-
-10.25 nadal używa dokładnie tego samego rdzenia 10.22:
+## Flow znajomych
 
 `UID → send 8/4 → WAIT_ACK → incoming ACK 8/4 → code 85 → code 159 → rooms[]`
 
-Queue Watch z 10.23 również pozostaje bez zmian. Nie przyspieszamy skanowania i nie dokładamy równoległych prób.
+Hipoteza 10.26: problem może występować **pomiędzy ACK i 85**, gdy oba etapy nie są wykonywane na tym samym połączeniu.
 
 ## Panel Znajomi — czysty
 
@@ -43,50 +39,47 @@ Główny branding pozostaje **SWIR MOD**. W panelu używane są proste nazwy typ
 
 ## MIX pisania — zamrożony
 
-10.25 ładuje niezmieniony moduł MIX z 10.19. Mechanizm pisania nie jest częścią tego testu.
+10.26 ładuje niezmieniony moduł MIX z 10.19. Mechanizm pisania nie jest częścią testu.
 
-## Diagnostyka 10.25
+## Diagnostyka 10.26
 
 ```javascript
-SWIR_SNAPSHOT_MERGE1025?.diagnostics?.()
-SWIR_SNAPSHOT_TRACE1024?.diagnostics?.()
-SWIR_BETA1025?.diagnostics?.()
+SWIR_ACK_ROUTE_TRACE1026?.diagnostics?.()
+SWIR_BETA1026?.diagnostics?.()
 ```
 
-Najważniejsze pola merge:
+Najważniejsze pola:
 
-- `sources` — świeże snapshoty użyte do złożenia wyniku,
-- `mergedCount` — liczba znajomych po scaleniu,
-- `mergedUsers` — wynik z połączonym `rooms[]`,
-- `decision` — czy merge rozszerzył, zmniejszył czy utrzymał snapshot,
-- `trace.divergences` — różne `159` obserwowane na różnych połączeniach,
-- `core` / `queue` — stan istniejącego ACK Core i Queue Watch.
+- `mismatches` — ACK i późniejsze `85` na różnych socketach,
+- `recent85` — ostatnie wysłania `85` z informacją `sameAsAck`,
+- `lastAck` — ostatni ACK wraz z pokojem/socketem,
+- `snapshot` / `merge` — diagnostyka 10.24/10.25,
+- `friends` / `queue` — stan ACK Core i Queue Watch.
 
-## Launcher 4.9
+## Launcher 5.0
 
 - **STABLE 10.17.2** — bez zmian,
-- **BETA 10.25** — Snapshot Merge,
+- **BETA 10.26** — ACK Route Trace,
+- **BETA 10.25** — Snapshot Merge rollback,
 - **BETA 10.24** — Snapshot Trace rollback,
 - **BETA 10.23** — Queue Watch rollback,
 - **BETA 10.22** — ACK Sync rollback,
-- **BETA 10.20** — Identity Guard rollback,
-- **BETA 10.19** — działający MIX 8/8 rollback,
-- **BETA 10.18 / 10.17** — starsze porównawcze bety.
+- **BETA 10.19** — działający MIX 8/8 rollback.
 
 ## Co sprawdzić rano
 
 1. Zrób **Ctrl+F5**.
-2. Otwórz launcher → **BETA → 10.25 BETA — SNAPSHOT MERGE**.
-3. Otwórz **Znajomi** i zostaw panel przez kilka minut bez ciągłego klikania Odśwież.
-4. Sprawdź przede wszystkim przypadek, w którym wcześniej jeden znajomy był widoczny, a po wykryciu drugiego pierwszy znikał.
-5. Jeśli problem nadal wystąpi, uruchom:
+2. Otwórz launcher → **BETA → 10.26 BETA — ACK ROUTE TRACE**.
+3. Otwórz **Znajomi** i zostaw panel kilka minut bez ciągłego klikania Odśwież.
+4. Testuj szczególnie przy kilku otwartych pokojach i kilku znajomych.
+5. Jeśli znowu jednego znajomego wykryje, a drugiego nie, uruchom:
 
 ```javascript
-SWIR_SNAPSHOT_MERGE1025?.diagnostics?.()
+SWIR_ACK_ROUTE_TRACE1026?.diagnostics?.()
 ```
 
-Jeśli `sources` pokazuje kilka aktywnych połączeń, a `mergedUsers` nadal nie zawiera któregoś znajomego, następny krok powinien zejść niżej: sprawdzić, czy ten znajomy w ogóle trafia do któregokolwiek `159`, czy problem powstaje wcześniej na etapie ACK/UID/85.
+Jeśli `mismatches` nie jest puste, następna beta powinna już zrobić odizolowaną zmianę routingu: zapamiętać `ackConnection` dla aktywnego joba i wysłać `85` dokładnie tym samym połączeniem zamiast przez ogólne `primaryConn()`.
 
 ---
 
-**Aktualny układ: Launcher 4.9 • 10.17.2 STABLE • 10.25 BETA SNAPSHOT MERGE • 10.24 Snapshot Trace rollback • 10.23 Queue Watch rollback • 10.19 working MIX rollback**
+**Aktualny układ: Launcher 5.0 • 10.17.2 STABLE • 10.26 BETA ACK ROUTE TRACE • 10.25 Snapshot Merge rollback • 10.24 Snapshot Trace rollback • 10.23 Queue Watch rollback • 10.19 working MIX rollback**
