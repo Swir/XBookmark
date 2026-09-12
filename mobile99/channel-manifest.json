@@ -1,23 +1,23 @@
 {
   "schema": 1,
-  "launcherVersion": "2.1-mobile",
-  "updatedAt": "2026-09-12T10:21:00Z",
+  "launcherVersion": "auto-main",
+  "updatedAt": "2026-09-12T10:23:25Z",
   "stable": {
     "id": "10.17.2",
     "label": "XBookmark 10.17.2 STABLE",
     "badge": "RECOMMENDED",
     "ref": "82c16fa72b16ce8a83fc496ed3b33f5df665a53a",
     "file": "swir-stable-10172.js",
-    "description": "Aktualny Stable — wersja rekomendowana z głównego katalogu XBookmark.",
+    "description": "Aktualny Stable — automatycznie zsynchronizowany z głównym version.json.",
     "accent": "#00E5FF"
   },
   "beta": {
     "id": "10.29-beta",
-    "label": "XBookmark 10.29 BETA",
+    "label": "XBookmark 10.29 BETA — SYMBOL SAFE NICKS",
     "badge": "BETA",
     "ref": "f5f9d7fd27fcd4e6e8eca13115cf5daf26a0ac9b",
     "file": "swir-beta-1029.js",
-    "description": "Aktualna Beta — SYMBOL SAFE NICKS. Zachowuje znaki specjalne w nickach i bieżące poprawki Friend/ACK.",
+    "description": "Aktualna Beta — automatycznie zsynchronizowana z głównym version.json.",
     "accent": "#FF69DF"
   }
 }
