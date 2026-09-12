@@ -1,23 +1,24 @@
 {
-  "launcher": "5.1",
+  "launcher": "5.2",
   "recommended": "10.17.2",
-  "beta": "10.27-beta",
+  "beta": "10.28-beta",
   "channels": ["stable", "beta"],
   "promotion_policy": "STABLE contains confirmed builds. BETA remains separate and is used for testing before promotion.",
-  "architecture": "10.27 BETA = frozen 10.6 UI base + Nick Integrity + 10.22 ACK-aware Friends core + 10.23 bounded Queue Watch + 10.24 per-connection trace + 10.25 fresh per-connection 159 merge + 10.26 route trace + 10.27 ACK-to-85 route pin + clean Friends panel + confirmed 10.19 MIX 8/8 + Ice dark-text overlay. Honour Probe remains removed.",
+  "architecture": "10.28 BETA = frozen 10.6 UI base + Nick Integrity + 10.22 ACK-aware Friends core + 10.23 bounded Queue Watch + 10.24 per-connection trace + 10.25 fresh per-connection 159 merge + 10.26 route trace + 10.28 per-socket ACK Route Guard + clean Friends panel + confirmed 10.19 MIX 8/8 + Ice dark-text overlay. Honour Probe remains removed.",
   "versions": [
     {"id":"10.17.2","channel":"stable","label":"10.17.2 STABLE — RECOMMENDED","ref":"82c16fa72b16ce8a83fc496ed3b33f5df665a53a","file":"swir-stable-10172.js","notes":"Current Stable."},
     {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE — ROLLBACK","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"Previous Stable rollback."},
     {"id":"9.9.2","channel":"stable","label":"9.9.2 STABLE — ROLLBACK","ref":"c16d6ec57b9063cd9c731f501e5c0cc14adb5c60","file":"swir-stable-992.js","notes":"Older stable rollback."},
-    {"id":"10.27-beta","channel":"beta","label":"10.27 BETA — ACK ROUTE PIN","ref":"f92d5a06a4281f3835e55319d7fcd0a54ce2751a","file":"swir-beta-1027.js","notes":"Current beta. Keeps 10.22 timing unchanged but redirects outgoing code 85 after a fresh ACK 8/4 to the exact still-open WebSocket that delivered that ACK. Falls back to original routing if the ACK socket is closed/stale. Includes 10.26 diagnostics, 10.25 merge and frozen MIX 10.19."},
-    {"id":"10.26-beta","channel":"beta","label":"10.26 BETA — ACK ROUTE TRACE","ref":"591336feb3d7a21ce9ce9711c795b724b60446d1","file":"swir-beta-1026.js","notes":"Immediate diagnostic rollback. Correlates ACK 8/4 with the following code 85 and flags ROUTE_MISMATCH without changing routing."},
-    {"id":"10.25-beta","channel":"beta","label":"10.25 BETA — SNAPSHOT MERGE","ref":"3cd39d15fcf8406009efe4f959f690c64caf2fb7","file":"swir-beta-1025.js","notes":"Snapshot merge rollback. Prevents fresh 159 from one socket from blindly erasing friends seen on another socket."},
-    {"id":"10.24-beta","channel":"beta","label":"10.24 BETA — SNAPSHOT TRACE","ref":"3bf19392acf82b610be55714995fa3a21005004b","file":"swir-beta-1024.js","notes":"Diagnostic rollback. Records each incoming 159 by connection/room and flags divergent snapshots without changing state arbitration."},
-    {"id":"10.23-beta","channel":"beta","label":"10.23 BETA — QUEUE WATCH","ref":"2d526138c4f9e178c1c3d2ffba4f76f2870bdb27","file":"swir-beta-1023.js","notes":"Queue Watch rollback. Bounded one-at-a-time retries plus snapshot-drop diagnostics."},
-    {"id":"10.22-beta","channel":"beta","label":"10.22 BETA — FRIEND ACK SYNC","ref":"4d8caf877175893ded41d4fd86e487e97c8004f5","file":"swir-beta-1022.js","notes":"ACK Sync rollback. send 8/4, wait for server 8/4 ACK, then 85 and 159 rooms[]."},
-    {"id":"10.20-beta","channel":"beta","label":"10.20 BETA — FRIEND IDENTITY GUARD","ref":"181b05e42630c2fa0168225d8a7d90615595d7b9","file":"swir-beta-1020.js","notes":"Identity-guard rollback. Canonical nick and context-menu experiments; no Honour Probe."},
+    {"id":"10.28-beta","channel":"beta","label":"10.28 BETA — ACK ROUTE GUARD","ref":"805ef6445c59ad1e0bee6c0a86e0d0d90aac6ded","file":"swir-beta-1028.js","notes":"Current beta. Replaces global lastAck pinning with per-socket ACK candidates. Code 85 is redirected only when one fresh ACK socket exists; multiple fresh candidates are logged as ambiguous instead of guessed."},
+    {"id":"10.27-beta","channel":"beta","label":"10.27 BETA — ACK ROUTE PIN","ref":"f92d5a06a4281f3835e55319d7fcd0a54ce2751a","file":"swir-beta-1027.js","notes":"Immediate rollback. Uses a global lastAck pin for code 85."},
+    {"id":"10.26-beta","channel":"beta","label":"10.26 BETA — ACK ROUTE TRACE","ref":"591336feb3d7a21ce9ce9711c795b724b60446d1","file":"swir-beta-1026.js","notes":"Diagnostic rollback. Correlates ACK 8/4 with following code 85 without changing routing."},
+    {"id":"10.25-beta","channel":"beta","label":"10.25 BETA — SNAPSHOT MERGE","ref":"3cd39d15fcf8406009efe4f959f690c64caf2fb7","file":"swir-beta-1025.js","notes":"Snapshot merge rollback."},
+    {"id":"10.24-beta","channel":"beta","label":"10.24 BETA — SNAPSHOT TRACE","ref":"3bf19392acf82b610be55714995fa3a21005004b","file":"swir-beta-1024.js","notes":"Per-connection snapshot diagnostic rollback."},
+    {"id":"10.23-beta","channel":"beta","label":"10.23 BETA — QUEUE WATCH","ref":"2d526138c4f9e178c1c3d2ffba4f76f2870bdb27","file":"swir-beta-1023.js","notes":"Bounded one-at-a-time retry rollback."},
+    {"id":"10.22-beta","channel":"beta","label":"10.22 BETA — FRIEND ACK SYNC","ref":"4d8caf877175893ded41d4fd86e487e97c8004f5","file":"swir-beta-1022.js","notes":"ACK Sync rollback."},
+    {"id":"10.20-beta","channel":"beta","label":"10.20 BETA — FRIEND IDENTITY GUARD","ref":"181b05e42630c2fa0168225d8a7d90615595d7b9","file":"swir-beta-1020.js","notes":"Identity guard rollback."},
     {"id":"10.19-beta","channel":"beta","label":"10.19 BETA — COLOR-ALIGNED MIX","ref":"345f201a2ceae4a619e8d96e8e5f54e1cbea77b1","file":"swir-beta-1019.js","notes":"User-confirmed working MIX 8/8 build and writing rollback."},
     {"id":"10.18-beta","channel":"beta","label":"10.18 BETA — ROLLBACK MIX FIX","ref":"39124e1cfc46a270a1d45a2da6a6b474cd1fc852","file":"swir-beta-1018.js","notes":"Older MIX/ICE beta."},
-    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen Friend Radar baseline previously confirmed working for server-returned friends."}
+    {"id":"10.17-beta","channel":"beta","label":"10.17 BETA — APK EXACT ROOMS","ref":"627f38c79ca474f53b266c74fa2136c3f4df7c76","file":"swir-beta-1017.js","notes":"Frozen Friend Radar baseline."}
   ]
 }
