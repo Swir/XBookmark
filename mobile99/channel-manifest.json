@@ -1,23 +1,23 @@
 {
   "schema": 1,
-  "launcherVersion": "2.0-mobile",
-  "updatedAt": "2026-09-12T09:30:00Z",
+  "launcherVersion": "2.1-mobile",
+  "updatedAt": "2026-09-12T10:21:00Z",
   "stable": {
-    "id": "9.9",
-    "label": "XBookmark 9.9",
+    "id": "10.17.2",
+    "label": "XBookmark 10.17.2 STABLE",
     "badge": "RECOMMENDED",
-    "ref": "8ef1a5773f98780094c65042c2e622852ea6eb29",
-    "file": "swir.js",
-    "description": "Sprawdzona wersja Stable. Friend Radar, szybkie akcje, motywy i stabilna baza 9.9.",
+    "ref": "82c16fa72b16ce8a83fc496ed3b33f5df665a53a",
+    "file": "swir-stable-10172.js",
+    "description": "Aktualny Stable — wersja rekomendowana z głównego katalogu XBookmark.",
     "accent": "#00E5FF"
   },
   "beta": {
-    "id": "10.1-beta",
-    "label": "XBookmark 10.1 BETA",
+    "id": "10.29-beta",
+    "label": "XBookmark 10.29 BETA",
     "badge": "BETA",
-    "ref": "czateria-plus-mobile-99",
-    "file": "swir-beta-101.js",
-    "description": "Najnowszy kanał testowy z nowymi funkcjami. Może zmieniać się częściej niż Stable.",
+    "ref": "f5f9d7fd27fcd4e6e8eca13115cf5daf26a0ac9b",
+    "file": "swir-beta-1029.js",
+    "description": "Aktualna Beta — SYMBOL SAFE NICKS. Zachowuje znaki specjalne w nickach i bieżące poprawki Friend/ACK.",
     "accent": "#FF69DF"
   }
 }
