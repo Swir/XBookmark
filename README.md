@@ -1,135 +1,127 @@
-# XBookmark — SWIR Version Launcher
+# XBookmark — SWIR MOD
 
 Centralne repozytorium bookmarka **SWIR MOD dla CZATerii**.
 
 ## Aktualny stan
 
-- **Launcher:** 5.3 — STABLE + BETA
-- **STABLE / recommended:** **10.17.2**
-- **BETA:** **10.29 — SYMBOL SAFE NICKS**
-- **BETA immediate rollback:** **10.28 — ACK ROUTE GUARD**
-- **BETA writing rollback:** **10.19 — potwierdzony działający MIX 8/8**
-- **Honour Probe:** usunięty i nie jest ładowany
+- **Launcher:** 5.4
+- **Rekomendowana wersja:** **10.29 STABLE**
+- **Najnowsza BETA:** **10.28 — ACK ROUTE GUARD**
+- Launcher pokazuje dokładnie **3 wersje STABLE** i **3 wersje BETA**.
 
-## 10.29 BETA — SYMBOL SAFE NICKS
+## 10.29 STABLE — SYMBOL SAFE NICKS + ACK ROUTE GUARD
 
-10.28 została zgłoszona jako ogólnie działająca, ale test ujawnił ważny błąd tożsamości użytkownika: nick zawierający `:` mógł być ucinany w wiadomości, przestać działać po kliknięciu/odpowiedzi i potencjalnie nie zgadzać się z wpisem używanym przez Friend Radar.
+10.29 STABLE łączy poprawki identyfikacji nicków, Friend Radaru, routingu ACK oraz synchronizacji `rooms[]`.
 
-### Znaleziona przyczyna
+### Naprawione nicki ze znakami specjalnymi
 
-Stary Nick Integrity odczytywał tekst loginu z wiadomości i wykonywał logikę równoważną:
-
-```javascript
-const pos = raw.indexOf(':');
-if (pos >= 0) raw = raw.slice(0, pos);
-```
-
-To było błędne założenie. Dla prawdziwego nicka:
-
-```text
-ABC:XYZ
-```
-
-SWIR potrafił uznać, że login to tylko:
-
-```text
-ABC
-```
-
-Dodatkowo starsze warstwy Friends Core, panelu Znajomych i Snapshot Merge usuwały końcowy `:` podczas normalizacji. Oznaczało to, że nick kończący się dwukropkiem również mógł być traktowany jako inna osoba.
-
-### Zasada 10.29
-
-**Znaki nicka są częścią tożsamości.**
-
-10.29 nie usuwa z loginu `:`, `.`, `-`, nawiasów ani innych prawidłowych znaków interpunkcyjnych. Normalizowane są wyłącznie rzeczy, które nie są loginem, takie jak znane znaczniki telefonu i niewidzialne znaki techniczne.
-
-W wiadomości CZATeria renderuje login jako:
-
-```text
-DOKŁADNY_NICK + ": "
-```
-
-Dlatego Nick Integrity 10.29 usuwa podczas odczytu DOM **wyłącznie jeden ostatni dwukropek będący separatorem interfejsu**. Nie dzieli tekstu po pierwszym dwukropku.
+Dwukropek i pozostałe prawidłowe znaki są traktowane jako część loginu. Nick nie jest dzielony po pierwszym `:` i nie jest skracany podczas obsługi wiadomości, odpowiedzi ani listy Znajomych.
 
 Przykłady:
 
-- `ABC:XYZ: ` → nick `ABC:XYZ`
-- `ABC:: ` → nick `ABC:`
-- `ABC-XYZ: ` → nick `ABC-XYZ`
+```text
+ABC:XYZ:  → ABC:XYZ
+ABC::      → ABC:
+ABC-XYZ:   → ABC-XYZ
+```
 
-### Friends / lokalizacja
+Usuwany jest wyłącznie jeden końcowy dwukropek dodawany przez interfejs CZATerii jako separator loginu od wiadomości.
 
-Ta sama zasada obowiązuje od początku do końca Friend Radaru:
+### Spójna tożsamość Friend Radaru
 
-`dokładny nick → UserData → UID → 8/4 username → ACK → 85 → 159.name → rooms[]`
+Pełny nick jest zachowywany w całym łańcuchu:
 
-10.29 zachowuje pełny nick w:
+```text
+dokładny nick → UserData → UID → 8/4 username → ACK → 85 → 159.name → rooms[]
+```
 
-- lokalnej liście Znajomych,
-- wyszukiwaniu `UserData`,
+Dotyczy to:
+
+- lokalnej listy Znajomych,
+- wyszukiwania `UserData`,
 - cache UID,
-- polu `username` pakietu `8/4`,
-- przychodzącym ACK `8/4`,
-- kluczach użytkowników z `159`,
+- pola `username` pakietu `8/4`,
+- przychodzącego ACK `8/4`,
+- kluczy użytkowników w `159`,
 - Snapshot Merge,
 - panelu Znajomi.
 
-Symbol-safe Friends Core zachowuje również blokadę starych pakietów Friend Radaru z bazowego 9.7/10.6, aby dawny timer nie wysyłał równolegle własnego `8/4` lub `85`.
+### ACK Route Guard
 
-## Co 10.29 zachowuje z 10.28
+Routing `code 85` korzysta ze świeżych ACK przypisanych do konkretnych socketów. Gdy istnieje dokładnie jeden właściwy kandydat, zapytanie jest kierowane na jego połączenie. Przy kilku równoczesnych kandydatach mechanizm nie zgaduje trasy.
 
-Mechanika routingu, nad którą pracowaliśmy wcześniej, pozostaje:
+### Snapshot Merge
 
-`UID → 8/4 → ACK 8/4 → ACK Route Guard → 85 → 159 → rooms[]`
+Świeże odpowiedzi `159` są scalane per połączenie przez ograniczony czas. Zapobiega to sytuacji, w której częściowy snapshot z jednego socketu nadpisuje pełniejsze dane o znajomych z innego połączenia.
 
-Pozostają również:
+### Kolejka Friends
 
-- bounded Queue Watch,
-- śledzenie wielu połączeń,
-- świeży merge `159` per połączenie z TTL 15 s,
-- per-socket ACK Route Guard 10.28,
-- prosty panel **Znajomi / Odśwież / Dodaj**,
-- działający MIX 8/8 z 10.19,
+Synchronizacja znajomych działa sekwencyjnie z ograniczonym retry dla stanów `NO_ACK` oraz `ACK_NO_159`. Format pakietów i kolejność `8/4 → ACK → 85 → 159` pozostają kontrolowane przez aktualny Friends Core.
+
+### Interfejs
+
+Panel zachowuje prosty układ:
+
+- **Znajomi**
+- **Pokoje**
+- **Odśwież**
+- **Dodaj**
+
+Główny branding pozostaje **SWIR MOD**. Dodatkowe techniczne oznaczenia APP/PC/SWIR/HONOUR nie są wyświetlane.
+
+### Pisanie i motyw
+
+10.29 STABLE zawiera:
+
+- MIX 8/8,
+- Color Writing,
 - ICE dark text,
-- brak Honour Probe.
+- ochronę natywnej struktury nicków.
+
+## Wersje w Launcherze 5.4
+
+### STABLE
+
+1. **10.29 STABLE — RECOMMENDED** — symbol-safe nicki, ACK Route Guard, Snapshot Merge, Friends/rooms[], MIX 8/8.
+2. **10.17.2 STABLE** — APK Exact Friends, MIX 8/8, ICE v2, ochrona natywnego kształtu nicków.
+3. **10.17.1 STABLE** — APK Exact Rooms, MIX 8/8, przebudowane kolory ICE.
+
+### BETA
+
+1. **10.28 BETA — ACK ROUTE GUARD** — routing `85` oparty o świeże ACK per socket.
+2. **10.27 BETA — ACK ROUTE PIN** — przypięcie `85` do socketu z ostatnim świeżym ACK.
+3. **10.26 BETA — ACK ROUTE TRACE** — diagnostyka trasy `ACK 8/4 → 85` per połączenie.
 
 ## Diagnostyka 10.29
 
 ```javascript
 SWIR_NICK_INTEGRITY1029?.diagnostics?.()
 SWIR_FRIENDS_SYMBOL1029?.diagnostics?.()
-SWIR_BETA1029?.diagnostics?.()
+SWIR_STABLE1029?.diagnostics?.()
 ```
 
-`SWIR_NICK_INTEGRITY1029.diagnostics()` pokazuje m.in. liczbę nicków zawierających `:`. Friends diagnostics pokazuje `symbolFriends`, pełne nicki, UID, stan kolejki oraz rooms[].
+Najważniejsze elementy diagnostyki obejmują pełne nicki, UID, stan kolejki, `rooms[]`, routing ACK oraz dane Snapshot Merge.
 
-## Jak testować 10.29
+## Architektura 10.29
 
-1. Zrób **Ctrl+F5**.
-2. XBookmark → **BETA → 10.29 BETA — SYMBOL SAFE NICKS**.
-3. Znajdź osobę z `:` w środku lub na końcu nicka.
-4. Sprawdź, czy przy wiadomości widać **cały nick**.
-5. Kliknij nick i sprawdź odpowiedź / natywne menu.
-6. Dodaj tę osobę do **Znajomych** pełnym nickiem.
-7. Kliknij **Odśwież** i sprawdź jej pokoje.
-8. Jeżeli masz możliwość, sprawdź też nick z innym nietypowym znakiem.
-
-Jeśli znajomy z takim nickiem został dodany w starej wersji już po ucięciu nazwy, usuń ten błędny wpis i dodaj go ponownie w 10.29 — utraconego fragmentu nicka nie da się pewnie odtworzyć z samego starego wpisu.
-
-## Launcher 5.3
-
-- **STABLE 10.17.2** — bez zmian,
-- **BETA 10.29** — Symbol Safe Nicks,
-- **BETA 10.28** — ACK Route Guard / immediate rollback,
-- **BETA 10.27** — ACK Route Pin rollback,
-- **BETA 10.26** — ACK Route Trace rollback,
-- **BETA 10.25** — Snapshot Merge rollback,
-- **BETA 10.24** — Snapshot Trace rollback,
-- **BETA 10.23** — Queue Watch rollback,
-- **BETA 10.22** — ACK Sync rollback,
-- **BETA 10.19** — working MIX 8/8 rollback.
+```text
+10.6 UI base
+  ↓
+Symbol-Safe Nick Integrity
+  ↓
+Symbol-Safe Friends Core
+  ↓
+ACK Route Guard
+  ↓
+Bounded Friends Queue
+  ↓
+Per-connection 159 Snapshot Merge
+  ↓
+Clean Friends Panel
+  ↓
+MIX 8/8 + ICE dark text
+```
 
 ---
 
-**Aktualny układ: Launcher 5.3 • 10.17.2 STABLE • 10.29 BETA SYMBOL SAFE NICKS • 10.28 immediate rollback • 10.19 working MIX rollback**
+**SWIR MOD • Launcher 5.4 • 10.29 STABLE • 10.28 / 10.27 / 10.26 BETA**
