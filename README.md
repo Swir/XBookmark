@@ -1,127 +1,104 @@
 # XBookmark — SWIR MOD
 
-Centralne repozytorium bookmarka **SWIR MOD dla CZATerii**.
+XBookmark to bookmarklet uruchamiający **SWIR MOD** na stronie CZATeria. Projekt dodaje własny launcher wersji oraz dodatkowe funkcje do interfejsu czatu bez instalowania rozszerzenia przeglądarki.
 
-## Aktualny stan
+Aktualny kanał główny:
 
 - **Launcher:** 5.4
-- **Rekomendowana wersja:** **10.29 STABLE**
-- **Najnowsza BETA:** **10.28 — ACK ROUTE GUARD**
-- Launcher pokazuje dokładnie **3 wersje STABLE** i **3 wersje BETA**.
+- **Rekomendowany Stable:** 10.29
+- **Najnowsza Beta w launcherze:** 10.28
+- Launcher pokazuje zawsze **3 ostatnie wersje Stable** i **3 ostatnie wersje Beta**.
 
-## 10.29 STABLE — SYMBOL SAFE NICKS + ACK ROUTE GUARD
+## Do czego służy XBookmark
 
-10.29 STABLE łączy poprawki identyfikacji nicków, Friend Radaru, routingu ACK oraz synchronizacji `rooms[]`.
+Po uruchomieniu bookmarkletu na CZATerii ładowany jest launcher SWIR MOD. Z niego możesz wybrać wersję Stable lub Beta.
 
-### Naprawione nicki ze znakami specjalnymi
+Najważniejsze elementy obecnej wersji obejmują:
 
-Dwukropek i pozostałe prawidłowe znaki są traktowane jako część loginu. Nick nie jest dzielony po pierwszym `:` i nie jest skracany podczas obsługi wiadomości, odpowiedzi ani listy Znajomych.
+- własny launcher Stable / Beta,
+- panel znajomych i wykrywanie pokojów, w których aktualnie znajdują się znajomi,
+- bezpieczniejsze rozpoznawanie nicków zawierających znaki specjalne,
+- obsługę odpowiedzi po nicku,
+- mechanizmy synchronizacji listy znajomych i pokojów,
+- MIX stylów pisania,
+- motyw ICE,
+- diagnostykę połączeń i mechanizmy ACK / snapshot wykorzystywane przez nowsze wersje.
 
-Przykłady:
+Projekt działa wyłącznie jako modyfikacja interfejsu strony po stronie przeglądarki. Nie wymaga instalowania osobnego programu.
 
-```text
-ABC:XYZ:  → ABC:XYZ
-ABC::      → ABC:
-ABC-XYZ:   → ABC-XYZ
-```
+## Bookmarklet — kod do zakładki
 
-Usuwany jest wyłącznie jeden końcowy dwukropek dodawany przez interfejs CZATerii jako separator loginu od wiadomości.
-
-### Spójna tożsamość Friend Radaru
-
-Pełny nick jest zachowywany w całym łańcuchu:
-
-```text
-dokładny nick → UserData → UID → 8/4 username → ACK → 85 → 159.name → rooms[]
-```
-
-Dotyczy to:
-
-- lokalnej listy Znajomych,
-- wyszukiwania `UserData`,
-- cache UID,
-- pola `username` pakietu `8/4`,
-- przychodzącego ACK `8/4`,
-- kluczy użytkowników w `159`,
-- Snapshot Merge,
-- panelu Znajomi.
-
-### ACK Route Guard
-
-Routing `code 85` korzysta ze świeżych ACK przypisanych do konkretnych socketów. Gdy istnieje dokładnie jeden właściwy kandydat, zapytanie jest kierowane na jego połączenie. Przy kilku równoczesnych kandydatach mechanizm nie zgaduje trasy.
-
-### Snapshot Merge
-
-Świeże odpowiedzi `159` są scalane per połączenie przez ograniczony czas. Zapobiega to sytuacji, w której częściowy snapshot z jednego socketu nadpisuje pełniejsze dane o znajomych z innego połączenia.
-
-### Kolejka Friends
-
-Synchronizacja znajomych działa sekwencyjnie z ograniczonym retry dla stanów `NO_ACK` oraz `ACK_NO_159`. Format pakietów i kolejność `8/4 → ACK → 85 → 159` pozostają kontrolowane przez aktualny Friends Core.
-
-### Interfejs
-
-Panel zachowuje prosty układ:
-
-- **Znajomi**
-- **Pokoje**
-- **Odśwież**
-- **Dodaj**
-
-Główny branding pozostaje **SWIR MOD**. Dodatkowe techniczne oznaczenia APP/PC/SWIR/HONOUR nie są wyświetlane.
-
-### Pisanie i motyw
-
-10.29 STABLE zawiera:
-
-- MIX 8/8,
-- Color Writing,
-- ICE dark text,
-- ochronę natywnej struktury nicków.
-
-## Wersje w Launcherze 5.4
-
-### STABLE
-
-1. **10.29 STABLE — RECOMMENDED** — symbol-safe nicki, ACK Route Guard, Snapshot Merge, Friends/rooms[], MIX 8/8.
-2. **10.17.2 STABLE** — APK Exact Friends, MIX 8/8, ICE v2, ochrona natywnego kształtu nicków.
-3. **10.17.1 STABLE** — APK Exact Rooms, MIX 8/8, przebudowane kolory ICE.
-
-### BETA
-
-1. **10.28 BETA — ACK ROUTE GUARD** — routing `85` oparty o świeże ACK per socket.
-2. **10.27 BETA — ACK ROUTE PIN** — przypięcie `85` do socketu z ostatnim świeżym ACK.
-3. **10.26 BETA — ACK ROUTE TRACE** — diagnostyka trasy `ACK 8/4 → 85` per połączenie.
-
-## Diagnostyka 10.29
+Skopiuj **cały kod poniżej w jednej linii** i wklej go jako adres URL zakładki:
 
 ```javascript
-SWIR_NICK_INTEGRITY1029?.diagnostics?.()
-SWIR_FRIENDS_SYMBOL1029?.diagnostics?.()
-SWIR_STABLE1029?.diagnostics?.()
+javascript:(async()=>{if(!/(^|\.)czateria\.interia\.pl$/i.test(location.hostname)){alert('SWIR: otworz CZATerie');return}const add=(u,f)=>{const s=document.createElement('script');s.src=u;s.onerror=f||(()=>alert('SWIR: blad pobierania'));document.head.appendChild(s)};const safe=()=>add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@8ef1a5773f98780094c65042c2e622852ea6eb29/swir.js?v='+Date.now(),()=>alert('SWIR: nie udalo sie uruchomic nawet 9.9 SAFE FALLBACK'));try{const r=await fetch('https://api.github.com/repos/Swir/XBookmark/commits/main?x='+Date.now(),{cache:'no-store'}),j=await r.json(),h=j.sha;if(!h)throw Error('brak SHA');add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@'+h+'/swir.js?v='+Date.now(),safe)}catch(e){safe()}})()
 ```
 
-Najważniejsze elementy diagnostyki obejmują pełne nicki, UID, stan kolejki, `rooms[]`, routing ACK oraz dane Snapshot Merge.
+## Jak uruchomić
 
-## Architektura 10.29
+### Chrome / Edge / Chromium
 
-```text
-10.6 UI base
-  ↓
-Symbol-Safe Nick Integrity
-  ↓
-Symbol-Safe Friends Core
-  ↓
-ACK Route Guard
-  ↓
-Bounded Friends Queue
-  ↓
-Per-connection 159 Snapshot Merge
-  ↓
-Clean Friends Panel
-  ↓
-MIX 8/8 + ICE dark text
-```
+1. Otwórz menedżer zakładek albo pasek zakładek.
+2. Dodaj nową zakładkę.
+3. Nazwij ją np. **SWIR MOD**.
+4. W polu **URL / Adres** wklej cały kod bookmarkletu z sekcji wyżej.
+5. Zapisz zakładkę.
+6. Wejdź na **CZATeria Interia** i zaloguj się do czatu.
+7. Kliknij zakładkę **SWIR MOD**.
+8. Pojawi się launcher, z którego wybierasz wersję Stable lub Beta.
+
+> Ważne: bookmarklet uruchamiaj dopiero po wejściu na CZATerię. Jeśli klikniesz go na innej stronie, pojawi się komunikat `SWIR: otworz CZATerie`.
+
+## Stable i Beta
+
+### Stable
+
+Kanał Stable jest przeznaczony do normalnego używania. Obecnie rekomendowana jest wersja **10.29 STABLE**.
+
+10.29 zawiera m.in.:
+
+- symbol-safe nickname identity,
+- ACK-aware Friends flow,
+- bounded friend queue,
+- per-connection snapshot merge,
+- per-socket ACK Route Guard,
+- czysty panel znajomych,
+- MIX 8/8,
+- ICE z ciemnym tekstem.
+
+### Beta
+
+Kanał Beta służy do testowania nowszych zmian przed przeniesieniem ich do Stable.
+
+W launcherze zachowywane są tylko **3 ostatnie wersje Beta**, aby repo i interfejs pozostawały czytelne.
+
+## Jak działa loader
+
+Bookmarklet:
+
+1. sprawdza aktualny commit gałęzi `main`,
+2. ładuje `swir.js` przypięty do konkretnego SHA,
+3. `swir.js` uruchamia `launcher.js`,
+4. launcher pozwala wybrać konkretną wersję,
+5. wybrane buildy korzystają z zamrożonych commitów SHA, dzięki czemu starsze Stable/Beta pozostają odtwarzalne.
+
+Jeżeli pobranie aktualnej wersji się nie powiedzie, bookmarklet posiada awaryjny fallback do wcześniejszej wersji bazowej.
+
+## Najważniejsze pliki
+
+- `bookmark-loader.txt` — kod bookmarkletu,
+- `swir.js` — entrypoint launchera,
+- `launcher.js` — interfejs wyboru wersji,
+- `version.json` — główny manifest bieżących kanałów,
+- `versions.json` — katalog wersji widocznych w launcherze,
+- `swir-stable-*.js` — zachowane wersje Stable,
+- `swir-beta-*.js` — zachowane wersje Beta.
+
+## Bezpieczeństwo wersji
+
+Starsze buildy używane przez launcher są przypinane do konkretnych commitów SHA. Dzięki temu późniejsze porządki na gałęzi `main` nie zmieniają kodu wcześniej zamrożonych wersji.
 
 ---
 
-**SWIR MOD • Launcher 5.4 • 10.29 STABLE • 10.28 / 10.27 / 10.26 BETA**
+**SWIR MOD / XBookmark**  
+Bookmarklet launcher dla CZATerii z kanałami Stable i Beta.
