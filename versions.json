@@ -1,15 +1,15 @@
 {
-  "launcher": "5.4",
+  "launcher": "5.5",
   "recommended": "10.29",
-  "beta": "10.28-beta",
+  "beta": "10.30-beta",
   "channels": ["stable", "beta"],
-  "architecture": "10.29 STABLE = symbol-safe nickname identity + ACK-aware Friends flow + bounded queue + per-connection 159 merge + per-socket ACK Route Guard + clean Friends panel + MIX 8/8 + ICE dark text.",
+  "architecture": "10.29 STABLE = symbol-safe nickname identity + ACK-aware Friends flow + bounded queue + per-connection 159 merge + per-socket ACK Route Guard + clean Friends panel + MIX 8/8 + ICE dark text. 10.30 BETA adds an isolated ICE readability guard on top of 10.29.",
   "versions": [
     {"id":"10.29","channel":"stable","label":"10.29 STABLE — RECOMMENDED","ref":"d59d32f5c4de212fc6b7022c238ced7e4c719a9c","file":"swir-stable-1029.js","notes":"Fixes nickname parsing for ':' and other punctuation, preserves exact identity through Friends/rooms[], protects ACK→85 routing across sockets and merges fresh 159 snapshots."},
     {"id":"10.17.2","channel":"stable","label":"10.17.2 STABLE","ref":"82c16fa72b16ce8a83fc496ed3b33f5df665a53a","file":"swir-stable-10172.js","notes":"APK Exact Friends with MIX 8/8, ICE v2 and native nickname-shape protection."},
     {"id":"10.17.1","channel":"stable","label":"10.17.1 STABLE","ref":"ca44d190ed8dfbad4b2e7dc90963f19e9d780dd4","file":"swir-stable-10171.js","notes":"APK Exact Rooms with MIX 8/8 and ICE color rework."},
+    {"id":"10.30-beta","channel":"beta","label":"10.30 BETA — ICE READABILITY GUARD","ref":"783ec8acc4c1e224a376f171d7f88c4f90f8933d","file":"swir-beta-1030.js","notes":"Loads the 10.29 Stable architecture and adds an isolated ICE contrast repair that detects near-white message text and forces a readable dark foreground while leaving nickname colors and Friends/ACK/snapshot/MIX behavior unchanged."},
     {"id":"10.28-beta","channel":"beta","label":"10.28 BETA — ACK ROUTE GUARD","ref":"805ef6445c59ad1e0bee6c0a86e0d0d90aac6ded","file":"swir-beta-1028.js","notes":"Uses fresh ACK candidates per socket and avoids guessing when several candidates are active."},
-    {"id":"10.27-beta","channel":"beta","label":"10.27 BETA — ACK ROUTE PIN","ref":"f92d5a06a4281f3835e55319d7fcd0a54ce2751a","file":"swir-beta-1027.js","notes":"Pins code 85 to the socket with the latest fresh ACK 8/4."},
-    {"id":"10.26-beta","channel":"beta","label":"10.26 BETA — ACK ROUTE TRACE","ref":"591336feb3d7a21ce9ce9711c795b724b60446d1","file":"swir-beta-1026.js","notes":"Traces ACK 8/4 → code 85 per connection to expose routing mismatches without changing routing."}
+    {"id":"10.27-beta","channel":"beta","label":"10.27 BETA — ACK ROUTE PIN","ref":"f92d5a06a4281f3835e55319d7fcd0a54ce2751a","file":"swir-beta-1027.js","notes":"Pins code 85 to the socket with the latest fresh ACK 8/4."}
   ]
 }
