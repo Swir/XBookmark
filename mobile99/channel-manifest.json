@@ -1,22 +1,22 @@
 {
   "schema": 1,
   "launcherVersion": "auto-main",
-  "updatedAt": "2026-09-12T10:23:25Z",
+  "updatedAt": "2026-09-14T20:00:04Z",
   "stable": {
-    "id": "10.17.2",
-    "label": "XBookmark 10.17.2 STABLE",
+    "id": "10.29",
+    "label": "XBookmark 10.29 STABLE",
     "badge": "RECOMMENDED",
-    "ref": "82c16fa72b16ce8a83fc496ed3b33f5df665a53a",
-    "file": "swir-stable-10172.js",
+    "ref": "d59d32f5c4de212fc6b7022c238ced7e4c719a9c",
+    "file": "swir-stable-1029.js",
     "description": "Aktualny Stable — automatycznie zsynchronizowany z głównym version.json.",
     "accent": "#00E5FF"
   },
   "beta": {
-    "id": "10.29-beta",
-    "label": "XBookmark 10.29 BETA — SYMBOL SAFE NICKS",
+    "id": "10.30-beta",
+    "label": "XBookmark 10.29 STABLE — SYMBOL SAFE NICKS + ACK ROUTE GUARD",
     "badge": "BETA",
-    "ref": "f5f9d7fd27fcd4e6e8eca13115cf5daf26a0ac9b",
-    "file": "swir-beta-1029.js",
+    "ref": "783ec8acc4c1e224a376f171d7f88c4f90f8933d",
+    "file": "swir-beta-1030.js",
     "description": "Aktualna Beta — automatycznie zsynchronizowana z głównym version.json.",
     "accent": "#FF69DF"
   }
