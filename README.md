@@ -4,9 +4,9 @@ XBookmark to bookmarklet uruchamiający **SWIR MOD** na stronie CZATeria. Projek
 
 Aktualny kanał główny:
 
-- **Launcher:** 5.4
+- **Launcher:** 5.5
 - **Rekomendowany Stable:** 10.29
-- **Najnowsza Beta w launcherze:** 10.28
+- **Najnowsza Beta w launcherze:** 10.30
 - Launcher pokazuje zawsze **3 ostatnie wersje Stable** i **3 ostatnie wersje Beta**.
 
 ## Do czego służy XBookmark
@@ -70,6 +70,14 @@ Kanał Stable jest przeznaczony do normalnego używania. Obecnie rekomendowana j
 
 Kanał Beta służy do testowania nowszych zmian przed przeniesieniem ich do Stable.
 
+**10.30 BETA — ICE Readability Guard** bazuje na 10.29 Stable i dodaje wyłącznie poprawkę czytelności motywu ICE:
+
+- wykrywa zbyt jasny tekst wiadomości na jasnym tle,
+- wymusza czytelny ciemny kolor dla treści wiadomości,
+- poprawia kontrast także w nowo pojawiających się wiadomościach,
+- nie zmienia kolorów nicków,
+- nie zmienia Friends, ACK, snapshotów ani MIX.
+
 W launcherze zachowywane są tylko **3 ostatnie wersje Beta**, aby repo i interfejs pozostawały czytelne.
 
 ## Jak działa loader
@@ -92,7 +100,8 @@ Jeżeli pobranie aktualnej wersji się nie powiedzie, bookmarklet posiada awaryj
 - `version.json` — główny manifest bieżących kanałów,
 - `versions.json` — katalog wersji widocznych w launcherze,
 - `swir-stable-*.js` — zachowane wersje Stable,
-- `swir-beta-*.js` — zachowane wersje Beta.
+- `swir-beta-*.js` — zachowane wersje Beta,
+- `swir-ice-contrast-1030.js` — izolowana poprawka kontrastu ICE dla 10.30 Beta.
 
 ## Bezpieczeństwo wersji
 
