@@ -1,8 +1,8 @@
 {
   "name": "SWIR XBookmark",
-  "launcher": "5.4",
+  "launcher": "5.5",
   "recommended": "10.29",
-  "beta": "10.28-beta",
+  "beta": "10.30-beta",
   "channel": "launcher",
   "title": "10.29 STABLE — SYMBOL SAFE NICKS + ACK ROUTE GUARD",
   "source": "https://github.com/Swir/XBookmark",
@@ -10,8 +10,8 @@
   "catalog": "versions.json",
   "stable_file": "swir-stable-1029.js",
   "stable_ref": "d59d32f5c4de212fc6b7022c238ced7e4c719a9c",
-  "beta_file": "swir-beta-1028.js",
-  "beta_ref": "805ef6445c59ad1e0bee6c0a86e0d0d90aac6ded",
+  "beta_file": "swir-beta-1030.js",
+  "beta_ref": "783ec8acc4c1e224a376f171d7f88c4f90f8933d",
   "base_106_ref": "9f6124e32f6a50520f4e9da6c7d504b4dc91d163",
   "nick_integrity_1029_ref": "0589c6fb6b949e4132e81c0b6e0de8cd5475b456",
   "friend_symbol_core_ref": "4ff412a6600dfb2d46ba12fb2d18dea8ab5b2b54",
@@ -22,6 +22,7 @@
   "ack_route_guard_ref": "9ab0d0cd080e999080aaaf97060deec26b9aaafd",
   "writing_overlay_ref": "30eb32ae756c7692f70323f5f6e0bed7211fbe18",
   "ice_overlay_ref": "39124e1cfc46a270a1d45a2da6a6b474cd1fc852",
+  "ice_contrast_1030_ref": "5b169e57c886a2dcadc9d1bb558af3f28437e61e",
   "nick_policy": "Nickname punctuation is preserved as identity data. One final native CZATeria display delimiter is removed only while parsing the message-login DOM label.",
   "friends_policy": "Exact nickname identity is preserved through local Friends storage, UserData resolution, outgoing 8/4 username, incoming ACK, 159 snapshot keys and rooms panel lookup.",
   "legacy_guard_policy": "Friend packets from older background timers are blocked so they cannot race the current 8/4 and 85 flow.",
@@ -29,6 +30,7 @@
   "snapshot_policy": "Fresh 159 snapshots are merged per connection with a 15-second TTL to reduce partial-snapshot loss.",
   "rooms_policy": "The Friends panel keeps simple labels and preserves exact nicknames, including punctuation.",
   "mix_policy": "MIX 8/8 is loaded from the frozen writing module.",
-  "launcher_policy": "Launcher shows exactly three Stable versions and three Beta versions. 10.29 is recommended Stable; 10.28 is the newest Beta.",
+  "ice_policy": "10.30 Beta layers an isolated readability guard over the 10.29 Stable base. In ICE it detects near-white message text and forces a readable dark foreground without changing nick colors or Friends/ACK/snapshot/MIX logic.",
+  "launcher_policy": "Launcher shows exactly three Stable versions and three Beta versions. 10.29 is recommended Stable; 10.30 is the newest Beta.",
   "loader": "bookmark-loader.txt"
 }
