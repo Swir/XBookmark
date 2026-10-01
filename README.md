@@ -9,7 +9,7 @@
 ![Platform](https://img.shields.io/badge/Browser-Chromium-02050A?style=for-the-badge&logo=googlechrome&logoColor=62E5FF)
 ![Mode](https://img.shields.io/badge/Mode-Bookmarklet-02050A?style=for-the-badge&logo=javascript&logoColor=62E5FF)
 ![Stable](https://img.shields.io/badge/Stable-10.29-02050A?style=for-the-badge&logo=checkmarx&logoColor=62E5FF)
-![Beta](https://img.shields.io/badge/Beta-10.30-02050A?style=for-the-badge&logo=github&logoColor=62E5FF)
+![Beta](https://img.shields.io/badge/Beta-10.31-02050A?style=for-the-badge&logo=github&logoColor=62E5FF)
 
 [![Author](https://img.shields.io/badge/Author-Swir-0088FF?style=flat-square&logo=github)](https://github.com/Swir)
 [![Stars](https://img.shields.io/github/stars/Swir/XBookmark?style=flat-square&color=0088FF)](https://github.com/Swir/XBookmark/stargazers)
@@ -32,9 +32,9 @@
 |---|---|
 | Current stage | Maintained Stable + Beta bookmarklet launcher |
 | Target site | CZATeria / `czateria.interia.pl` |
-| Launcher | 5.5 |
+| Launcher | 5.6 |
 | Recommended Stable | 10.29 |
-| Newest Beta | 10.30 |
+| Newest Beta | 10.31 |
 | Public GitHub release | None; channels are delivered from repository-pinned scripts |
 | Product roadmap | No canonical measurable roadmap |
 
@@ -55,9 +55,10 @@ The project is site-specific: it augments the page after the user opens CZATeria
 | 🔖 Bookmarklet launcher | Starts SWIR MOD directly from a browser bookmark. |
 | 🧭 Stable / Beta selector | Lets users choose between the supported Stable and Beta channels. |
 | 👥 Friends panel | Maintains local friend identities and room lookup behavior used by current builds. |
+| 💬 Virtual Rooms | 10.31 Beta can create client-side group rooms with invitations and group fan-out over ordinary CZATeria private messages. |
 | 🧩 Symbol-safe nick handling | Preserves nickname punctuation through current Friends/ACK/snapshot flows. |
 | 🔁 Version pinning | Older builds use frozen commit SHA references so later `main` changes do not rewrite them. |
-| 🧊 ICE theme layer | Current Beta adds an isolated readability guard for overly bright message text. |
+| 🧊 ICE theme layer | 10.30+ includes an isolated readability guard for overly bright message text. |
 | 🧪 Diagnostics | Newer builds contain ACK/snapshot/route diagnostics used to troubleshoot friend-room detection. |
 
 ## ⚙️ Quick Start
@@ -70,6 +71,14 @@ The project is site-specific: it augments the page after the user opens CZATeria
 4. Open `https://czateria.interia.pl/` and sign in normally.
 5. Click the saved bookmark.
 6. Choose a Stable or Beta build from the SWIR MOD launcher.
+
+### Bookmarklet code
+
+Copy this entire line into the **URL / Address** field of a browser bookmark:
+
+```javascript
+javascript:(async()=>{if(!/(^|\.)czateria\.interia\.pl$/i.test(location.hostname)){alert('SWIR: otworz CZATerie');return}const add=(u,f)=>{const s=document.createElement('script');s.src=u;s.onerror=f||(()=>alert('SWIR: blad pobierania'));document.head.appendChild(s)};const safe=()=>add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@8ef1a5773f98780094c65042c2e622852ea6eb29/swir.js?v='+Date.now(),()=>alert('SWIR: nie udalo sie uruchomic nawet 9.9 SAFE FALLBACK'));try{const r=await fetch('https://api.github.com/repos/Swir/XBookmark/commits/main?x='+Date.now(),{cache:'no-store'}),j=await r.json(),h=j.sha;if(!h)throw Error('brak SHA');add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@'+h+'/swir.js?v='+Date.now(),safe)}catch(e){safe()}})()
+```
 
 The bookmarklet refuses to run on unrelated hostnames and shows a message instead.
 
@@ -88,9 +97,11 @@ Because XBookmark depends on a third-party website's DOM and client behavior, si
 
 The current recommended Stable line includes symbol-safe nickname identity, ACK-aware Friends flow, a bounded friend queue, per-connection snapshot merge, per-socket ACK route guarding, the current Friends panel, MIX 8/8 and the ICE theme base.
 
-### Beta 10.30
+### Beta 10.31
 
-The current Beta layers an **ICE Readability Guard** over 10.29. It detects near-white message text on light ICE backgrounds and forces a darker readable foreground without intentionally changing nickname colors, Friends logic, ACK routing, snapshots or MIX behavior.
+The newest Beta keeps the 10.30 ICE readability layer and adds **Virtual Rooms**. A user can create a local group room, invite exact nicknames, accept or reject invitations, synchronize membership, send group messages, leave a room, or close it as the owner.
+
+Virtual Rooms are intentionally client-side: they do **not** create a native CZATeria server room and do not use an external SWIR server. Room transport is fanned out through ordinary CZATeria private-message packets and interpreted by SWIR 10.31+. Participants therefore need 10.31+ running for the group-room UI and protocol.
 
 The authoritative channel metadata is stored in [`version.json`](version.json) and [`versions.json`](versions.json).
 
@@ -115,6 +126,7 @@ Key files:
 | `versions.json` | Launcher catalog |
 | `swir-stable-*.js` | Preserved Stable builds |
 | `swir-beta-*.js` | Preserved Beta builds |
+| `swir-rooms-1031.js` | Virtual Rooms transport, membership state and group-room UI for 10.31 Beta |
 
 ## 🗺️ Roadmap
 
@@ -135,12 +147,14 @@ There are currently **no GitHub Releases** for this repository. Distribution is 
 - XBookmark modifies only the current browser page context; it is not an official CZATeria product.
 - Third-party DOM/protocol changes can require maintenance.
 - Beta builds are test builds and may be less stable than the recommended Stable channel.
+- Virtual Rooms in 10.31 are not native CZATeria rooms; every participant needs SWIR 10.31+ for the room protocol and UI.
+- Virtual Room delivery still depends on CZATeria accepting/routing the underlying ordinary private-message transport.
 - The loader executes JavaScript fetched from the XBookmark repository through GitHub/jsDelivr; users should review the source and use only repository-controlled URLs.
 - Use the tool in accordance with the target service's terms and applicable rules. This documentation does not claim moderation, privilege escalation, authentication bypass or access-control capabilities.
 
 ## 🔎 Search Keywords
 
-`CZATeria bookmarklet` • `SWIR MOD launcher` • `browser chat bookmarklet` • `JavaScript bookmarklet launcher` • `Stable Beta script launcher` • `CZATeria friends panel` • `symbol safe nickname handling` • `browser UI modification` • `jsDelivr GitHub bookmarklet` • `client side chat enhancement` • `XBookmark SWIR`
+`CZATeria bookmarklet` • `SWIR MOD launcher` • `browser chat bookmarklet` • `JavaScript bookmarklet launcher` • `Stable Beta script launcher` • `CZATeria friends panel` • `symbol safe nickname handling` • `browser UI modification` • `jsDelivr GitHub bookmarklet` • `client side chat enhancement` • `virtual group room` • `XBookmark SWIR`
 
 <img width="100%" src="https://raw.githubusercontent.com/Swir/Swir/main/assets/power-divider-v4.svg" alt="SWIR electric divider" />
 
