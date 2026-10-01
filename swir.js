@@ -1,4 +1,4 @@
-/* SWIR XBookmark — Launcher 5.5 STABLE + BETA entrypoint */
+/* SWIR XBookmark — Launcher 5.6 STABLE + BETA entrypoint */
 (function(){try{
   const current=(document.currentScript&&document.currentScript.src)||'';
   const m=current.match(/\/gh\/Swir\/XBookmark@([^/]+)\//);
