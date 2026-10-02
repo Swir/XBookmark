@@ -6,7 +6,7 @@
 if(window.__SWIR_BETA1031_BOOT)return;window.__SWIR_BETA1031_BOOT=1;
 const CDN='https://cdn.jsdelivr.net/gh/Swir/XBookmark@';
 const BASE_REF='783ec8acc4c1e224a376f171d7f88c4f90f8933d';
-const ROOMS_REF='115299375d052bdf80d7a013b7306da81a787d0f';
+const ROOMS_REF='4067f6d0c27f1f4a8dbc03c89dc6624477c1c42f';
 function add(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=()=>resolve(src);s.onerror=()=>reject(new Error('load fail: '+src));document.head.appendChild(s)})}
 function waitBase(){return new Promise(resolve=>{let n=0;(function tick(){n++;if(window.SWIR_BETA1030||n>200)return resolve(!!window.SWIR_BETA1030);setTimeout(tick,120)})()})}
 function paint(){try{const p=document.getElementById('configPanel');if(!p)return;p.querySelectorAll('.swir99-ver').forEach(x=>x.textContent='v10.31');p.querySelectorAll('.swir99-badge').forEach(x=>x.remove());const sub=p.querySelector('.sw10-summary,.swir-summary,[data-swir-summary]');if(sub)sub.textContent='SWIR MOD'}catch(e){}}
