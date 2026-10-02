@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "launcherVersion": "auto-main",
-  "updatedAt": "2026-10-01T21:15:32Z",
+  "updatedAt": "2026-10-02T03:38:48Z",
   "stable": {
     "id": "10.29",
     "label": "XBookmark 10.29 STABLE",
@@ -15,7 +15,7 @@
     "id": "10.31-beta",
     "label": "XBookmark 10.29 STABLE — SYMBOL SAFE NICKS + ACK ROUTE GUARD",
     "badge": "BETA",
-    "ref": "304c2a4bec4283eb6e71e9bd91ad7f2adccfe442",
+    "ref": "986c7a71a8b64e438ac2e2efb3cb6bc63a2be790",
     "file": "swir-beta-1031.js",
     "description": "Aktualna Beta — automatycznie zsynchronizowana z głównym version.json.",
     "accent": "#FF69DF"
