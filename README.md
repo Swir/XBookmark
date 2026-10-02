@@ -1,169 +1,89 @@
-<!-- SWIR-README-STANDARD:v2 -->
+# XBookmark — SWIR MOD
 
-<div align="center">
+**XBookmark** to bookmarklet dla CZATerii, który uruchamia **SWIR MOD** bez instalowania rozszerzenia przeglądarki. Po kliknięciu zakładki pojawia się launcher z wersjami **Stable** i **Beta**.
 
-<img width="100%" src="assets/readme/hero.svg" alt="XBookmark — SWIR MOD bookmarklet launcher for CZATeria" />
+## Aktualny stan
 
-<br>
+- **Launcher:** 5.6
+- **Stable:** 10.29
+- **Beta:** 10.31
+- Launcher pokazuje **3 ostatnie Stable + 3 ostatnie Beta**.
 
-![Platform](https://img.shields.io/badge/Browser-Chromium-02050A?style=for-the-badge&logo=googlechrome&logoColor=62E5FF)
-![Mode](https://img.shields.io/badge/Mode-Bookmarklet-02050A?style=for-the-badge&logo=javascript&logoColor=62E5FF)
-![Stable](https://img.shields.io/badge/Stable-10.29-02050A?style=for-the-badge&logo=checkmarx&logoColor=62E5FF)
-![Beta](https://img.shields.io/badge/Beta-10.31-02050A?style=for-the-badge&logo=github&logoColor=62E5FF)
+## Co dodaje SWIR MOD
 
-[![Author](https://img.shields.io/badge/Author-Swir-0088FF?style=flat-square&logo=github)](https://github.com/Swir)
-[![Stars](https://img.shields.io/github/stars/Swir/XBookmark?style=flat-square&color=0088FF)](https://github.com/Swir/XBookmark/stargazers)
+- launcher Stable / Beta,
+- panel znajomych i lokalizacje znajomych w pokojach,
+- obsługę nicków ze znakami specjalnymi,
+- odpowiedzi po nicku,
+- MIX stylów pisania,
+- motyw ICE z poprawioną czytelnością,
+- diagnostykę Friends / ACK / snapshot,
+- **Virtual Rooms w 10.31 Beta** — własne grupowe pokoje widoczne dla użytkowników SWIR 10.31+.
 
-[**Highlights**](#-highlights) · [**Install**](#-quick-start) · [**Channels**](#-stable--beta-channels) · [**Architecture**](#-loader--version-architecture)
+## Bookmarklet
 
-</div>
-
-<p align="center">
-  <img width="100%" src="assets/readme/progress-card.svg" alt="XBookmark product roadmap progress — N/A because no canonical measurable roadmap exists" />
-</p>
-
-**Product roadmap progress:** N/A — XBookmark has version/channel manifests but no canonical checklist or weighted roadmap that supports a truthful product-completion percentage.
-
-<img width="100%" src="https://raw.githubusercontent.com/Swir/Swir/main/assets/power-divider-v4.svg" alt="SWIR electric divider" />
-
-## 📍 Project Status
-
-| Item | Status |
-|---|---|
-| Current stage | Maintained Stable + Beta bookmarklet launcher |
-| Target site | CZATeria / `czateria.interia.pl` |
-| Launcher | 5.6 |
-| Recommended Stable | 10.29 |
-| Newest Beta | 10.31 |
-| Public GitHub release | None; channels are delivered from repository-pinned scripts |
-| Product roadmap | No canonical measurable roadmap |
-
-## 🚀 Overview
-
-**XBookmark** is a browser bookmarklet launcher for **SWIR MOD**, a client-side CZATeria interface modification. It loads a version selector without requiring a browser extension and keeps recent Stable and Beta builds addressable through repository manifests and pinned commit references.
-
-The project is site-specific: it augments the page after the user opens CZATeria and runs the bookmarklet. It does not install a desktop service or system component.
-
-<div align="center">
-<img src="assets/app_icon.svg" alt="XBookmark project icon" width="112" height="112" />
-</div>
-
-## ✨ Highlights
-
-| Feature | What it does |
-|---|---|
-| 🔖 Bookmarklet launcher | Starts SWIR MOD directly from a browser bookmark. |
-| 🧭 Stable / Beta selector | Lets users choose between the supported Stable and Beta channels. |
-| 👥 Friends panel | Maintains local friend identities and room lookup behavior used by current builds. |
-| 💬 Virtual Rooms | 10.31 Beta can create client-side group rooms with invitations and group fan-out over ordinary CZATeria private messages. |
-| 🧩 Symbol-safe nick handling | Preserves nickname punctuation through current Friends/ACK/snapshot flows. |
-| 🔁 Version pinning | Older builds use frozen commit SHA references so later `main` changes do not rewrite them. |
-| 🧊 ICE theme layer | 10.30+ includes an isolated readability guard for overly bright message text. |
-| 🧪 Diagnostics | Newer builds contain ACK/snapshot/route diagnostics used to troubleshoot friend-room detection. |
-
-## ⚙️ Quick Start
-
-### Chrome / Edge / Chromium
-
-1. Open [`bookmark-loader.txt`](bookmark-loader.txt).
-2. Copy the entire `javascript:` bookmarklet as one line.
-3. Create a new browser bookmark and paste the code into its **URL / Address** field.
-4. Open `https://czateria.interia.pl/` and sign in normally.
-5. Click the saved bookmark.
-6. Choose a Stable or Beta build from the SWIR MOD launcher.
-
-### Bookmarklet code
-
-Copy this entire line into the **URL / Address** field of a browser bookmark:
+Skopiuj cały kod poniżej jako **adres URL zakładki**:
 
 ```javascript
 javascript:(async()=>{if(!/(^|\.)czateria\.interia\.pl$/i.test(location.hostname)){alert('SWIR: otworz CZATerie');return}const add=(u,f)=>{const s=document.createElement('script');s.src=u;s.onerror=f||(()=>alert('SWIR: blad pobierania'));document.head.appendChild(s)};const safe=()=>add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@8ef1a5773f98780094c65042c2e622852ea6eb29/swir.js?v='+Date.now(),()=>alert('SWIR: nie udalo sie uruchomic nawet 9.9 SAFE FALLBACK'));try{const r=await fetch('https://api.github.com/repos/Swir/XBookmark/commits/main?x='+Date.now(),{cache:'no-store'}),j=await r.json(),h=j.sha;if(!h)throw Error('brak SHA');add('https://cdn.jsdelivr.net/gh/Swir/XBookmark@'+h+'/swir.js?v='+Date.now(),safe)}catch(e){safe()}})()
 ```
 
-The bookmarklet refuses to run on unrelated hostnames and shows a message instead.
+## Jak uruchomić
 
-## 📋 Requirements / Compatibility
+1. Dodaj nową zakładkę w Chrome / Edge / Chromium.
+2. Nazwij ją np. **SWIR MOD**.
+3. W polu **URL / Adres** wklej kod bookmarkletu z sekcji wyżej.
+4. Otwórz CZATerię i zaloguj się.
+5. Kliknij zakładkę **SWIR MOD**.
+6. W launcherze wybierz Stable albo Beta.
 
-- A modern Chromium-family browser such as Chrome or Edge.
-- Access to the public CZATeria web client.
-- JavaScript/bookmarklets allowed by the browser profile.
-- Network access to GitHub's API and jsDelivr for the loader path used by the current bookmarklet.
+## Stable 10.29
 
-Because XBookmark depends on a third-party website's DOM and client behavior, site changes can break individual features even when the repository itself is unchanged.
+Rekomendowana wersja do normalnego używania. Zawiera aktualny Friends flow, symbol-safe nick identity, snapshot merge, ACK Route Guard, MIX 8/8 oraz bazę motywu ICE.
 
-## 🧪 Stable / Beta Channels
+## Beta 10.31 — Virtual Rooms
 
-### Stable 10.29
+10.31 bazuje na 10.30 i dodaje **własne grupowe pokoje SWIR**.
 
-The current recommended Stable line includes symbol-safe nickname identity, ACK-aware Friends flow, a bounded friend queue, per-connection snapshot merge, per-socket ACK route guarding, the current Friends panel, MIX 8/8 and the ICE theme base.
+Możesz:
 
-### Beta 10.31
+- utworzyć własny pokój,
+- zaprosić użytkownika po nicku,
+- przyjąć albo odrzucić zaproszenie,
+- prowadzić rozmowę grupową,
+- zobaczyć listę członków,
+- wyjść z pokoju,
+- zamknąć pokój jako jego twórca.
 
-The newest Beta keeps the 10.30 ICE readability layer and adds **Virtual Rooms**. A user can create a local group room, invite exact nicknames, accept or reject invitations, synchronize membership, send group messages, leave a room, or close it as the owner.
+Virtual Rooms są funkcją klienta SWIR — nie tworzą nowego oficjalnego pokoju na serwerze CZATerii. Każdy uczestnik powinien mieć uruchomione **SWIR 10.31+**.
 
-Virtual Rooms are intentionally client-side: they do **not** create a native CZATeria server room and do not use an external SWIR server. Room transport is fanned out through ordinary CZATeria private-message packets and interpreted by SWIR 10.31+. Participants therefore need 10.31+ running for the group-room UI and protocol.
+Przy pierwszym zaproszeniu nick musi być widoczny w jednym z otwartych pokojów nadawcy albo być już dostępny przez aktywną rozmowę prywatną. Beta nie zgaduje trasy do niewidocznego nicka.
 
-The authoritative channel metadata is stored in [`version.json`](version.json) and [`versions.json`](versions.json).
+### Test 10.31
 
-## 🧠 Loader & Version Architecture
+1. Na obu komputerach uruchom **10.31 BETA**.
+2. Na pierwszym komputerze kliknij **POKÓJ+**.
+3. Wybierz **Nowy pokój** i podaj nazwę.
+4. Kliknij **Zaproś** i wpisz dokładny nick drugiej osoby.
+5. Druga osoba zobaczy zaproszenie w **POKÓJ+**.
+6. Po zaakceptowaniu wyślij wiadomość z obu stron.
 
-The normal loader flow is:
+## Najważniejsze pliki
 
-1. bookmarklet checks the current `main` commit;
-2. it loads `swir.js` pinned to that SHA;
-3. `swir.js` loads `launcher.js` using the same repository ref;
-4. launcher reads the version catalog and lets the user select a build;
-5. historical Stable/Beta builds use frozen commit SHA references for reproducibility.
+- `bookmark-loader.txt` — bookmarklet,
+- `swir.js` — entrypoint,
+- `launcher.js` — launcher wersji,
+- `version.json` — główny manifest,
+- `versions.json` — katalog 3 Stable + 3 Beta,
+- `swir-beta-1031.js` — bootstrap 10.31,
+- `swir-rooms-1031.js` — Virtual Rooms,
+- `swir-stable-1029.js` — rekomendowany Stable.
 
-Key files:
+## Ważne
 
-| File | Role |
-|---|---|
-| `bookmark-loader.txt` | Copy/paste bookmarklet source |
-| `swir.js` | Lightweight launcher entrypoint |
-| `launcher.js` | Stable/Beta selector UI |
-| `version.json` | Current channel metadata and pinned refs |
-| `versions.json` | Launcher catalog |
-| `swir-stable-*.js` | Preserved Stable builds |
-| `swir-beta-*.js` | Preserved Beta builds |
-| `swir-rooms-1031.js` | Virtual Rooms transport, membership state and group-room UI for 10.31 Beta |
+SWIR MOD działa w kontekście strony CZATerii. Zmiany po stronie serwisu mogą wymagać aktualizacji moda. Wersje historyczne są przypięte do konkretnych commitów SHA, dzięki czemu pozostają odtwarzalne.
 
-## 🗺️ Roadmap
+---
 
-<p align="center">
-  <img width="100%" src="assets/readme/progress-mini.svg" alt="XBookmark roadmap progress — N/A because no canonical checklist exists" />
-</p>
-
-XBookmark currently has release-channel/version manifests rather than an authoritative completion roadmap. The project therefore reports product completion as **N/A**, not as a percentage inferred from version numbers or file count.
-
-## 📦 Releases
-
-There are currently **no GitHub Releases** for this repository. Distribution is repository/channel based through the bookmarklet and pinned scripts.
-
-[**Repository history →**](https://github.com/Swir/XBookmark/commits/main)
-
-## ⚠️ Limitations / Responsible Use
-
-- XBookmark modifies only the current browser page context; it is not an official CZATeria product.
-- Third-party DOM/protocol changes can require maintenance.
-- Beta builds are test builds and may be less stable than the recommended Stable channel.
-- Virtual Rooms in 10.31 are not native CZATeria rooms; every participant needs SWIR 10.31+ for the room protocol and UI.
-- Virtual Room delivery still depends on CZATeria accepting/routing the underlying ordinary private-message transport.
-- The loader executes JavaScript fetched from the XBookmark repository through GitHub/jsDelivr; users should review the source and use only repository-controlled URLs.
-- Use the tool in accordance with the target service's terms and applicable rules. This documentation does not claim moderation, privilege escalation, authentication bypass or access-control capabilities.
-
-## 🔎 Search Keywords
-
-`CZATeria bookmarklet` • `SWIR MOD launcher` • `browser chat bookmarklet` • `JavaScript bookmarklet launcher` • `Stable Beta script launcher` • `CZATeria friends panel` • `symbol safe nickname handling` • `browser UI modification` • `jsDelivr GitHub bookmarklet` • `client side chat enhancement` • `virtual group room` • `XBookmark SWIR`
-
-<img width="100%" src="https://raw.githubusercontent.com/Swir/Swir/main/assets/power-divider-v4.svg" alt="SWIR electric divider" />
-
-<div align="center">
-
-### `PIN • LAUNCH • TEST • STABILIZE`
-
-⭐ **If this project is useful, consider leaving a star.**
-
-[**← SWIR profile**](https://github.com/Swir) · [**All projects →**](https://github.com/Swir?tab=repositories)
-
-</div>
+**SWIR MOD / XBookmark**  
+Bookmarklet launcher i rozszerzenia interfejsu dla CZATerii.
